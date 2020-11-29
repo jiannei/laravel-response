@@ -1,0 +1,39 @@
+{
+    "name": "jiannei\/laravel-response",
+    "description": "Laravel api response data format.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jiannei",
+            "email": "longjian.huang@foxmail.com"
+        }
+    ],
+    "require": {
+        "jiannei/laravel-enum": "^1.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.4",
+        "phpunit/phpunit": "^9.4",
+        "ext-json": "*",
+        "laravel/legacy-factories": "^1.0.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jiannei\\Response\\Laravel\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jiannei\\Response\\Laravel\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jiannei\\Enum\\Laravel\\Providers\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable" : true
+}
