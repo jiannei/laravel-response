@@ -2,6 +2,8 @@
 
 <p align="center"> Laravel api response data format.</p>
 
+![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
+[![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main)](https://github.styleci.io/repos/316969462?branch=main)
 
 ## Installing
 
