@@ -1,7 +1,15 @@
 <?php
 
-namespace Jiannei\Response\Laravel\Tests\Repositories\Models;
+/*
+ * This file is part of the Jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
+namespace Jiannei\Response\Laravel\Tests\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

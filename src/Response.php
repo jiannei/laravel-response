@@ -1,6 +1,13 @@
 <?php
 
-
+/*
+ * This file is part of the Jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Jiannei\Response\Laravel;
 
@@ -14,7 +21,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\HigherOrderTapProxy;
 use Jiannei\Enum\Laravel\Exceptions\InvalidEnumValueException;
-use Jiannei\Response\Laravel\Repositories\Enums\ResponseCodeEnum;
 
 class Response
 {
@@ -145,7 +151,7 @@ class Response
             $status = 'success';
         }
 
-        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($originalCode)->description;
         }
 
