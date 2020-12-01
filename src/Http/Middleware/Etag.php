@@ -14,7 +14,7 @@ namespace Jiannei\Response\Laravel\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class EtagMiddleware
+class Etag
 {
     /**
      * Implement Etag support.

@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "jiannei/laravel-enum": "^1.0"
+        "jiannei/laravel-enum": "^1.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "orchestra/testbench": "^6.4",

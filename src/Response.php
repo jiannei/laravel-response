@@ -15,7 +15,6 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -24,14 +23,18 @@ use Jiannei\Enum\Laravel\Exceptions\InvalidEnumValueException;
 
 class Response
 {
-    public function accepted(string $message = '')
+    /**
+     *  Respond with an accepted response and associate a location and/or content if provided.
+     *
+     * @param  null  $data
+     * @param  string  $message
+     * @param  string  $location
+     * @return JsonResponse|JsonResource|HigherOrderTapProxy
+     * @throws InvalidEnumValueException
+     */
+    public function accepted($data = null, string $message = '', string $location = '')
     {
-        return $this->success(null, $message, HttpResponse::HTTP_ACCEPTED);
-    }
-
-    public function created($data = null, string $message = '', string $location = '')
-    {
-        $response = $this->success($data, $message, HttpResponse::HTTP_CREATED);
+        $response = $this->success($data, $message, 202);
         if ($location) {
             $response->header('Location', $location);
         }
@@ -39,37 +42,100 @@ class Response
         return $response;
     }
 
-    public function errorBadRequest(?string $message = '')
+    /**
+     * Respond with a created response and associate a location if provided.
+     *
+     * @param  null  $data
+     * @param  string  $message
+     * @param  string  $location
+     * @return JsonResponse|JsonResource|HigherOrderTapProxy
+     * @throws InvalidEnumValueException
+     */
+    public function created($data = null, string $message = '', string $location = '')
     {
-        $this->fail($message, HttpResponse::HTTP_BAD_REQUEST);
-    }
+        $response = $this->success($data, $message, 201);
+        if ($location) {
+            $response->header('Location', $location);
+        }
 
-    public function errorForbidden(string $message = '')
-    {
-        $this->fail($message, HttpResponse::HTTP_FORBIDDEN);
-    }
-
-    public function errorInternal(string $message = '')
-    {
-        $this->fail($message, HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    public function errorMethodNotAllowed(string $message = '')
-    {
-        $this->fail($message, HttpResponse::HTTP_METHOD_NOT_ALLOWED);
-    }
-
-    public function errorNotFound(string $message = '')
-    {
-        $this->fail($message, HttpResponse::HTTP_NOT_FOUND);
-    }
-
-    public function errorUnauthorized(string $message = '')
-    {
-        $this->fail($message, HttpResponse::HTTP_UNAUTHORIZED);
+        return $response;
     }
 
     /**
+     * Respond with a no content response.
+     *
+     * @param  string  $message
+     * @return JsonResponse|JsonResource|HigherOrderTapProxy
+     * @throws InvalidEnumValueException
+     */
+    public function noContent(string $message = '')
+    {
+        return $this->success(null, $message, 204);
+    }
+
+    /**
+     * Return a 400 bad request error.
+     *
+     * @param  string|null  $message
+     */
+    public function errorBadRequest(?string $message = ''): void
+    {
+        $this->fail($message, 400);
+    }
+
+    /**
+     * Return a 401 unauthorized error.
+     *
+     * @param  string  $message
+     */
+    public function errorUnauthorized(string $message = ''): void
+    {
+        $this->fail($message, 401);
+    }
+
+    /**
+     * Return a 403 forbidden error.
+     *
+     * @param  string  $message
+     */
+    public function errorForbidden(string $message = ''): void
+    {
+        $this->fail($message, 403);
+    }
+
+    /**
+     * Return a 404 not found error.
+     *
+     * @param  string  $message
+     */
+    public function errorNotFound(string $message = ''): void
+    {
+        $this->fail($message, 404);
+    }
+
+    /**
+     * Return a 405 method not allowed error.
+     *
+     * @param  string  $message
+     */
+    public function errorMethodNotAllowed(string $message = ''): void
+    {
+        $this->fail($message, 405);
+    }
+
+    /**
+     * Return a 500 internal server error.
+     *
+     * @param  string  $message
+     */
+    public function errorInternal(string $message = ''): void
+    {
+        $this->fail($message, 500);
+    }
+
+    /**
+     * Return an fail response.
+     *
      * @param  string  $message
      * @param  int  $code
      * @param  null  $data
@@ -78,7 +144,7 @@ class Response
      *
      * @throws HttpResponseException
      */
-    public function fail(string $message = '', int $code = HttpResponse::HTTP_INTERNAL_SERVER_ERROR, $data = null, array $header = [], int $options = 0)
+    public function fail(string $message = '', int $code = 500, $data = null, array $header = [], int $options = 0): void
     {
         $this->response(
             $this->formatData(null, $message, $code, $data),
@@ -86,11 +152,6 @@ class Response
             $header,
             $options
         )->throwResponse();
-    }
-
-    public function noContent(string $message = '')
-    {
-        return $this->success(null, $message, HttpResponse::HTTP_NO_CONTENT);
     }
 
     /**
@@ -103,7 +164,7 @@ class Response
      * @return JsonResponse|JsonResource
      * @throws InvalidEnumValueException
      */
-    public function success($data = null, string $message = '', $code = HttpResponse::HTTP_OK, array $headers = [], $option = 0)
+    public function success($data = null, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
         if (! $data instanceof JsonResource) {
             return $this->formatArrayResponse($data, $message, $code, $headers, $option);
@@ -127,12 +188,14 @@ class Response
      *
      * @return JsonResponse
      */
-    protected function formatArrayResponse($data, string $message = '', $code = HttpResponse::HTTP_OK, array $headers = [], $option = 0)
+    protected function formatArrayResponse(?array $data, string $message = '', $code = 200, array $headers = [], $option = 0): JsonResponse
     {
         return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
     }
 
     /**
+     * Format return data structure.
+     *
      * @param  JsonResource|array|null  $data
      * @param $message
      * @param $code
@@ -174,9 +237,8 @@ class Response
      * @param  int  $option
      *
      * @return HigherOrderTapProxy|mixed
-     * @throws InvalidEnumValueException
      */
-    protected function formatPaginatedResourceResponse($resource, string $message = '', $code = HttpResponse::HTTP_OK, array $headers = [], $option = 0)
+    protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
         $paginated = $resource->resource->toArray();
 
@@ -223,7 +285,7 @@ class Response
      *
      * @return HigherOrderTapProxy|mixed
      */
-    protected function formatResourceResponse($resource, string $message = '', $code = HttpResponse::HTTP_OK, array $headers = [], $option = 0)
+    protected function formatResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
         return tap(
             $this->response($this->formatData($this->parseDataFrom($resource), $message, $code), $code, $headers, $option),
@@ -242,7 +304,7 @@ class Response
      *
      * @return array
      */
-    protected function parseDataFrom(JsonResource $data)
+    protected function parseDataFrom(JsonResource $data): array
     {
         return array_merge_recursive($data->resolve(request()), $data->with(request()), $data->additional);
     }
@@ -254,9 +316,9 @@ class Response
      * @param  int  $status
      * @param  array  $headers
      * @param  int  $options
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function response($data = [], $status = HttpResponse::HTTP_OK, array $headers = [], $options = 0)
+    protected function response($data = [], $status = 200, array $headers = [], $options = 0): JsonResponse
     {
         return response()->json($data, $status, $headers, $options);
     }

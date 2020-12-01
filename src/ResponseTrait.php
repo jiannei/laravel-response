@@ -11,6 +11,8 @@
 
 namespace Jiannei\Response\Laravel;
 
+use ErrorException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -27,17 +29,17 @@ trait ResponseTrait
             'response',
         ];
 
-        if (in_array($key, $callable) && method_exists($this, $key)) {
+        if (in_array($key, $callable, true) && method_exists($this, $key)) {
             return $this->$key();
         }
 
-        throw new \ErrorException('Undefined property '.get_class($this).'::'.$key);
+        throw new ErrorException('Undefined property '.get_class($this).'::'.$key);
     }
 
     /**
      * @return Response
      */
-    protected function response()
+    protected function response(): Response
     {
         return app(Response::class);
     }
@@ -48,7 +50,7 @@ trait ResponseTrait
      * @param $request
      * @param  Throwable  $e
      */
-    protected function prepareJsonResponse($request, Throwable $e)
+    protected function prepareJsonResponse($request, Throwable $e): void
     {
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
@@ -64,17 +66,18 @@ trait ResponseTrait
     /**
      * Custom Failed Validation Response.
      *
-     * @param Request $request
-     * @param array   $errors
+     * @param  Request  $request
+     * @param  array  $errors
      *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return mixed
+     * @throws HttpResponseException
      */
     protected function buildFailedValidationResponse(Request $request, array $errors)
     {
-        if (isset(static::$responseBuilder)) {
-            return call_user_func(static::$responseBuilder, $request, $errors);
+        if (!isset(static::$responseBuilder)) {
+            $this->response->fail('Validation error', 422, $errors);
         }
 
-        $this->response->fail('Validation error', 422, $errors);
+        return call_user_func(static::$responseBuilder, $request, $errors);
     }
 }

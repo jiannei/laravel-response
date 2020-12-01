@@ -20,17 +20,12 @@ use ReflectionException;
 
 class ResponseCodeEnum extends Enum implements LocalizedEnumContract
 {
-//    /**
-//     * Get the description for an enum value.
-//     *
-//     * @param  mixed  $value
-//     * @return string
-//     */
-//    public static function getDescription($value): string
-//    {
-//        return static::getLocalizedDescription($value) ?? HttpResponse::$statusTexts[$value];
-//    }
-
+    /**
+     * Get localized description.
+     *
+     * @param $value
+     * @return string|null
+     */
     protected static function getLocalizedDescription($value): ?string
     {
         if (static::isLocalizable()) {
@@ -60,6 +55,11 @@ class ResponseCodeEnum extends Enum implements LocalizedEnumContract
         return static::$cache[$calledClass];
     }
 
+    /**
+     * Get HTTP standard status code
+     *
+     * @return array
+     */
     protected static function getHttpConstants(): array
     {
         $reflect = new ReflectionClass(HttpResponse::class);
