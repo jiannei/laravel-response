@@ -74,7 +74,7 @@ trait ResponseTrait
      */
     protected function buildFailedValidationResponse(Request $request, array $errors)
     {
-        if (!isset(static::$responseBuilder)) {
+        if (! isset(static::$responseBuilder)) {
             $this->response->fail('Validation error', 422, $errors);
         }
 

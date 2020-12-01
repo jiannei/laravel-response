@@ -56,7 +56,7 @@ class ResponseCodeEnum extends Enum implements LocalizedEnumContract
     }
 
     /**
-     * Get HTTP standard status code
+     * Get HTTP standard status code.
      *
      * @return array
      */
