@@ -109,7 +109,7 @@ class FailTest extends TestCase
                 'code' => ResponseCodeEnum::SYSTEM_ERROR,
                 'message' => ResponseCodeEnum::fromValue(ResponseCodeEnum::SYSTEM_ERROR)->description,
                 'data' =>  (object) [],
-                'error' => $this->convertExceptionToArray($httpException),
+                'error' => config('app.debug', false) ? $this->convertExceptionToArray($httpException) : [],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
             $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
