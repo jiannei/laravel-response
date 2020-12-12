@@ -14,7 +14,7 @@ namespace Jiannei\Response\Laravel;
 use ErrorException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
-use Jiannei\Response\Laravel\Repositories\Enums\ResponseCodeEnum;
+use Illuminate\Support\Facades\Config;
 use Throwable;
 
 /**
@@ -79,6 +79,6 @@ trait ResponseTrait
             return (static::$responseBuilder)($request, $errors);
         }
 
-        return $this->response->fail('', ResponseCodeEnum::CLIENT_VALIDATION_ERROR, $errors);
+        return $this->response->fail('', Config::get('response.validation_error_code', 422), $errors);
     }
 }
