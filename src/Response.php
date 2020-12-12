@@ -11,6 +11,7 @@
 
 namespace Jiannei\Response\Laravel;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -130,7 +131,7 @@ class Response
      */
     public function errorInternal(string $message = ''): void
     {
-        $this->fail($message, 500);
+        $this->fail($message);
     }
 
     /**
@@ -138,43 +139,55 @@ class Response
      *
      * @param  string  $message
      * @param  int  $code
-     * @param  null  $data
+     * @param  array|null  $errors
      * @param  array  $header
      * @param  int  $options
      *
+     * @return JsonResponse
      * @throws HttpResponseException
      */
-    public function fail(string $message = '', int $code = 500, $data = null, array $header = [], int $options = 0): void
+    public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
     {
-        $this->response(
-            $this->formatData(null, $message, $code, $data),
+        $response = $this->response(
+            $this->formatData(null, $message, $code, $errors),
             $code,
             $header,
             $options
-        )->throwResponse();
+        );
+
+        if (is_null($errors)) {
+            $response->throwResponse();
+        }
+
+        return $response;
     }
 
     /**
-     * @param  JsonResource|array|null  $data
+     * Return an success response.
+     *
+     * @param  JsonResource|array|null|mixed  $data
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
      *
      * @return JsonResponse|JsonResource
-     * @throws InvalidEnumValueException
      */
     public function success($data = null, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        if (! $data instanceof JsonResource) {
-            return $this->formatArrayResponse($data, $message, $code, $headers, $option);
-        }
-
         if ($data instanceof ResourceCollection && ($data->resource instanceof AbstractPaginator)) {
             return $this->formatPaginatedResourceResponse(...func_get_args());
         }
 
-        return $this->formatResourceResponse(...func_get_args());
+        if ($data instanceof JsonResource) {
+            return $this->formatResourceResponse(...func_get_args());
+        }
+
+        if ($data instanceof Arrayable) {
+            $data = $data->toArray();
+        }
+
+        return $this->formatArrayResponse(Arr::wrap($data), $message, $code, $headers, $option);
     }
 
     /**
@@ -223,7 +236,7 @@ class Response
             'code' => $originalCode,
             'message' => $message,
             'data' => $data ?: (object) $data,
-            'error' =>  $errors ?: [],
+            'error' =>  $errors ?: (object)[],
         ];
     }
 
@@ -241,22 +254,35 @@ class Response
     protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
         $paginated = $resource->resource->toArray();
+        $count = $paginated['total'] ?? null;
+        $totalPages = $paginated['last_page'] ?? null;
+        $previous = $paginated['prev_page_url'] ?? null;
+        $next = $paginated['next_page_url'] ?? null;
 
         $paginationInformation = [
             'meta' => [
                 'pagination' => [
-                    'total' => $paginated['total'] ?? null,
                     'count' => $paginated['to'] ?? null,
                     'per_page' => $paginated['per_page'] ?? null,
                     'current_page' => $paginated['current_page'] ?? null,
-                    'total_pages' => $paginated['last_page'] ?? null,
-                    'links' => [
-                        'previous' => $paginated['prev_page_url'] ?? null,
-                        'next' => $paginated['next_page_url'] ?? null,
-                    ],
                 ],
             ],
         ];
+
+        if ($count) {
+            $paginationInformation['meta']['pagination']['total'] = $count;
+        }
+
+        if ($totalPages) {
+            $paginationInformation['meta']['pagination']['total_pages'] = $totalPages;
+        }
+
+        if ($previous || $next) {
+            $paginationInformation['meta']['pagination']['links'] = [
+                'previous' => $previous,
+                'next' => $next,
+            ];
+        }
 
         $data = array_merge_recursive(['data' => $this->parseDataFrom($resource)], $paginationInformation);
 
