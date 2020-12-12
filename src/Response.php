@@ -236,7 +236,7 @@ class Response
             'code' => $originalCode,
             'message' => $message,
             'data' => $data ?: (object) $data,
-            'error' =>  $errors ?: (object)[],
+            'error' =>  $errors ?: (object) [],
         ];
     }
 
