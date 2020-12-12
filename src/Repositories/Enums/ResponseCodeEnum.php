@@ -11,59 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Repositories\Enums;
 
-use Illuminate\Http\Response as HttpResponse;
-use Illuminate\Support\Facades\Lang;
-use Jiannei\Enum\Laravel\Contracts\LocalizedEnumContract;
-use Jiannei\Enum\Laravel\Enum;
-use ReflectionClass;
-use ReflectionException;
-
-class ResponseCodeEnum extends Enum implements LocalizedEnumContract
+abstract class ResponseCodeEnum extends HttpStatusCodeEnum
 {
-    /**
-     * Get localized description.
-     *
-     * @param $value
-     * @return string|null
-     */
-    protected static function getLocalizedDescription($value): ?string
-    {
-        if (static::isLocalizable()) {
-            $localizedStringKey = static::getLocalizationKey().'.'.$value;
-            if (Lang::has($localizedStringKey)) {
-                return Lang::get($localizedStringKey);
-            }
-        }
-
-        return HttpResponse::$statusTexts[$value] ?? null;
-    }
-
-    /**
-     * Get all of the constants defined on the class.
-     *
-     * @return array
-     * @throws ReflectionException
-     */
-    protected static function getConstants(): array
-    {
-        $calledClass = static::class;
-        if (! array_key_exists($calledClass, static::$cache)) {
-            $reflect = new ReflectionClass($calledClass);
-            static::$cache[$calledClass] = array_merge(self::getHttpConstants(), $reflect->getConstants());
-        }
-
-        return static::$cache[$calledClass];
-    }
-
-    /**
-     * Get HTTP standard status code.
-     *
-     * @return array
-     */
-    protected static function getHttpConstants(): array
-    {
-        $reflect = new ReflectionClass(HttpResponse::class);
-
-        return $reflect->getConstants();
-    }
+    const CLIENT_VALIDATION_ERROR = 422001;// 表单验证错误
 }
