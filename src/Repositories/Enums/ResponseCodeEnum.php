@@ -13,5 +13,5 @@ namespace Jiannei\Response\Laravel\Repositories\Enums;
 
 abstract class ResponseCodeEnum extends HttpStatusCodeEnum
 {
-    const CLIENT_VALIDATION_ERROR = 422001;// 表单验证错误
+    const CLIENT_VALIDATION_ERROR = 422001; // 表单验证错误
 }
