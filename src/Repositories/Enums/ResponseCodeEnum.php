@@ -13,5 +13,4 @@ namespace Jiannei\Response\Laravel\Repositories\Enums;
 
 abstract class ResponseCodeEnum extends HttpStatusCodeEnum
 {
-
 }
