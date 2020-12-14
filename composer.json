@@ -31,7 +31,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jiannei\\Response\\Laravel\\Providers\\ServiceProvider"
+                "Jiannei\\Response\\Laravel\\Providers\\LaravelServiceProvider"
             ],
             "aliases": {
                 "Response": "Jiannei\\Response\\Laravel\\Support\\Facades\\Response"

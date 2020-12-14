@@ -11,23 +11,13 @@
 
 namespace Jiannei\Response\Laravel\Providers;
 
-use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
-use Jiannei\Response\Laravel\Response;
-
-class ServiceProvider extends IlluminateServiceProvider
+class LumenServiceProvider extends LaravelServiceProvider
 {
-    public function register()
-    {
-        $this->app->singleton(Response::class, function ($app) {
-            return new Response();
-        });
-
-        $this->setupConfig();
-    }
-
     protected function setupConfig()
     {
         $path = dirname(__DIR__, 2).'/config/response.php';
+
+        $this->app->configure('response');
 
         $this->mergeConfigFrom($path, 'response');
     }

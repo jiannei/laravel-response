@@ -11,7 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Tests;
 
-use Jiannei\Response\Laravel\Providers\ServiceProvider;
+use Jiannei\Response\Laravel\Providers\LumenServiceProvider;
 use Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
@@ -30,7 +30,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            ServiceProvider::class,
+            LumenServiceProvider::class,
         ];
     }
 
