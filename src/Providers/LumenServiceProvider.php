@@ -13,11 +13,14 @@ namespace Jiannei\Response\Laravel\Providers;
 
 class LumenServiceProvider extends LaravelServiceProvider
 {
+    protected function boot()
+    {
+        $this->app->configure('response');
+    }
+
     protected function setupConfig()
     {
         $path = dirname(__DIR__, 2).'/config/response.php';
-
-        $this->app->configure('response');
 
         $this->mergeConfigFrom($path, 'response');
     }
