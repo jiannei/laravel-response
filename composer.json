@@ -31,8 +31,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jiannei\\Enum\\Laravel\\Providers\\ServiceProvider"
-            ]
+                "Jiannei\\Response\\Laravel\\Providers\\ServiceProvider"
+            ],
+            "aliases": {
+                "Response": "Jiannei\\Response\\Laravel\\Support\\Facades\\Response"
+            }
         }
     },
     "minimum-stability": "dev",

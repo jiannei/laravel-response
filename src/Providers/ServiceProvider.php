@@ -12,11 +12,16 @@
 namespace Jiannei\Response\Laravel\Providers;
 
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
+use Jiannei\Response\Laravel\Response;
 
 class ServiceProvider extends IlluminateServiceProvider
 {
     public function register()
     {
+        $this->app->singleton(Response::class, function ($app) {
+            return new Response();
+        });
+
         $this->setupConfig();
     }
 
