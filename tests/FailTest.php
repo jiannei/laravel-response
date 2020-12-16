@@ -13,7 +13,8 @@ namespace Jiannei\Response\Laravel\Tests;
 
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Arr;
-use Jiannei\Response\Laravel\ResponseTrait;
+use Jiannei\Response\Laravel\Support\Facades\Response;
+use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;
 use Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -21,14 +22,14 @@ use Throwable;
 
 class FailTest extends TestCase
 {
-    use ResponseTrait;
+    use ExceptionTrait;
 
     public function testFail()
     {
         try {
             // 方式一：Controller 中直接返回失败，这里本质上是通过 JsonResponse 是抛出了一个 HttpResponseException，需要捕获异常后才能拿到真实响应
             // 不需要在前面加 return
-            $this->response()->fail();
+            Response::fail();
         } catch (HttpResponseException $e) {
             $response = $e->getResponse();
 
@@ -52,7 +53,7 @@ class FailTest extends TestCase
     {
         try {
             // 方式二：Controller 中返回指定的 Message
-            $this->response()->fail('操作失败');
+            Response::fail('操作失败');
         } catch (HttpResponseException $e) {
             $response = $e->getResponse();
 
@@ -73,7 +74,7 @@ class FailTest extends TestCase
     {
         try {
             // 方式三：Controller 中返回预先定义的业务错误码和错误描述
-            $this->response()->fail('', ResponseCodeEnum::SERVICE_LOGIN_ERROR);
+            Response::fail('', ResponseCodeEnum::SERVICE_LOGIN_ERROR);
         } catch (HttpResponseException $e) {
             $response = $e->getResponse();
 
@@ -96,7 +97,7 @@ class FailTest extends TestCase
             // 方式四：Controller 中默认引入了 ResponseTrait；在没有引入 ResponseTrait 的地方可以直接使用 abort 来抛出 HttpException 异常然后返回错误信息
             abort(ResponseCodeEnum::SYSTEM_ERROR);
         } catch (HttpException $httpException) {
-            $response = $this->response()->fail(
+            $response = Response::fail(
                 '',
                 $this->isHttpException($httpException) ? $httpException->getStatusCode() : 500,
                 config('app.debug', false) ? $this->convertExceptionToArray($httpException) : [],

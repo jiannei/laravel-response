@@ -13,7 +13,7 @@ namespace Jiannei\Response\Laravel\Tests;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jiannei\Response\Laravel\ResponseTrait;
+use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum;
 use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
 use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserCollection;
@@ -21,12 +21,12 @@ use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserResource;
 
 class SuccessTest extends TestCase
 {
-    use ResponseTrait, DatabaseMigrations,RefreshDatabase;
+    use DatabaseMigrations, RefreshDatabase;
 
     public function testSuccess()
     {
         // 方式一：直接返回响应成功
-        $response = $this->response()->success(); // 注意：这里必须使用 this->response() 函数方式调用，因为 MakesHttpRequests 中有 response 属性
+        $response = Response::success(); // 注意：这里必须使用 this->response() 函数方式调用，因为 MakesHttpRequests 中有 response 属性
 
         $this->assertEquals(200, $response->status());
 
@@ -43,7 +43,7 @@ class SuccessTest extends TestCase
     public function testCreated()
     {
         // 方式二：返回创建成功
-        $response = $this->response()->created();
+        $response = Response::created();
 
         $this->assertEquals(201, $response->status());
 
@@ -60,7 +60,7 @@ class SuccessTest extends TestCase
     public function testAccepted()
     {
         // 方式三：返回接收成功
-        $response = $this->response()->accepted();
+        $response = Response::accepted();
 
         $this->assertEquals(202, $response->status());
 
@@ -77,7 +77,7 @@ class SuccessTest extends TestCase
     public function testNoContent()
     {
         // 方式四：返回空内容；创建成功或删除成功等场景
-        $response = $this->response()->noContent();
+        $response = Response::noContent();
 
         $this->assertEquals(204, $response->status());
 
@@ -99,7 +99,7 @@ class SuccessTest extends TestCase
             'name' => 'Jiannei',
             'email' => 'longjian.huang@foxmail.com',
         ];
-        $response = $this->response()->success($data);
+        $response = Response::success($data);
 
         $this->assertEquals(200, $response->status());
 
@@ -117,7 +117,7 @@ class SuccessTest extends TestCase
     {
         // 方式六：返回 Api resource
         $user = User::factory()->make();
-        $response = $this->response()->success(new UserResource($user));
+        $response = Response::success(new UserResource($user));
 
         $this->assertEquals(200, $response->status());
         $expectedJson = json_encode([
@@ -138,7 +138,7 @@ class SuccessTest extends TestCase
     {
         // 方式七：返回 Api collection
         $users = User::factory()->count(10)->make();
-        $response = $this->response()->success(new UserCollection($users));
+        $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
 
@@ -164,7 +164,7 @@ class SuccessTest extends TestCase
         User::factory()->count(20)->create();
         $users = User::paginate();
 
-        $response = $this->response()->success(new UserCollection($users));
+        $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
 
@@ -205,7 +205,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithMessage()
     {
         // 方式九：返回指定的 Message
-        $response = $this->response()->success(null, '成功');
+        $response = Response::success(null, '成功');
 
         $expectedJson = json_encode([
             'status' => 'success',
@@ -221,7 +221,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithCustomMessageAndCode()
     {
         // 方式十：根据预定义的「业务码」和「对应的描述信息」返回
-        $response = $this->response()->success(null, '', ResponseCodeEnum::SERVICE_LOGIN_SUCCESS);
+        $response = Response::success(null, '', ResponseCodeEnum::SERVICE_LOGIN_SUCCESS);
 
         $expectedJson = json_encode([
             'status' => 'success',

@@ -12,8 +12,10 @@
 namespace Jiannei\Response\Laravel\Support\Traits;
 
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Validation\ValidationException;
 use Jiannei\Response\Laravel\Response;
 use Throwable;
 
@@ -24,6 +26,7 @@ trait ExceptionTrait
      *
      * @param $request
      * @param  Throwable  $e
+     * @return JsonResponse
      */
     protected function prepareJsonResponse($request, Throwable $e)
     {
@@ -39,7 +42,7 @@ trait ExceptionTrait
     }
 
     /**
-     * Custom Failed Validation Response.
+     * Custom Failed Validation Response for Lumen.
      *
      * @param  Request  $request
      * @param  array  $errors
@@ -54,5 +57,17 @@ trait ExceptionTrait
         }
 
         return app(Response::class)->fail('', Config::get('response.validation_error_code', 422), $errors);
+    }
+
+    /**
+     * Custom Failed Validation Response for Laravel.
+     *
+     * @param  Request  $request
+     * @param  ValidationException  $exception
+     * @return JsonResponse
+     */
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        return app(Response::class)->fail('', Config::get('response.validation_error_code', $exception->status), $exception->errors());
     }
 }
