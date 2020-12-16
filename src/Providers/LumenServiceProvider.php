@@ -13,7 +13,7 @@ namespace Jiannei\Response\Laravel\Providers;
 
 class LumenServiceProvider extends LaravelServiceProvider
 {
-    protected function boot()
+    public function boot()
     {
         $this->app->configure('response');
     }
