@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Facade as IlluminateFacade;
  * @method static void errorNotFound(string $message = '')
  * @method static void errorMethodNotAllowed(string $message = '')
  * @method static void errorInternal(string $message = '')
- * @method static void fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
+ * @method static JsonResponse fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
  *
  * @see \Jiannei\Response\Laravel\Response
  */
