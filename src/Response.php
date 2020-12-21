@@ -19,8 +19,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\HigherOrderTapProxy;
-use Jiannei\Enum\Laravel\Exceptions\InvalidEnumValueException;
 
 class Response
 {
@@ -30,8 +28,7 @@ class Response
      * @param  null  $data
      * @param  string  $message
      * @param  string  $location
-     * @return JsonResponse|JsonResource|HigherOrderTapProxy
-     * @throws InvalidEnumValueException
+     * @return JsonResponse|JsonResource
      */
     public function accepted($data = null, string $message = '', string $location = '')
     {
@@ -49,8 +46,7 @@ class Response
      * @param  null  $data
      * @param  string  $message
      * @param  string  $location
-     * @return JsonResponse|JsonResource|HigherOrderTapProxy
-     * @throws InvalidEnumValueException
+     * @return JsonResponse|JsonResource
      */
     public function created($data = null, string $message = '', string $location = '')
     {
@@ -66,8 +62,7 @@ class Response
      * Respond with a no content response.
      *
      * @param  string  $message
-     * @return JsonResponse|JsonResource|HigherOrderTapProxy
-     * @throws InvalidEnumValueException
+     * @return JsonResponse|JsonResource
      */
     public function noContent(string $message = '')
     {
@@ -249,7 +244,7 @@ class Response
      * @param  array  $headers
      * @param  int  $option
      *
-     * @return HigherOrderTapProxy|mixed
+     * @return mixed
      */
     protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
@@ -309,7 +304,7 @@ class Response
      * @param  array  $headers
      * @param  int  $option
      *
-     * @return HigherOrderTapProxy|mixed
+     * @return mixed
      */
     protected function formatResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
