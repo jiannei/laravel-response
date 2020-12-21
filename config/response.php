@@ -10,7 +10,7 @@
  */
 
 return [
-    'enum' => \Jiannei\Response\Laravel\Repositories\Enums\ResponseCodeEnum::class,
+    'enum' => \Jiannei\Enum\Laravel\Repositories\Enums\ResponseCodeEnum::class,
 
-    'validation_error_code' => \Jiannei\Response\Laravel\Repositories\Enums\ResponseCodeEnum::HTTP_UNPROCESSABLE_ENTITY,
+    'validation_error_code' => \Jiannei\Enum\Laravel\Repositories\Enums\ResponseCodeEnum::HTTP_UNPROCESSABLE_ENTITY,
 ];

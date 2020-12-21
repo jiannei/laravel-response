@@ -9,14 +9,13 @@
         }
     ],
     "require": {
-        "jiannei/laravel-enum": "^1.0",
         "ext-json": "*"
     },
     "require-dev": {
         "orchestra/testbench": "^6.4",
         "phpunit/phpunit": "^9.4",
-        "ext-json": "*",
-        "laravel/legacy-factories": "^1.0.4"
+        "laravel/legacy-factories": "^1.0.4",
+        "jiannei/laravel-enum": "^1.2"
     },
     "autoload": {
         "psr-4": {
