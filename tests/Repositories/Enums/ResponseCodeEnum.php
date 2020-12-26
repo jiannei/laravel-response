@@ -11,9 +11,9 @@
 
 namespace Jiannei\Response\Laravel\Tests\Repositories\Enums;
 
-use Jiannei\Enum\Laravel\Repositories\Enums\ResponseCodeEnum as BaseResponseCodeEnum;
+use Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum;
 
-class ResponseCodeEnum extends BaseResponseCodeEnum
+class ResponseCodeEnum extends HttpStatusCodeEnum
 {
     // 定制/覆盖 HTTP 协议状态码
     const HTTP_OK = 200;
