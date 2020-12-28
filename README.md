@@ -1,17 +1,25 @@
 <h1 align="center"> laravel-response </h1>
 
-<p align="center"> Laravel api response data format.</p>
-
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main)](https://github.styleci.io/repos/316969462?branch=main)
 
-## Installing
+**社区讨论**：[教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
+
+## 安装
+
+响应码部分依赖于 [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需先进行安装
+
+```shell
+$ composer require jiannei/laravel-enum -vvv
+```
+
+再执行
 
 ```shell
 $ composer require jiannei/laravel-response -vvv
 ```
 
-## Usage
+## 使用
 
 TODO
 
