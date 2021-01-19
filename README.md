@@ -43,6 +43,10 @@ $ composer require jiannei/laravel-response -vvv
 $ php artisan vendor:publish --provider="Jiannei\Response\Laravel\Providers\LaravelServiceProvider"
 ```
 
+- 格式化异常响应
+
+在 `app/Exceptions/Handler.php` 中 引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`  引入以后，对于 ajax 请求产生的异常都会进行格式化数据返回。
+
 ### Lumen
 
 - 复制配置文件到 `vendor/jiannei/laravel-response/config/response.php`，到 `config/response.php`
@@ -57,6 +61,12 @@ cp vendor/jiannei/laravel-response/config/response.php config/response.php
 // bootstrap/app.php
 $app->configure('response');
 ```
+
+- 格式化异常响应
+
+在 `app/Exceptions/Handler.php` 中 引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
+
+在 `app/Http/Controllers/Controller.php` 中引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
 
 - 注册服务容器
 
@@ -348,10 +358,6 @@ Response::errorInternal();
 ```
 
 ### 异常响应
-
-对于异常的数据格式化，需额外在 `app/Exceptions/Handler.php` 中 引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`  引入以后，对于 ajax 请求产生的异常都会进行格式化数据返回。
-
-（Lumen 中为达到同样效果，还需在 `app/Http/Controllers/Controller.php` 中引入 `ExceptionTrait`）
 
 - 表单验证异常
 
