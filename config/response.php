@@ -16,7 +16,7 @@ return [
 
     'format' => [
         'paginated_resource' => [
-            'data_field' => 'data'
-        ]
-    ]
+            'data_field' => 'data',
+        ],
+    ],
 ];
