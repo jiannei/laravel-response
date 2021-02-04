@@ -279,7 +279,8 @@ class Response
             ];
         }
 
-        $data = array_merge_recursive(['data' => $this->parseDataFrom($resource)], $paginationInformation);
+        $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
+        $data = array_merge_recursive([$paginationDataField => $this->parseDataFrom($resource)], $paginationInformation);
 
         return tap(
             $this->response($this->formatData($data, $message, $code), $code, $headers, $option),
