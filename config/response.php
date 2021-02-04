@@ -13,4 +13,10 @@ return [
     'enum' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class,
 
     'validation_error_code' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY,
+
+    'format' => [
+        'paginated_resource' => [
+            'data_field' => 'data'
+        ]
+    ]
 ];

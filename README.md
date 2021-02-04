@@ -152,7 +152,7 @@ public function array()
 }
 ```
 
-- 分页数据
+- 分页数据（里层 data 字段名支持自定义，比如修改成 list、rows 等）
 
 ```php
 {
@@ -200,7 +200,7 @@ public function array()
 }
 ```
 
-- 返回简单分页数据
+- 返回简单分页数据（里层 data 字段名支持自定义，比如修改成 list、rows 等）
 
 ```php
 {
@@ -246,7 +246,7 @@ public function array()
 }
 ```
 
-- 返回单条数据
+- 返回单条数据（里层 data 字段名支持自定义，比如修改成 list、rows 等）
 
 ```php
 {
@@ -481,7 +481,7 @@ class ResponseCodeEnum extends BaseResponseCodeEnum
 
 ```php
 <?php
-// resources/lang/zh-CN/enums.php
+// resources/lang/zh_CN/enums.php
 use App\Repositories\Enums\ResponseCodeEnum;
 
 return [
