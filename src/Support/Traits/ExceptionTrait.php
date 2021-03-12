@@ -35,7 +35,7 @@ trait ExceptionTrait
         return app(Response::class)->fail(
             '',
             $this->isHttpException($e) ? $e->getStatusCode() : 500,
-            config('app.debug', false) ? $this->convertExceptionToArray($e) : [],
+            $this->convertExceptionToArray($e),
             $this->isHttpException($e) ? $e->getHeaders() : [],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );

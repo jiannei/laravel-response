@@ -100,7 +100,7 @@ class FailTest extends TestCase
             $response = Response::fail(
                 '',
                 $this->isHttpException($httpException) ? $httpException->getStatusCode() : 500,
-                config('app.debug', false) ? $this->convertExceptionToArray($httpException) : [],
+                $this->convertExceptionToArray($httpException),
                 $this->isHttpException($httpException) ? $httpException->getHeaders() : [],
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
             );
@@ -109,8 +109,8 @@ class FailTest extends TestCase
                 'status' => 'fail',
                 'code' => ResponseCodeEnum::SYSTEM_ERROR,
                 'message' => ResponseCodeEnum::fromValue(ResponseCodeEnum::SYSTEM_ERROR)->description,
-                'data' =>  (object) [],
-                'error' => config('app.debug', false) ? $this->convertExceptionToArray($httpException) : (object) [],
+                'data' => (object) [],
+                'error' => $this->convertExceptionToArray($httpException),
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
             $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
