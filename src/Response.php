@@ -178,6 +178,10 @@ class Response
             return $this->formatResourceResponse(...func_get_args());
         }
 
+        if ($data instanceof AbstractPaginator) {
+            return $this->formatPaginatedResponse(...func_get_args());
+        }
+
         if ($data instanceof Arrayable) {
             $data = $data->toArray();
         }
@@ -231,14 +235,14 @@ class Response
             'code' => $originalCode,
             'message' => $message,
             'data' => $data ?: (object) $data,
-            'error' =>  $errors ?: (object) [],
+            'error' => $errors ?: (object) [],
         ];
     }
 
     /**
-     * Format paginated resource data.
+     * Format paginated response.
      *
-     * @param  JsonResource  $resource
+     * @param  AbstractPaginator  $resource
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
@@ -246,9 +250,28 @@ class Response
      *
      * @return mixed
      */
-    protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    protected function formatPaginatedResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        $paginated = $resource->resource->toArray();
+        $paginated = $resource->toArray();
+
+        $paginationInformation = $this->formatPaginatedData($paginated);
+
+        $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
+        $data = array_merge_recursive([$paginationDataField => $paginated['data']], $paginationInformation);
+
+        return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
+    }
+
+
+    /**
+     * Format paginated data.
+     *
+     * @param  array  $paginated
+     *
+     * @return array
+     */
+    protected function formatPaginatedData(array $paginated)
+    {
         $count = $paginated['total'] ?? null;
         $totalPages = $paginated['last_page'] ?? null;
         $previous = $paginated['prev_page_url'] ?? null;
@@ -278,6 +301,26 @@ class Response
                 'next' => $next,
             ];
         }
+
+        return $paginationInformation;
+    }
+
+    /**
+     * Format paginated resource response.
+     *
+     * @param  JsonResource  $resource
+     * @param  string  $message
+     * @param  int  $code
+     * @param  array  $headers
+     * @param  int  $option
+     *
+     * @return mixed
+     */
+    protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    {
+        $paginated = $resource->resource->toArray();
+
+        $paginationInformation = $this->formatPaginatedData($paginated);
 
         $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
         $data = array_merge_recursive([$paginationDataField => $this->parseDataFrom($resource)], $paginationInformation);
