@@ -262,7 +262,6 @@ class Response
         return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
     }
 
-
     /**
      * Format paginated data.
      *
