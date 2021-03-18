@@ -1,0 +1,10 @@
+<?php
+
+use Jiannei\Response\Laravel\Response;
+
+if (!function_exists('api')) {
+    function api()
+    {
+        return app(Response::class);
+    }
+}
