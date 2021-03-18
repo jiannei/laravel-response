@@ -18,6 +18,8 @@ class LaravelServiceProvider extends ServiceProvider
     public function register()
     {
         $this->setupConfig();
+        
+        $this->registerHelpers();
     }
 
     protected function setupConfig()
@@ -29,5 +31,12 @@ class LaravelServiceProvider extends ServiceProvider
         }
 
         $this->mergeConfigFrom($path, 'response');
+    }
+    
+    protected function registerHelpers()
+    {
+        if (file_exists($helperFile = __DIR__.'/helpers.php')) {
+            require_once $helperFile;
+        }
     }
 }
