@@ -322,7 +322,9 @@ class Response
         $paginationInformation = $this->formatPaginatedData($paginated);
 
         $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
-        $data = array_merge_recursive([$paginationDataField => $this->parseDataFrom($resource)], $paginationInformation);
+        $resourceData = array_merge_recursive([$paginationDataField => $resource->resolve(request())], $resource->with(request()), $resource->additional);
+
+        $data = array_merge_recursive($resourceData, $paginationInformation);
 
         return tap(
             $this->response($this->formatData($data, $message, $code), $code, $headers, $option),
@@ -351,26 +353,16 @@ class Response
      */
     protected function formatResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
+        $resourceData = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+
         return tap(
-            $this->response($this->formatData($this->parseDataFrom($resource), $message, $code), $code, $headers, $option),
+            $this->response($this->formatData($resourceData, $message, $code), $code, $headers, $option),
             function ($response) use ($resource) {
                 $response->original = $resource->resource;
 
                 $resource->withResponse(request(), $response);
             }
         );
-    }
-
-    /**
-     * Parse data from JsonResource.
-     *
-     * @param  JsonResource  $data
-     *
-     * @return array
-     */
-    protected function parseDataFrom(JsonResource $data): array
-    {
-        return array_merge_recursive($data->resolve(request()), $data->with(request()), $data->additional);
     }
 
     /**
