@@ -12,6 +12,8 @@
 return [
     'enum' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class,
 
+    'error_code' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::HTTP_INTERNAL_SERVER_ERROR,
+
     'validation_error_code' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY,
 
     'format' => [
