@@ -145,7 +145,7 @@ class Response
     {
         $response = $this->response(
             $this->formatData(null, $message, $code, $errors),
-            Config::get('response.error_code', $code),
+            Config::get('response.error_code') ?: $code,
             $header,
             $options
         );
