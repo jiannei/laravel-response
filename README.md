@@ -127,27 +127,29 @@ public function array()
 }
 ```
 
-- 返回全部数据
+- 返回全部数据（支持自定义内层 data 字段名称，比如 rows、list）
 
 ```php
 {
     "status": "success",
     "code": 200,
     "message": "操作成功",
-    "data": [
-        {
-            "nickname": "Joaquin Ondricka",
-            "email": "lowe.chaim@example.org"
-        },
-        {
-            "nickname": "Jermain D'Amore",
-            "email": "reanna.marks@example.com"
-        },
-        {
-            "nickname": "Erich Moore",
-            "email": "ernestine.koch@example.org"
-        }
-    ],
+    "data": {
+        "data": [
+            {
+                "nickname": "Joaquin Ondricka",
+                "email": "lowe.chaim@example.org"
+            },
+            {
+                "nickname": "Jermain D'Amore",
+                "email": "reanna.marks@example.com"
+            },
+            {
+                "nickname": "Erich Moore",
+                "email": "ernestine.koch@example.org"
+            }
+        ]
+    },
     "error": {}
 }
 ```
