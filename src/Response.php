@@ -170,8 +170,8 @@ class Response
      */
     public function success($data = null, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        if ($data instanceof ResourceCollection && ($data->resource instanceof AbstractPaginator)) {
-            return $this->formatPaginatedResourceResponse(...func_get_args());
+        if ($data instanceof ResourceCollection) {
+            return $this->formatResourceCollectionResponse(...func_get_args());
         }
 
         if ($data instanceof JsonResource) {
@@ -305,7 +305,7 @@ class Response
     }
 
     /**
-     * Format paginated resource response.
+     * Format collection resource response.
      *
      * @param  JsonResource  $resource
      * @param  string  $message
@@ -315,16 +315,17 @@ class Response
      *
      * @return mixed
      */
-    protected function formatPaginatedResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    protected function formatResourceCollectionResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        $paginated = $resource->resource->toArray();
+        $dataField = Config::get('response.format.paginated_resource.data_field', 'data');
 
-        $paginationInformation = $this->formatPaginatedData($paginated);
+        $data = array_merge_recursive([$dataField => $resource->resolve(request())], $resource->with(request()), $resource->additional);
+        if ($resource->resource instanceof AbstractPaginator) {
+            $paginated = $resource->resource->toArray();
+            $paginationInformation = $this->formatPaginatedData($paginated);
 
-        $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
-        $resourceData = array_merge_recursive([$paginationDataField => $resource->resolve(request())], $resource->with(request()), $resource->additional);
-
-        $data = array_merge_recursive($resourceData, $paginationInformation);
+            $data = array_merge_recursive($data, $paginationInformation);
+        }
 
         return tap(
             $this->response($this->formatData($data, $message, $code), $code, $headers, $option),
