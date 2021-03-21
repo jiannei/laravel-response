@@ -377,6 +377,6 @@ class Response
      */
     protected function response($data = [], $status = 200, array $headers = [], $options = 0): JsonResponse
     {
-        return response()->json($data, $status, $headers, $options);
+        return new JsonResponse($data, $status, $headers, $options);
     }
 }
