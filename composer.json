@@ -9,7 +9,6 @@
         }
     ],
     "require": {
-        "ext-json": "*"
     },
     "require-dev": {
         "orchestra/testbench": "^6.4",

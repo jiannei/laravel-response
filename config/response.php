@@ -10,8 +10,6 @@
  */
 
 return [
-    'enum' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class,
-
     /*
     |--------------------------------------------------------------------------
     | Set the http status code when the response fails
@@ -29,7 +27,7 @@ return [
     // Set the http status code returned when the form validation fails.
     //  When the error_code is set to 200 or 500, it will not work
 
-    'validation_error_code' => \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY,
+    'validation_error_code' => 422,
 
     // Set the structure of the paging data return,the following structure will be returned by default,
     // You can modify the name of the inner data field through the following configuration items, such as rows or list
@@ -53,4 +51,14 @@ return [
             'data_field' => 'data',
         ],
     ],
+
+    // You can use enumerations to define the code when the response is returned,
+    // and set the response message according to the locale
+    //
+    // The following two enumeration packages are good choices
+    //
+    // https://github.com/Jiannei/laravel-enum
+    // https://github.com/BenSampo/laravel-enum
+
+    'enum' => '',// \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class
 ];
