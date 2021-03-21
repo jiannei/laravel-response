@@ -71,7 +71,7 @@ trait ExceptionTrait
     {
         return app(Response::class)->fail('', Config::get('response.validation_error_code', $exception->status), $exception->errors());
     }
-    
+
     /**
      * Custom Failed Authentication Response for Laravel.
      * @param Request $request
