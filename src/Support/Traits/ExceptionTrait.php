@@ -15,6 +15,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Jiannei\Response\Laravel\Response;
@@ -33,11 +34,13 @@ trait ExceptionTrait
     {
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
+        $isHttpException = $this->isHttpException($e);
+
         return app(Response::class)->fail(
-            '',
-            $this->isHttpException($e) ? $e->getStatusCode() : 500,
+            $isHttpException ? $e->getMessage() : 'Server Error',
+            $isHttpException ? $e->getStatusCode() : 500,
             $this->convertExceptionToArray($e),
-            $this->isHttpException($e) ? $e->getHeaders() : [],
+            $isHttpException ? $e->getHeaders() : [],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
     }
@@ -57,7 +60,13 @@ trait ExceptionTrait
             return (static::$responseBuilder)($request, $errors);
         }
 
-        return app(Response::class)->fail('', Config::get('response.validation_error_code', 422), $errors);
+        $firstMessage = Arr::first($errors, null, '');
+
+        return app(Response::class)->fail(
+            is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage
+            , Config::get('response.validation_error_code', 422),
+            $errors
+        );
     }
 
     /**
@@ -69,7 +78,11 @@ trait ExceptionTrait
      */
     protected function invalidJson($request, ValidationException $exception)
     {
-        return app(Response::class)->fail('', Config::get('response.validation_error_code', $exception->status), $exception->errors());
+        return app(Response::class)->fail(
+            $exception->validator->errors()->first(),
+            Config::get('response.validation_error_code', $exception->status),
+            $exception->errors()
+        );
     }
 
     /**
