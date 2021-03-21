@@ -11,6 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Support\Traits;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,5 +70,16 @@ trait ExceptionTrait
     protected function invalidJson($request, ValidationException $exception)
     {
         return app(Response::class)->fail('', Config::get('response.validation_error_code', $exception->status), $exception->errors());
+    }
+    
+    /**
+     * Custom Failed Authentication Response for Laravel.
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return JsonResponse
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return app(Response::class)->errorUnauthorized($exception->getMessage());
     }
 }
