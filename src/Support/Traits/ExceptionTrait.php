@@ -63,8 +63,7 @@ trait ExceptionTrait
         $firstMessage = Arr::first($errors, null, '');
 
         return app(Response::class)->fail(
-            is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage
-            , Config::get('response.validation_error_code', 422),
+            is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage, Config::get('response.validation_error_code', 422),
             $errors
         );
     }

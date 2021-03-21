@@ -60,5 +60,5 @@ return [
     // https://github.com/Jiannei/laravel-enum
     // https://github.com/BenSampo/laravel-enum
 
-    'enum' => '',// \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class
+    'enum' => '', // \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class
 ];
