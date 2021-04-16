@@ -86,12 +86,15 @@ trait ExceptionTrait
 
     /**
      * Custom Failed Authentication Response for Laravel.
-     * @param Request $request
-     * @param AuthenticationException $exception
-     * @return JsonResponse
+     *
+     * @param  Request  $request
+     * @param  AuthenticationException  $exception
+     * @return \Illuminate\Http\RedirectResponse | JsonResponse
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return app(Response::class)->errorUnauthorized($exception->getMessage());
+        return $request->expectsJson()
+            ? app(Response::class)->errorUnauthorized($exception->getMessage())
+            : redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 }
