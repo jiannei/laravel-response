@@ -282,6 +282,10 @@ class Response
                     'count' => $paginated['to'] ?? null,
                     'per_page' => $paginated['per_page'] ?? null,
                     'current_page' => $paginated['current_page'] ?? null,
+                    'links' => [
+                        'previous' => $previous,
+                        'next' => $next,
+                    ],
                 ],
             ],
         ];
@@ -292,13 +296,6 @@ class Response
 
         if ($totalPages) {
             $paginationInformation['meta']['pagination']['total_pages'] = $totalPages;
-        }
-
-        if ($previous || $next) {
-            $paginationInformation['meta']['pagination']['links'] = [
-                'previous' => $previous,
-                'next' => $next,
-            ];
         }
 
         return $paginationInformation;
