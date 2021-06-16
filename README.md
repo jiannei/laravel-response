@@ -2,8 +2,11 @@
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main)](https://github.styleci.io/repos/316969462?branch=main)
-
-**社区讨论**：[教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
+[![Latest Stable Version](http://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
+[![Total Downloads](http://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
+[![Monthly Downloads](http://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
+[![Latest Unstable Version](http://poser.pugx.org/jiannei/laravel-response/v/unstable)](https://packagist.org/packages/jiannei/laravel-response)
+[![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
 ## 介绍
 
@@ -12,6 +15,8 @@
 实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
 
 遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
+
+**社区讨论**：[教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
 
 ## 概览
 
@@ -129,7 +134,7 @@ public function array()
 
 - 返回全部数据（支持自定义内层 data 字段名称，比如 rows、list）
 
-```php
+```json
 {
     "status": "success",
     "code": 200,
@@ -156,7 +161,7 @@ public function array()
 
 - 分页数据（支持自定义内层 data 字段名称，比如 rows、list）
 
-```php
+```json
 {
     "status": "success",
     "code": 200,
@@ -204,7 +209,7 @@ public function array()
 
 - 返回简单分页数据（支持自定义内层 data 字段名称，比如 rows、list）
 
-```php
+```json
 {
     "status": "success",
     "code": 200,
@@ -250,7 +255,7 @@ public function array()
 
 - 返回单条数据
 
-```php
+```json
 {
     "status": "success",
     "code": 200,
@@ -317,7 +322,7 @@ public function fail()
 
 返回数据
 
-```php
+```json
 {
     "status": "fail",
     "code": 500,
@@ -338,7 +343,7 @@ public function fail()
 
 返回数据
 
-```php
+```json
 {
     "status": "fail",
     "code": 500102,
@@ -363,7 +368,7 @@ Response::errorInternal();
 
 - 表单验证异常
 
-```php
+```json
 {
     "status": "error",
     "code": 422,
@@ -382,7 +387,7 @@ Response::errorInternal();
 可以直接使用 abort 辅助函数直接抛出 HttpException 异常
 
 ```php
-abort(ResponseCodeEnum::SERVICE_LOGIN_ERROR);
+abort(500102,'登录失败');
 
 // 返回数据
 
@@ -399,7 +404,7 @@ abort(ResponseCodeEnum::SERVICE_LOGIN_ERROR);
 
 开启 debug
 
-```php
+```json
 {
     "status": "error",
     "code": 404,
@@ -433,7 +438,7 @@ abort(ResponseCodeEnum::SERVICE_LOGIN_ERROR);
 
 关闭 debug
 
-```php
+```json
 {
     "status": "error",
     "code": 404,
@@ -442,6 +447,10 @@ abort(ResponseCodeEnum::SERVICE_LOGIN_ERROR);
     "error": {}
 }
 ```
+
+## message 多语言
+
+TODO
 
 ### 自定义操作码
 
