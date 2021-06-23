@@ -8,6 +8,15 @@
 [![Latest Unstable Version](http://poser.pugx.org/jiannei/laravel-response/v/unstable)](https://packagist.org/packages/jiannei/laravel-response)
 [![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
+## 社区讨论文章
+
+- [是时候使用 Lumen 8 + API Resource 开发项目了！](https://learnku.com/articles/45311)
+- [教你更优雅地写 API 之「路由设计」](https://learnku.com/articles/45526)
+- [教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
+- [教你更优雅地写 API 之「枚举使用」](https://learnku.com/articles/53015)
+- [教你更优雅地写 API 之「记录日志」](https://learnku.com/articles/53669)
+- [教你更优雅地写 API 之「灵活地任务调度」](https://learnku.com/articles/58403)
+
 ## 介绍
 
 `laravel-response` 主要用来统一 API 开发过程中「成功」、「失败」以及「异常」情况下的响应数据格式。
@@ -15,8 +24,6 @@
 实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
 
 遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
-
-**社区讨论**：[教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
 
 ## 概览
 
