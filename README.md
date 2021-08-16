@@ -88,7 +88,7 @@ $app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
 
 ## 使用
 
-扩展包本身提供了丰富的单元测试用例[tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以直接查看测试用例。
+扩展包本身提供了丰富的单元测试用例[tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以通过查看测试用例来解锁使用方法。
 
 或者查看相应的模板项目:
 
@@ -391,7 +391,7 @@ Response::errorInternal();
 
 - Controller 以外抛出异常返回
 
-可以直接使用 abort 辅助函数直接抛出 HttpException 异常
+可以使用 abort 辅助函数抛出 HttpException 异常
 
 ```php
 abort(500102,'登录失败');

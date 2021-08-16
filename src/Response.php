@@ -271,17 +271,17 @@ class Response
      */
     protected function formatPaginatedData(array $paginated)
     {
-        $count = $paginated['total'] ?? null;
-        $totalPages = $paginated['last_page'] ?? null;
-        $previous = $paginated['prev_page_url'] ?? null;
-        $next = $paginated['next_page_url'] ?? null;
+        $count = $paginated['total'] ?? 0;
+        $totalPages = $paginated['last_page'] ?? 0;
+        $previous = $paginated['prev_page_url'] ?? '';
+        $next = $paginated['next_page_url'] ?? '';
 
         $paginationInformation = [
             'meta' => [
                 'pagination' => [
-                    'count' => $paginated['to'] ?? null,
-                    'per_page' => $paginated['per_page'] ?? null,
-                    'current_page' => $paginated['current_page'] ?? null,
+                    'count' => $paginated['to'] ?? 0,
+                    'per_page' => $paginated['per_page'] ?? 0,
+                    'current_page' => $paginated['current_page'] ?? 0,
                     'links' => [
                         'previous' => $previous,
                         'next' => $next,
