@@ -271,7 +271,7 @@ class Response
      */
     protected function formatPaginatedData(array $paginated)
     {
-       return [
+        return [
             'meta' => [
                 'pagination' => [
                     'total' => $paginated['total'] ?? 0,
