@@ -179,14 +179,14 @@ class SuccessTest extends TestCase
             'data' => $formatData,
             'meta' => [
                 'pagination' => [
-                    'count' => $paginated['to'] ?? null,
-                    'per_page' => $paginated['per_page'] ?? null,
-                    'current_page' => $paginated['current_page'] ?? null,
-                    'total' => $paginated['total'] ?? null,
-                    'total_pages' => $paginated['last_page'] ?? null,
+                    'count' => $paginated['to'] ?? 0,
+                    'per_page' => $paginated['per_page'] ?? 0,
+                    'current_page' => $paginated['current_page'] ?? 0,
+                    'total' => $paginated['total'] ?? 0,
+                    'total_pages' => $paginated['last_page'] ?? 0,
                     'links' => [
-                        'previous' => $paginated['prev_page_url'] ?? null,
-                        'next' => $paginated['next_page_url'] ?? null,
+                        'previous' => $paginated['prev_page_url'] ?? '',
+                        'next' => $paginated['next_page_url'] ?? '',
                     ],
                 ],
             ],
