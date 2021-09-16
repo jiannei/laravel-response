@@ -50,8 +50,8 @@ trait ExceptionTrait
      *
      * @param  Request  $request
      * @param  array  $errors
-     *
      * @return mixed
+     *
      * @throws HttpResponseException
      */
     protected function buildFailedValidationResponse(Request $request, array $errors)
@@ -64,7 +64,7 @@ trait ExceptionTrait
 
         return Response::fail(
             is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage,
-            Arr::get(Config::get('response.exception'), ValidationException::class,422),
+            Arr::get(Config::get('response.exception'), ValidationException::class, 422),
             $errors
         );
     }
@@ -80,7 +80,7 @@ trait ExceptionTrait
     {
         return Response::fail(
             $exception->validator->errors()->first(),
-            Arr::get(Config::get('response.exception'), ValidationException::class,422),
+            Arr::get(Config::get('response.exception'), ValidationException::class, 422),
             $exception->errors()
         );
     }

@@ -33,10 +33,10 @@ return [
 
         ],
         \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class =>[
-            'message' => ''
+            'message' => '',
         ],
         \Illuminate\Database\Eloquent\ModelNotFoundException::class => [
-            'message' => ''
+            'message' => '',
         ],
     ],
 
