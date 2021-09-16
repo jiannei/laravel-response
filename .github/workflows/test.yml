@@ -8,6 +8,7 @@ on:
 
 jobs:
     tests:
+        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
@@ -19,8 +20,6 @@ jobs:
                 include:
                     - laravel: 8.*
                       testbench: 6.*
-
-        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
         steps:
             - name: Checkout code
@@ -45,6 +44,7 @@ jobs:
                 coverage: none
 
             - name: Install dependencies
+              if: ${{ matrix.laravel }} ==  '8.*'
               run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer require --dev "jiannei/laravel-enum" --no-interaction --no-update
