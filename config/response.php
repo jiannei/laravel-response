@@ -24,10 +24,21 @@ return [
 
     'error_code' => false,
 
-    // Set the http status code returned when the form validation fails.
-    //  When the error_code is set to 200 or 500, it will not work
+    //  You can set some attributes (eg:code/message/header/options) for the exception, and it will override the default attributes of the exception
+    'exception' => [
+        \Illuminate\Validation\ValidationException::class => [
+            'code' => 422,
+        ],
+        \Illuminate\Auth\AuthenticationException::class => [
 
-    'validation_error_code' => 422,
+        ],
+        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class =>[
+            'message' => ''
+        ],
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class => [
+            'message' => ''
+        ],
+    ],
 
     // Set the structure of the paging data return,the following structure will be returned by default,
     // You can modify the name of the inner data field through the following configuration items, such as rows or list

@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
-use Jiannei\Response\Laravel\Response;
+use Jiannei\Response\Laravel\Support\Facades\Response;
 use Throwable;
 
 trait ExceptionTrait
@@ -34,15 +34,15 @@ trait ExceptionTrait
     {
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
+        $exceptionConfig = Arr::get(Config::get('response.exception'), get_class($e));
         $isHttpException = $this->isHttpException($e);
 
-        return app(Response::class)->fail(
-            $isHttpException ? $e->getMessage() : 'Server Error',
-            $isHttpException ? $e->getStatusCode() : 500,
-            $this->convertExceptionToArray($e),
-            $isHttpException ? $e->getHeaders() : [],
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-        );
+        $message = $exceptionConfig['message'] ?? ($isHttpException ? $e->getMessage() : 'Server Error');
+        $code = $exceptionConfig['code'] ?? ($isHttpException ? $e->getStatusCode() : 500);
+        $header = $exceptionConfig['header'] ?? ($isHttpException ? $e->getHeaders() : []);
+        $options = $exceptionConfig['options'] ?? (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        return Response::fail($message, $code, $this->convertExceptionToArray($e), $header, $options);
     }
 
     /**
@@ -50,8 +50,8 @@ trait ExceptionTrait
      *
      * @param  Request  $request
      * @param  array  $errors
-     * @return mixed
      *
+     * @return mixed
      * @throws HttpResponseException
      */
     protected function buildFailedValidationResponse(Request $request, array $errors)
@@ -62,8 +62,9 @@ trait ExceptionTrait
 
         $firstMessage = Arr::first($errors, null, '');
 
-        return app(Response::class)->fail(
-            is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage, Config::get('response.validation_error_code', 422),
+        return Response::fail(
+            is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage,
+            Arr::get(Config::get('response.exception'), ValidationException::class,422),
             $errors
         );
     }
@@ -77,9 +78,9 @@ trait ExceptionTrait
      */
     protected function invalidJson($request, ValidationException $exception)
     {
-        return app(Response::class)->fail(
+        return Response::fail(
             $exception->validator->errors()->first(),
-            Config::get('response.validation_error_code', $exception->status),
+            Arr::get(Config::get('response.exception'), ValidationException::class,422),
             $exception->errors()
         );
     }
@@ -93,8 +94,10 @@ trait ExceptionTrait
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
+        $exceptionConfig = Arr::get(Config::get('response.exception'), AuthenticationException::class);
+
         return $request->expectsJson()
-            ? app(Response::class)->errorUnauthorized($exception->getMessage())
+            ? Response::errorUnauthorized($exceptionConfig['message'] ?? $exception->getMessage())
             : redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 }
