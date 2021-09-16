@@ -59,6 +59,7 @@ return [
 
     'format' => [
         'fields' => [
+            'status' => ['alia' => 'status', 'show' => true],
             'code' => ['alia' => 'code', 'show' => true],
             'message' => ['alia' => 'message', 'show' => true],
             'data' => ['alia' => 'data', 'show' => true],
