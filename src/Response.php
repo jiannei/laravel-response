@@ -237,7 +237,7 @@ class Response
         $responseData = Arr::only($responseData, array_keys($fields));
 
         foreach ($responseData as $key => $value) {
-            $alia = $fields[$key]['alia'] ?? $key;
+            $alia = $fields[$key]['alias'] ?? $key;
             unset($responseData[$key]);
             $responseData[$alia] = $value;
         }
@@ -295,7 +295,7 @@ class Response
 
         $paginationInformation = $this->formatPaginatedData($paginated);
 
-        $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
+        $paginationDataField = Config::get('response.format.fields.data.data.alias', 'data');
         $data = array_merge_recursive([$paginationDataField => $paginated['data']], $paginationInformation);
 
         return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
@@ -338,7 +338,7 @@ class Response
      */
     protected function formatResourceCollectionResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        $dataField = Config::get('response.format.paginated_resource.data_field', 'data');
+        $dataField = Config::get('response.format.fields.data.data.alias', 'data');
 
         $data = array_merge_recursive([$dataField => $resource->resolve(request())], $resource->with(request()), $resource->additional);
         if ($resource->resource instanceof AbstractPaginator) {

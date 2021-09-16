@@ -40,34 +40,22 @@ return [
         ],
     ],
 
-    // Set the structure of the paging data return,the following structure will be returned by default,
-    // You can modify the name of the inner data field through the following configuration items, such as rows or list
-    //{
-    //    "status": "success",
-    //    "code": 200,
-    //    "message": "Success.",
-    //    "data": {
-    //    "data": [
-    //        // ...
-    //    ],
-    //        "meta": {
-    //        // ...
-    //    }
-    //    },
-    //    "error": {}
-    //}
-
+    // Set the structure of the response data
     'format' => [
         'fields' => [
-            'status' => ['alia' => 'status', 'show' => true],
-            'code' => ['alia' => 'code', 'show' => true],
-            'message' => ['alia' => 'message', 'show' => true],
-            'data' => ['alia' => 'data', 'show' => true],
-            'error' => ['alia' => 'error', 'show' => true],
-        ],
+            'status' => ['alias' => 'status', 'show' => true],
+            'code' => ['alias' => 'code', 'show' => true],
+            'message' => ['alias' => 'message', 'show' => true],
+            'error' => ['alias' => 'error', 'show' => true],
+            'data' => [
+                'alias' => 'data',
+                'show' => true,
 
-        'paginated_resource' => [
-            'data_field' => 'data',
+                // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
+                'data' => [
+                    'alias' => 'data',// data/rows/list
+                ],
+            ],
         ],
     ],
 
