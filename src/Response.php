@@ -70,6 +70,21 @@ class Response
     }
 
     /**
+     * Alias of success method, no need to specify data parameter.
+     *
+     * @param  string  $message
+     * @param  int  $code
+     * @param  array  $headers
+     * @param  int  $option
+     *
+     * @return JsonResponse|JsonResource
+     */
+    public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
+    {
+        return $this->success(null, $message, $code, $headers, $option);
+    }
+
+    /**
      * Return a 400 bad request error.
      *
      * @param  string|null  $message
@@ -168,7 +183,7 @@ class Response
      *
      * @return JsonResponse|JsonResource
      */
-    public function success($data = null, string $message = '', $code = 200, array $headers = [], $option = 0)
+    public function success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
         if ($data instanceof ResourceCollection) {
             return $this->formatResourceCollectionResponse(...func_get_args());
