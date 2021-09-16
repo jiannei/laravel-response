@@ -53,7 +53,7 @@ return [
 
                 // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
                 'data' => [
-                    'alias' => 'data',// data/rows/list
+                    'alias' => 'data', // data/rows/list
                 ],
             ],
         ],
