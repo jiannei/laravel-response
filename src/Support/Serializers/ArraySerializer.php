@@ -22,7 +22,6 @@ class ArraySerializer extends FractalArraySerializer
      *
      * @param  string  $resourceKey
      * @param  array  $data
-     *
      * @return array
      */
     public function collection($resourceKey, array $data)
@@ -36,7 +35,6 @@ class ArraySerializer extends FractalArraySerializer
      * Serialize the paginator.
      *
      * @param  PaginatorInterface  $paginator
-     *
      * @return array
      */
     public function paginator(PaginatorInterface $paginator)
