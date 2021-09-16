@@ -76,7 +76,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return JsonResponse|JsonResource
      */
     public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
@@ -152,8 +151,8 @@ class Response
      * @param  array|null  $errors
      * @param  array  $header
      * @param  int  $options
-     *
      * @return JsonResponse
+     *
      * @throws HttpResponseException
      */
     public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
@@ -180,7 +179,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return JsonResponse|JsonResource
      */
     public function success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
@@ -212,7 +210,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return JsonResponse
      */
     protected function formatArrayResponse(?array $data, string $message = '', $code = 200, array $headers = [], $option = 0): JsonResponse
@@ -262,7 +259,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return mixed
      */
     protected function formatPaginatedResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
@@ -281,7 +277,6 @@ class Response
      * Format paginated data.
      *
      * @param  array  $paginated
-     *
      * @return array
      */
     protected function formatPaginatedData(array $paginated)
@@ -311,7 +306,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return mixed
      */
     protected function formatResourceCollectionResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
@@ -348,7 +342,6 @@ class Response
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     *
      * @return mixed
      */
     protected function formatResourceResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)

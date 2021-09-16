@@ -50,8 +50,8 @@ trait ExceptionTrait
      *
      * @param  Request  $request
      * @param  array  $errors
-     *
      * @return mixed
+     *
      * @throws HttpResponseException
      */
     protected function buildFailedValidationResponse(Request $request, array $errors)
