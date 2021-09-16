@@ -47,6 +47,13 @@ return [
     //}
 
     'format' => [
+        'fields' => [
+            'code' => ['alia' => 'code', 'show' => true],
+            'message' => ['alia' => 'message', 'show' => true],
+            'data' => ['alia' => 'data', 'show' => true],
+            'error' => ['alia' => 'error', 'show' => true],
+        ],
+
         'paginated_resource' => [
             'data_field' => 'data',
         ],

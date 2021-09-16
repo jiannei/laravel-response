@@ -218,6 +218,34 @@ class Response
     }
 
     /**
+     * Format response data fields.
+     *
+     * @param $responseData
+     * @return array
+     */
+    protected function formatDataFields($responseData): array
+    {
+        $dataFieldsConfig = Config::get('response.format.fields',[]);
+        if (empty($dataFieldsConfig)) {
+            return $responseData;
+        }
+
+        $fields = Arr::where($dataFieldsConfig, function ($item) {
+            return $item['show'];
+        });
+
+        $responseData = Arr::only($responseData,array_keys($fields));
+
+        foreach ($responseData as $key => $value) {
+            $alia = $fields[$key]['alia'] ?? $key;
+            unset($responseData[$key]);
+            $responseData[$alia] = $value;
+        }
+
+        return $responseData;
+    }
+
+    /**
      * Format return data structure.
      *
      * @param  JsonResource|array|null  $data
@@ -242,13 +270,13 @@ class Response
             $message = $enumClass::fromValue($originalCode)->description;
         }
 
-        return [
+        return $this->formatDataFields([
             'status' => $status,
             'code' => $originalCode,
             'message' => $message,
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
-        ];
+        ]);
     }
 
     /**
