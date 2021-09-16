@@ -225,7 +225,7 @@ class Response
      */
     protected function formatDataFields($responseData): array
     {
-        $dataFieldsConfig = Config::get('response.format.fields',[]);
+        $dataFieldsConfig = Config::get('response.format.fields', []);
         if (empty($dataFieldsConfig)) {
             return $responseData;
         }
@@ -234,7 +234,7 @@ class Response
             return $item['show'];
         });
 
-        $responseData = Arr::only($responseData,array_keys($fields));
+        $responseData = Arr::only($responseData, array_keys($fields));
 
         foreach ($responseData as $key => $value) {
             $alia = $fields[$key]['alia'] ?? $key;
