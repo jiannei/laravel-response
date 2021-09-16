@@ -11,6 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Support\Traits;
 
+use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
@@ -27,10 +28,10 @@ trait ExceptionTrait
      * Custom Normal Exception response.
      *
      * @param $request
-     * @param  Throwable  $e
+     * @param  Throwable|Exception  $e
      * @return JsonResponse
      */
-    protected function prepareJsonResponse($request, Throwable $e)
+    protected function prepareJsonResponse($request, $e)
     {
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
