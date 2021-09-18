@@ -220,12 +220,12 @@ class Response
     /**
      * Format response data fields.
      *
-     * @param $responseData
+     * @param  array  $responseData
+     * @param  array  $dataFieldsConfig
      * @return array
      */
-    protected function formatDataFields($responseData): array
+    protected function formatDataFields(array $responseData, array $dataFieldsConfig = []): array
     {
-        $dataFieldsConfig = Config::get('response.format.fields', []);
         if (empty($dataFieldsConfig)) {
             return $responseData;
         }
@@ -236,10 +236,13 @@ class Response
 
         $responseData = Arr::only($responseData, array_keys($fields));
 
-        foreach ($responseData as $key => $value) {
-            $alia = $fields[$key]['alias'] ?? $key;
-            unset($responseData[$key]);
-            $responseData[$alia] = $value;
+        foreach ($responseData as $field => $value) {
+            if ($value && in_array($field, ['data', 'meta', 'pagination', 'links'])) {
+                $value = $this->formatDataFields($value, Arr::get($dataFieldsConfig, "{$field}.fields",[]));
+            }
+            $alias = $fields[$field]['alias'] ?? $field;
+            unset($responseData[$field]);
+            $responseData[$alias] = $value;
         }
 
         return $responseData;
@@ -274,9 +277,9 @@ class Response
             'status' => $status,
             'code' => $originalCode,
             'message' => $message,
-            'data' => $data ?: (object) $data,
-            'error' => $errors ?: (object) [],
-        ]);
+            'data' => $data ?: (object)$data,
+            'error' => $errors ?: (object)[],
+        ],Config::get('response.format.fields', []));
     }
 
     /**
@@ -295,8 +298,7 @@ class Response
 
         $paginationInformation = $this->formatPaginatedData($paginated);
 
-        $paginationDataField = Config::get('response.format.fields.data.data.alias', 'data');
-        $data = array_merge_recursive([$paginationDataField => $paginated['data']], $paginationInformation);
+        $data = array_merge_recursive(['data' => $paginated['data']], $paginationInformation);
 
         return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
     }
@@ -338,9 +340,7 @@ class Response
      */
     protected function formatResourceCollectionResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
     {
-        $dataField = Config::get('response.format.fields.data.data.alias', 'data');
-
-        $data = array_merge_recursive([$dataField => $resource->resolve(request())], $resource->with(request()), $resource->additional);
+        $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
         if ($resource->resource instanceof AbstractPaginator) {
             $paginated = $resource->resource->toArray();
             $paginationInformation = $this->formatPaginatedData($paginated);
