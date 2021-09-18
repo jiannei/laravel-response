@@ -238,7 +238,7 @@ class Response
 
         foreach ($responseData as $field => $value) {
             if ($value && in_array($field, ['data', 'meta', 'pagination', 'links'])) {
-                $value = $this->formatDataFields($value, Arr::get($dataFieldsConfig, "{$field}.fields",[]));
+                $value = $this->formatDataFields($value, Arr::get($dataFieldsConfig, "{$field}.fields", []));
             }
             $alias = $fields[$field]['alias'] ?? $field;
             unset($responseData[$field]);
@@ -277,9 +277,9 @@ class Response
             'status' => $status,
             'code' => $originalCode,
             'message' => $message,
-            'data' => $data ?: (object)$data,
-            'error' => $errors ?: (object)[],
-        ],Config::get('response.format.fields', []));
+            'data' => $data ?: (object) $data,
+            'error' => $errors ?: (object) [],
+        ], Config::get('response.format.fields', []));
     }
 
     /**
