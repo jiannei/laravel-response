@@ -24,7 +24,6 @@ return [
 
     'error_code' => false,
 
-
     // You can use enumerations to define the code when the response is returned,
     // and set the response message according to the locale
     //
@@ -64,7 +63,7 @@ return [
 
                 'fields' => [
                     // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
-                    'data' => ['alias' => 'data','show' => true], // data/rows/list
+                    'data' => ['alias' => 'data', 'show' => true], // data/rows/list
 
                     'meta' => [
                         'alia' => 'meta',
@@ -88,11 +87,11 @@ return [
                                         'fields' => [
                                             'previous' => ['alias' => 'previous', 'show' => true],
                                             'next' => ['alias' => 'next', 'show' => true],
-                                        ]
+                                        ],
                                     ],
-                                ]
+                                ],
                             ],
-                        ]
+                        ],
                     ],
                 ],
             ],
