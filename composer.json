@@ -9,14 +9,14 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0"
+        "php": ">=7.2.5"
     },
     "require-dev": {
-        "orchestra/testbench": "^3.5",
-        "phpunit/phpunit": "~6.0",
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0",
+        "orchestra/database": "^4.0",
         "jiannei/laravel-enum": "~1.4",
-        "league/fractal": "^0.19.2",
-        "orchestra/database": "^3.5"
+        "league/fractal": "^0.19.2"
     },
     "autoload": {
         "psr-4": {

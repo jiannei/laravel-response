@@ -11,7 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Tests\Repositories\Resources;
 
-use Illuminate\Http\Resources\Json\Resource as JsonResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
