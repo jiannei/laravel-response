@@ -231,7 +231,7 @@ class Response
         }
 
         foreach ($responseData as $field => $value) {
-            $fieldConfig = Arr::get($dataFieldsConfig,$field);
+            $fieldConfig = Arr::get($dataFieldsConfig, $field);
             if (is_null($fieldConfig)) {
                 continue;
             }
