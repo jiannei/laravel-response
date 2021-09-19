@@ -12,7 +12,7 @@
 namespace Jiannei\Response\Laravel\Support\Facades;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\Resource as JsonResource;
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**

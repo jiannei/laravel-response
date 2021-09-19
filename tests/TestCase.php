@@ -11,26 +11,25 @@
 
 namespace Jiannei\Response\Laravel\Tests;
 
-use Jiannei\Response\Laravel\Providers\LaravelServiceProvider;
-use Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
      * Setup the test environment.
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
-        $this->withFactories(__DIR__.'/Database/Factories');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->withFactories(__DIR__.'/database/factories');
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            LaravelServiceProvider::class,
+            \Orchestra\Database\ConsoleServiceProvider::class,
+            \Jiannei\Response\Laravel\Providers\LaravelServiceProvider::class,
         ];
     }
 
@@ -46,6 +45,6 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             'prefix' => '',
         ]);
 
-        $app['config']->set('response.enum', ResponseCodeEnum::class);
+        $app['config']->set('response.enum', \Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum::class);
     }
 }

@@ -14,7 +14,7 @@ namespace Jiannei\Response\Laravel;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\Resource as JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
@@ -25,12 +25,12 @@ class Response
     /**
      *  Respond with an accepted response and associate a location and/or content if provided.
      *
-     * @param  null  $data
+     * @param  array  $data
      * @param  string  $message
      * @param  string  $location
      * @return JsonResponse|JsonResource
      */
-    public function accepted($data = null, string $message = '', string $location = '')
+    public function accepted($data = [], string $message = '', string $location = '')
     {
         $response = $this->success($data, $message, 202);
         if ($location) {
@@ -48,7 +48,7 @@ class Response
      * @param  string  $location
      * @return JsonResponse|JsonResource
      */
-    public function created($data = null, string $message = '', string $location = '')
+    public function created($data = [], string $message = '', string $location = '')
     {
         $response = $this->success($data, $message, 201);
         if ($location) {
@@ -66,7 +66,7 @@ class Response
      */
     public function noContent(string $message = '')
     {
-        return $this->success(null, $message, 204);
+        return $this->success([], $message, 204);
     }
 
     /**
@@ -80,7 +80,7 @@ class Response
      */
     public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
-        return $this->success(null, $message, $code, $headers, $option);
+        return $this->success([], $message, $code, $headers, $option);
     }
 
     /**
@@ -88,7 +88,7 @@ class Response
      *
      * @param  string|null  $message
      */
-    public function errorBadRequest(?string $message = ''): void
+    public function errorBadRequest(string $message = '')
     {
         $this->fail($message, 400);
     }
@@ -98,7 +98,7 @@ class Response
      *
      * @param  string  $message
      */
-    public function errorUnauthorized(string $message = ''): void
+    public function errorUnauthorized(string $message = '')
     {
         $this->fail($message, 401);
     }
@@ -108,7 +108,7 @@ class Response
      *
      * @param  string  $message
      */
-    public function errorForbidden(string $message = ''): void
+    public function errorForbidden(string $message = '')
     {
         $this->fail($message, 403);
     }
@@ -118,7 +118,7 @@ class Response
      *
      * @param  string  $message
      */
-    public function errorNotFound(string $message = ''): void
+    public function errorNotFound(string $message = '')
     {
         $this->fail($message, 404);
     }
@@ -128,7 +128,7 @@ class Response
      *
      * @param  string  $message
      */
-    public function errorMethodNotAllowed(string $message = ''): void
+    public function errorMethodNotAllowed(string $message = '')
     {
         $this->fail($message, 405);
     }
@@ -138,7 +138,7 @@ class Response
      *
      * @param  string  $message
      */
-    public function errorInternal(string $message = ''): void
+    public function errorInternal(string $message = '')
     {
         $this->fail($message);
     }
@@ -174,14 +174,14 @@ class Response
     /**
      * Return an success response.
      *
-     * @param  JsonResource|array|null|mixed  $data
+     * @param  JsonResource|array|mixed  $data
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
      * @return JsonResponse|JsonResource
      */
-    public function success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
+    public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
         if ($data instanceof ResourceCollection) {
             return $this->formatResourceCollectionResponse(...func_get_args());
@@ -212,7 +212,7 @@ class Response
      * @param  int  $option
      * @return JsonResponse
      */
-    protected function formatArrayResponse(?array $data, string $message = '', $code = 200, array $headers = [], $option = 0): JsonResponse
+    protected function formatArrayResponse(array $data, string $message = '', int $code = 200, array $headers = [], int $option = 0): JsonResponse
     {
         return $this->response($this->formatData($data, $message, $code), $code, $headers, $option);
     }
@@ -342,7 +342,7 @@ class Response
      * @param  int  $option
      * @return mixed
      */
-    protected function formatResourceCollectionResponse($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    protected function formatResourceCollectionResponse($resource, string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
         $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
         if ($resource->resource instanceof AbstractPaginator) {
@@ -399,7 +399,7 @@ class Response
      * @param  int  $options
      * @return JsonResponse
      */
-    protected function response($data = [], $status = 200, array $headers = [], $options = 0): JsonResponse
+    protected function response($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
     {
         return new JsonResponse($data, $status, $headers, $options);
     }
