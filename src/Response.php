@@ -230,19 +230,23 @@ class Response
             return $responseData;
         }
 
-        $fields = Arr::where($dataFieldsConfig, function ($item) {
-            return $item['show'];
-        });
-
-        $responseData = Arr::only($responseData, array_keys($fields));
-
         foreach ($responseData as $field => $value) {
-            if ($value && in_array($field, ['data', 'meta', 'pagination', 'links'])) {
+            $fieldConfig = Arr::get($dataFieldsConfig,$field);
+            if (is_null($fieldConfig)) {
+                continue;
+            }
+
+            if ($value && is_array($value) && in_array($field, ['data', 'meta', 'pagination', 'links'])) {
                 $value = $this->formatDataFields($value, Arr::get($dataFieldsConfig, "{$field}.fields", []));
             }
-            $alias = $fields[$field]['alias'] ?? $field;
+
+            $alias = $fieldConfig['alias'] ?? $field;
+            $show = $fieldConfig['show'] ?? true;
             unset($responseData[$field]);
-            $responseData[$alias] = $value;
+
+            if ($show) {
+                $responseData[$alias] = $value;
+            }
         }
 
         return $responseData;
