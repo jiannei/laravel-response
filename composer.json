@@ -14,7 +14,7 @@
     "require-dev": {
         "orchestra/testbench": "^3.5",
         "phpunit/phpunit": "~6.0",
-        "jiannei/laravel-enum": "^1.0",
+        "jiannei/laravel-enum": "~1.4",
         "league/fractal": "^0.19.2",
         "orchestra/database": "^3.5"
     },
