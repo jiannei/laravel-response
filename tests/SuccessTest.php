@@ -33,8 +33,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 200,
             'message' => ResponseCodeEnum::fromValue(200)->description,
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
     }
@@ -50,8 +50,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 201,
             'message' => ResponseCodeEnum::fromValue(201)->description,
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
     }
@@ -67,8 +67,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 202,
             'message' => ResponseCodeEnum::fromValue(202)->description,
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
     }
@@ -84,8 +84,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 204,
             'message' => ResponseCodeEnum::fromValue(204)->description,
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
 
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
@@ -107,7 +107,7 @@ class SuccessTest extends TestCase
             'code' => 200,
             'message' => ResponseCodeEnum::fromValue(200)->description,
             'data' => $data,
-            'error' => (object)[],
+            'error' => (object) [],
         ]);
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
     }
@@ -136,7 +136,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithCollectionData()
     {
         // 方式七：返回 Api collection
-        $users = factory(User::class,10)->create();
+        $users = factory(User::class, 10)->create();
         $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
@@ -160,7 +160,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithPaginatedData()
     {
         // 方式八：返回分页的 Api collection
-        factory(User::class,20)->create();
+        factory(User::class, 20)->create();
         $users = User::paginate();
 
         $response = Response::success(new UserCollection($users));
@@ -210,8 +210,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 200,
             'message' => '成功',
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
 
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
@@ -226,8 +226,8 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => ResponseCodeEnum::SERVICE_LOGIN_SUCCESS, // 返回自定义的业务码
             'message' => ResponseCodeEnum::fromValue(ResponseCodeEnum::SERVICE_LOGIN_SUCCESS)->description, // 根据业务码取多语言的业务描述
-            'data' => (object)[],
-            'error' => (object)[],
+            'data' => (object) [],
+            'error' => (object) [],
         ]);
 
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());

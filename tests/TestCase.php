@@ -11,7 +11,6 @@
 
 namespace Jiannei\Response\Laravel\Tests;
 
-
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
