@@ -26,7 +26,7 @@ class ArraySerializer extends FractalArraySerializer
      */
     public function collection($resourceKey, array $data)
     {
-        $paginationDataField = Config::get('response.format.paginated_resource.data_field', 'data');
+        $paginationDataField = Config::get('response.format.fields.data.fields.data', 'data');
 
         return [$resourceKey ?: $paginationDataField => $data];
     }
