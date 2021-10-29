@@ -349,7 +349,7 @@ class Response
             $paginationInformation = $this->formatPaginatedData($paginated);
 
             $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional, $paginationInformation);
-        }else{
+        } else {
             $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
         }
 
