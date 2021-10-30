@@ -151,7 +151,7 @@ class SuccessTest extends TestCase
             'status' => 'success',
             'code' => 200,
             'message' => ResponseCodeEnum::fromValue(200)->description,
-            'data' => ['data' => $data],
+            'data' => $data,
             'error' => (object) [],
         ]);
         $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
