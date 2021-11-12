@@ -29,7 +29,7 @@
 
 ## 概览
 
-- 统一的数据响应格式，固定包含：`code`、`status`、`data`、`message`、`error`
+- 统一的数据响应格式，固定包含：`code`、`status`、`data`、`message`、`error` (响应格式设计源于：[RESTful服务最佳实践](https://www.cnblogs.com/jaxu/p/7908111.html#a_8_2) )
 - 你可以继续链式调用 `JsonResponse` 类中的所有 public 方法，比如 `Response::success()->header('X-foo','bar');`
 - 合理地返回 Http 状态码，默认为 restful 严格模式，可以配置异常时返回 200 http 状态码（多数项目会这样使用）
 - 支持格式化 Laravel 的 `Api Resource`、`Api  Resource Collection`、`Paginator`（简单分页）、`LengthAwarePaginator`（普通分页）、`Eloquent\Model`、`Eloquent\Collection`，以及简单的 `array` 和 `string`等格式数据返回
