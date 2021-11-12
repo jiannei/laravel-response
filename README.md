@@ -21,28 +21,55 @@
 
 `laravel-response` 主要用来统一 API 开发过程中「成功」、「失败」以及「异常」情况下的响应数据格式。
 
-实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
+实现过程简单，在原有的 `response()->json()` ([@vanthao03596]( https://github.com/vanthao03596) 的 [提议](https://github.com/Jiannei/laravel-response/pull/23) 调整成了 `Illuminate\Http\JsonResponse`)进行封装，使用时不需要有额外的心理负担。
 
 遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
 
 ## 概览
 
 - 统一的数据响应格式，固定包含：`code`、`status`、`data`、`message`、`error`
-- 内置 Http 标准状态码支持，同时支持扩展 ResponseCodeEnum 来根据不同业务模块定义响应码
-- 响应码 code 对应描述信息 message 支持本地化，支持配置多语言
-- 合理地返回 Http 状态码
-- 根据 debug 开关，合理返回异常信息、验证异常信息等
+- 合理地返回 Http 状态码，默认为 restful 严格模式，可以配置异常时返回 200 http 状态码（多数项目会这样使用）
 - 支持格式化 Laravel 的 `Api Resource`、`Api  Resource Collection`、`Paginator`（简单分页）、`LengthAwarePaginator`（普通分页）、`Eloquent\Model`、`Eloquent\Collection`，以及简单的 `array` 和 `string`等格式数据返回
+- 根据 debug 开关，合理返回异常信息、验证异常信息等
+- 支持修改 Laravel 特地异常的状态码或提示信息，比如将 `No query results for model` 的异常提示修改成 `数据未找到`
+- 支持配置返回字段是否显示，以及为她们设置别名，比如，将 `message` 别名设置为 `msg`，或者 分页数据第二层的 `data` 改成 `list`(res.data.data -> res.data.list)
 - 分页数据格式化后的结果与使用 `league/fractal` （DingoApi 使用该扩展进行数据转换）的 transformer 转换后的格式保持一致，也就是说，可以顺滑地从 Laravel Api Resource 切换到 `league/fractal`
+- 内置 Http 标准状态码支持，同时支持扩展 ResponseCodeEnum 来根据不同业务模块定义响应码(可选，需要安装 `jiannei/laravel-enum`)
+- 响应码 code 对应描述信息 message 支持本地化，支持配置多语言(可选，需要安装 `jiannei/laravel-enum`)
+
 
 ## 安装
 
-支持 Laravel 8/Lumen 8 以上版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
+支持 Laravel 5.5.* ~ Laravel 8.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
+
+|  laravel 版本   | lumen 版本 |  response 版本 |  enum 版本  |
+|  ----  | ----  |  ----  |  ----  |
+| 5.5.*  | 5.5.*  |  ~1.8  | ~1.4  |
+| 6.*  | 6.* |  ^2.0  |  ~1.4  |
+| 7.*  | 7.* |  ^3.0  |  ^2.0  |
+| 8.*  | 8.* |  ^4.0  |  ^3.0  |
+
 
 ```shell
-$ composer require jiannei/laravel-enum -vvv
-$ composer require jiannei/laravel-response -vvv
+# laravel 5.5
 
+composer require jiannei/laravel-response "~1.8" -vvv
+composer require jiannei/laravel-enum "~1.4" -vvv # 可选
+
+# laravel 6.x
+
+composer require jiannei/laravel-response "^2.0" -vvv
+composer require jiannei/laravel-enum "~1.4" -vvv # 可选
+
+# laravel 7.x
+
+composer require jiannei/laravel-response "^3.0" -vvv
+composer require jiannei/laravel-enum "^2.0" -vvv # 可选
+
+# laravel 8.x
+
+composer require jiannei/laravel-response "^4.0" -vvv
+composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 ```
 
 ## 配置
@@ -278,6 +305,7 @@ public function array()
 其他快捷方法
 
 ```php
+Response::ok();// 无需返回 data，只返回 message 情形的快捷方法
 Response::accepted();
 Response::created();
 Response::noContent();
