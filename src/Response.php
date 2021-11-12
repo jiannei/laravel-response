@@ -187,7 +187,7 @@ class Response
             return $this->formatResourceCollectionResponse(...func_get_args());
         }
 
-        if ($data instanceof JsonResource || $data instanceof \Illuminate\Http\Resources\Json\JsonResource) {
+        if ($data instanceof JsonResource) {
             return $this->formatResourceResponse(...func_get_args());
         }
 
