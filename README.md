@@ -21,13 +21,16 @@
 
 `laravel-response` 主要用来统一 API 开发过程中「成功」、「失败」以及「异常」情况下的响应数据格式。
 
-实现过程简单，在原有的 `response()->json()` ([@vanthao03596]( https://github.com/vanthao03596) 的 [提议](https://github.com/Jiannei/laravel-response/pull/23) 调整成了 `Illuminate\Http\JsonResponse`)进行封装，使用时不需要有额外的心理负担。
+实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
+
+(由 [@vanthao03596]( https://github.com/vanthao03596) 的 [提议](https://github.com/Jiannei/laravel-response/pull/23) 调整成了 `Illuminate\Http\JsonResponse`)
 
 遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
 
 ## 概览
 
 - 统一的数据响应格式，固定包含：`code`、`status`、`data`、`message`、`error`
+- 你可以继续链式调用 `JsonResponse` 类中的所有 public 方法，比如 `Response::success()->header('X-foo','bar');`
 - 合理地返回 Http 状态码，默认为 restful 严格模式，可以配置异常时返回 200 http 状态码（多数项目会这样使用）
 - 支持格式化 Laravel 的 `Api Resource`、`Api  Resource Collection`、`Paginator`（简单分页）、`LengthAwarePaginator`（普通分页）、`Eloquent\Model`、`Eloquent\Collection`，以及简单的 `array` 和 `string`等格式数据返回
 - 根据 debug 开关，合理返回异常信息、验证异常信息等
