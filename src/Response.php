@@ -344,13 +344,12 @@ class Response
      */
     protected function formatResourceCollectionResponse($resource, string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
+        $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
         if ($resource->resource instanceof AbstractPaginator) {
             $paginated = $resource->resource->toArray();
             $paginationInformation = $this->formatPaginatedData($paginated);
 
-            $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional, $paginationInformation);
-        } else {
-            $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+            $data = array_merge_recursive($data, $paginationInformation);
         }
 
         return tap(
