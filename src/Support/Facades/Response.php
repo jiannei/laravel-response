@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Facade as IlluminateFacade;
  * @method static JsonResponse|JsonResource accepted($data = null, string $message = '', string $location = '')
  * @method static JsonResponse|JsonResource created($data = null, string $message = '', string $location = '')
  * @method static noContent(string $message = '')
+ * @method static JsonResponse|JsonResource localize(int $code = 200, array $headers = [], int $option = 0)
  * @method static JsonResponse|JsonResource ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
  * @method static JsonResponse|JsonResource success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
  * @method static void errorBadRequest(?string $message = '')

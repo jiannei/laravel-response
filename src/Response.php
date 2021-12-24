@@ -84,6 +84,20 @@ class Response
     }
 
     /**
+     * Alias of the successful method, no need to specify the message and data parameters.
+     * You can use ResponseCodeEnum to localize the message.
+     *
+     * @param  int  $code
+     * @param  array  $headers
+     * @param  int  $option
+     * @return JsonResponse|JsonResource
+     */
+    public function localize(int $code = 200, array $headers = [], int $option = 0)
+    {
+        return $this->ok('', $code, $headers, $option);
+    }
+
+    /**
      * Return a 400 bad request error.
      *
      * @param  string|null  $message
