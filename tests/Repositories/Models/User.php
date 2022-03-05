@@ -11,10 +11,14 @@
 
 namespace Jiannei\Response\Laravel\Tests\Repositories\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Jiannei\Response\Laravel\Tests\database\factories\UserFactory;
 
 class User extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -32,4 +36,9 @@ class User extends Model
     protected $hidden = [
         'password',
     ];
+
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
 }

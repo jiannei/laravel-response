@@ -115,7 +115,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithResourceData()
     {
         // 方式六：返回 Api resource
-        $user = factory(User::class)->make();
+        $user = User::factory()->make();
         $response = Response::success(new UserResource($user));
 
         $this->assertEquals(200, $response->status());
@@ -136,7 +136,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithCollectionData()
     {
         // 方式七：返回 Api collection
-        $users = factory(User::class, 10)->create();
+        $users =  User::factory()->count(10)->make();
         $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
@@ -160,7 +160,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithPaginatedData()
     {
         // 方式八：返回分页的 Api collection
-        factory(User::class, 20)->create();
+        User::factory()->count(20)->create();
         $users = User::paginate();
 
         $response = Response::success(new UserCollection($users));

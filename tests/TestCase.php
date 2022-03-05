@@ -13,28 +13,26 @@ namespace Jiannei\Response\Laravel\Tests;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
-        $this->withFactories(__DIR__.'/database/factories');
-    }
-
     protected function getPackageProviders($app)
     {
         return [
-            \Orchestra\Database\ConsoleServiceProvider::class,
             \Jiannei\Response\Laravel\Providers\LaravelServiceProvider::class,
         ];
     }
 
-    protected function getEnvironmentSetUp($app)
+    /**
+     * Define database migrations.
+     *
+     * @return void
+     */
+    protected function defineDatabaseMigrations()
     {
-        $app['path.lang'] = __DIR__.'/lang';
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+    }
+
+    protected function defineEnvironment($app)
+    {
+        $app['path.lang'] = __DIR__ . '/lang';
 
         $app['config']->set('database.default', 'sqlite');
 
