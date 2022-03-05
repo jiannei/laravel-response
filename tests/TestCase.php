@@ -27,12 +27,12 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function defineDatabaseMigrations()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
     }
 
     protected function defineEnvironment($app)
     {
-        $app['path.lang'] = __DIR__ . '/lang';
+        $app['path.lang'] = __DIR__.'/lang';
 
         $app['config']->set('database.default', 'sqlite');
 

@@ -136,7 +136,7 @@ class SuccessTest extends TestCase
     public function testSuccessWithCollectionData()
     {
         // 方式七：返回 Api collection
-        $users =  User::factory()->count(10)->make();
+        $users = User::factory()->count(10)->make();
         $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
