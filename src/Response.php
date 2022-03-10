@@ -256,10 +256,11 @@ class Response
 
             $alias = $fieldConfig['alias'] ?? $field;
             $show = $fieldConfig['show'] ?? true;
+            $map = $fieldConfig['map'] ?? null;
             unset($responseData[$field]);
 
             if ($show) {
-                $responseData[$alias] = $value;
+                $responseData[$alias] = $map[$value] ?? $value;
             }
         }
 
