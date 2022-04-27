@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "vanthao03596",
+      "name": "Pham Thao",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34786441?v=4",
+      "profile": "https://github.com/vanthao03596",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "laravel-response",
+  "projectOwner": "jiannei",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
