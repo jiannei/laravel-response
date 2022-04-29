@@ -16,7 +16,7 @@
 
 `laravel-response` It is mainly used to unify the response data format of "success", "failure" and "exception" in the process of API development.
 
-It is encapsulated in the original `response() - > json()`, there is nothing complicated.
+It is encapsulated in the original `response()-> json()`, there is nothing complicated.
 
 Follow certain specifications, return HTTP status codes that are easy to understand, and support the definition of 'enum' to meet the return of descriptive business operation codes in different scenarios.
 
@@ -30,7 +30,6 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 - It supports modifying the status code or prompt information of laravel's special exception, such as modifying the exception prompt of `No query results for model` to `data not found`
 - Any returned field can be displayed or hidden, and aliases can be set, such as alia `message` to `msg`
 - The formatted result of paging data is consistent with the format converted by the transformer using `league/fractal` (DingoApi uses this extension for data conversion), that is, it can be smoothly switched from laravel API resource to `league/fractal`
-- 分页数据格式化后的结果与使用 `league/fractal` （DingoApi 使用该扩展进行数据转换）的 transformer 转换后的格式保持一致，也就是说，可以顺滑地从 Laravel Api Resource 切换到 `league/fractal`
 - Built in HTTP standard status code support, and support the extension of ResponseCodeEnum to define response codes according to different business modules (optional, need to install `jiannei/laravel-enum`)
 
 ## Install
@@ -129,7 +128,7 @@ $app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
 
 ## Usage
 
-The extension package itself provides rich unit test cases,you can unlock usage by viewing test cases [tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以通过查看测试用例来解锁使用方法。
+The extension package itself provides rich unit test cases,you can unlock usage by viewing test cases [tests](https://github.com/Jiannei/laravel-response/tree/main/tests)
 
 Or view the corresponding template projects:
 
