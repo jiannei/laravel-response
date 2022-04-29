@@ -2,99 +2,88 @@
 
 [简体中文](README.md) | [ENGLISH](README-EN.md)
 
-> 为 Laravel 和 Lumen API 项目提供一个规范统一的响应数据格式。
+> Provide a standardized and unified response data format for Laravel and Lumen API projects.
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
-[![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main)](https://github.styleci.io/repos/316969462?branch=main)
+[![StyleCI](https://github.styleci.io/repos/316969462/shield?style=flat&branch=main)](https://github.styleci.io/repos/316969462?style=flat&branch=main)
 [![Latest Stable Version](http://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](http://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
 [![Monthly Downloads](http://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
 [![Latest Unstable Version](http://poser.pugx.org/jiannei/laravel-response/v/unstable)](https://packagist.org/packages/jiannei/laravel-response)
 [![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
-## 社区讨论文章
+## Introduce
 
-- [是时候使用 Lumen 8 + API Resource 开发项目了！](https://learnku.com/articles/45311)
-- [教你更优雅地写 API 之「路由设计」](https://learnku.com/articles/45526)
-- [教你更优雅地写 API 之「规范响应数据」](https://learnku.com/articles/52784)
-- [教你更优雅地写 API 之「枚举使用」](https://learnku.com/articles/53015)
-- [教你更优雅地写 API 之「记录日志」](https://learnku.com/articles/53669)
-- [教你更优雅地写 API 之「灵活地任务调度」](https://learnku.com/articles/58403)
+`laravel-response` It is mainly used to unify the response data format of "success", "failure" and "exception" in the process of API development.
 
-## 介绍
+It is encapsulated in the original `response() - > json()`, there is nothing complicated.
 
-`laravel-response` 主要用来统一 API 开发过程中「成功」、「失败」以及「异常」情况下的响应数据格式。
+Follow certain specifications, return HTTP status codes that are easy to understand, and support the definition of 'enum' to meet the return of descriptive business operation codes in different scenarios.
 
-实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
+## Features
 
-遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
-
-## 概览
-
-- 统一的数据响应格式，固定包含：`code`、`status`、`data`、`message`、`error` (响应格式设计源于：[RESTful服务最佳实践](https://www.cnblogs.com/jaxu/p/7908111.html#a_8_2) )
-- 你可以继续链式调用 `JsonResponse` 类中的所有 public 方法，比如 `Response::success()->header('X-foo','bar');`
-- 合理地返回 Http 状态码，默认为 restful 严格模式，可以配置异常时返回 200 http 状态码（多数项目会这样使用）
-- 支持格式化 Laravel 的 `Api Resource`、`Api  Resource Collection`、`Paginator`（简单分页）、`LengthAwarePaginator`（普通分页）、`Eloquent\Model`、`Eloquent\Collection`，以及简单的 `array` 和 `string`等格式数据返回
-- 根据 debug 开关，合理返回异常信息、验证异常信息等
-- 支持修改 Laravel 特地异常的状态码或提示信息，比如将 `No query results for model` 的异常提示修改成 `数据未找到`
-- 支持配置返回字段是否显示，以及为她们设置别名，比如，将 `message` 别名设置为 `msg`，或者 分页数据第二层的 `data` 改成 `list`(res.data.data -> res.data.list)
+- Unified data response format, including:`code`、`status`、`data`、`message`、`error`
+- You can continue to chain call all public methods in the `JsonResponse` class, such as `Response::success()->header('x-foo ',' bar ')`
+- Reasonably return the HTTP status code. The default is restful strict mode. You can configure to return 200 HTTP status code in case of exception (this is how most projects use it)
+- It supports the formatting of `Api Resource`、`Api  Resource Collection`、`Paginator`、`LengthAwarePaginator`、`Eloquent\Model`、`Eloquent\Collection`,as well as the return of data in simple formats such as `array` 和 `string`
+- According to the debug config, reasonably return the exception information, verify the exception information
+- It supports modifying the status code or prompt information of laravel's special exception, such as modifying the exception prompt of `No query results for model` to `data not found`
+- Any returned field can be displayed or hidden, and aliases can be set, such as alia `message` to `msg`
+- The formatted result of paging data is consistent with the format converted by the transformer using `league/fractal` (DingoApi uses this extension for data conversion), that is, it can be smoothly switched from laravel API resource to `league/fractal`
 - 分页数据格式化后的结果与使用 `league/fractal` （DingoApi 使用该扩展进行数据转换）的 transformer 转换后的格式保持一致，也就是说，可以顺滑地从 Laravel Api Resource 切换到 `league/fractal`
-- 内置 Http 标准状态码支持，同时支持扩展 ResponseCodeEnum 来根据不同业务模块定义响应码(可选，需要安装 `jiannei/laravel-enum`)
-- 响应码 code 对应描述信息 message 支持本地化，支持配置多语言(可选，需要安装 `jiannei/laravel-enum`)
+- Built in HTTP standard status code support, and support the extension of ResponseCodeEnum to define response codes according to different business modules (optional, need to install `jiannei/laravel-enum`)
 
+## Install
 
-## 安装
+Support for laravel 5.5. *~ Laravel 9.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
-支持 Laravel 5.5.* ~ Laravel 9.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
-
-| laravel 版本 | lumen 版本 |  response 版本 |  enum 版本  |
-|------------| ----  |  ----  |  ----  |
-| 5.5.*      | 5.5.*  |  ~1.8  | ~1.4  |
-| 6.*        | 6.* |  ^2.0  |  ~1.4  |
-| 7.*        | 7.* |  ^3.0  |  ^2.0  |
-| 8.* - 9.*  | 8.*  - 9.* |  ^4.0  |  ^3.0  |
+| laravel version | lumen version |  response version |  enum version  |
+|-----------| ----  |  ----  |  ----  |
+| 5.5.*     | 5.5.*  |  ~1.8  | ~1.4  |
+| 6.*       | 6.* |  ^2.0  |  ~1.4  |
+| 7.*       | 7.* |  ^3.0  |  ^2.0  |
+| 8.* - 9.* | 8.*  - 9.* |  ^4.0  |  ^3.0  |
 
 
 ```shell
 # laravel 5.5
 
 composer require jiannei/laravel-response "~1.8" -vvv
-composer require jiannei/laravel-enum "~1.4" -vvv # 可选
+composer require jiannei/laravel-enum "~1.4" -vvv # optional
 
 # laravel 6.x
 
 composer require jiannei/laravel-response "^2.0" -vvv
-composer require jiannei/laravel-enum "~1.4" -vvv # 可选
+composer require jiannei/laravel-enum "~1.4" -vvv # optional
 
 # laravel 7.x
 
 composer require jiannei/laravel-response "^3.0" -vvv
-composer require jiannei/laravel-enum "^2.0" -vvv # 可选
+composer require jiannei/laravel-enum "^2.0" -vvv # optional
 
 # laravel 8.x - 9.x
 
 composer require jiannei/laravel-response "^4.0" -vvv
-composer require jiannei/laravel-enum "^3.0" -vvv # 可选
+composer require jiannei/laravel-enum "^3.0" -vvv # optional
 ```
 
-## 配置
+## Configuration
 
 ### Laravel
 
-- 发布配置文件
+- publish config file
 
 ```shell
 $ php artisan vendor:publish --provider="Jiannei\Response\Laravel\Providers\LaravelServiceProvider"
 ```
 
-- 格式化异常响应
-
+- format exception response
 
 ```php
 // app/Exceptions/Handler.php
-// 引入以后对于 API 请求产生的异常都会进行格式化数据返回
-// 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
-// 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
+// The exceptions generated by API requests will be formatted and returned
+// The request header is required to contain /json or +json, such as Accept:application/json
+// Or Ajax request, the header contains X-Requested-With：XMLHttpRequest;
 
 <?php
 
@@ -113,46 +102,47 @@ class Handler extends ExceptionHandler
 
 ### Lumen
 
-- 复制配置文件到 `vendor/jiannei/laravel-response/config/response.php`，到 `config/response.php`
+- Copy `vendor/jiannei/laravel-response/config/response.php` file to `config/response.php`
 
 ```bash
 cp vendor/jiannei/laravel-response/config/response.php config/response.php
 ```
 
-- 加载配置
+- load response configuration
 
 ```php
 // bootstrap/app.php
 $app->configure('response');
 ```
 
-- 格式化异常响应
+- format exception response
 
-在 `app/Exceptions/Handler.php` 中 引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
+In `app/Exceptions/Handler.php` file `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
 
-在 `app/Http/Controllers/Controller.php` 中引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
+In `app/Http/Controllers/Controller.php` file `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
 
-- 注册服务容器
+- register service provider
 
 ```php
 $app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
 ```
 
-## 使用
+## Usage
 
-扩展包本身提供了丰富的单元测试用例[tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以通过查看测试用例来解锁使用方法。
+The extension package itself provides rich unit test cases,you can unlock usage by viewing test cases [tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以通过查看测试用例来解锁使用方法。
 
-或者查看相应的模板项目:
+Or view the corresponding template projects:
 
 - [laravel-api-starter](https://github.com/Jiannei/laravel-api-starter)
 - [lumen-api-starter](https://github.com/Jiannei/lumen-api-starter)
 
-### 成功响应
+### Successful response
 
-#### 示例代码
+#### Sample code
 
 ```php
 <?php
+// ...
 public function index()
 {
     $users = User::all();
@@ -188,11 +178,13 @@ public function array()
         'email' => 'longjian.huang@foxmail.com'
     ],'', ResponseCodeEnum::SERVICE_REGISTER_SUCCESS);
 }
+
+
 ```
 
-#### 返回全部数据
+#### Return all rows data
 
-支持自定义内层 data 字段名称，比如 rows、list
+Support custom inner `data` field names, such as `rows` or `list`
 
 ```json
 {
@@ -219,9 +211,9 @@ public function array()
 }
 ```
 
-#### 分页数据
+#### Paginator
 
-支持自定义内层 data 字段名称，比如 rows、list
+Support custom inner `data` field names, such as `rows` or `list`
 
 ```json
 {
@@ -269,9 +261,9 @@ public function array()
 }
 ```
 
-#### 返回简单分页数据
+#### Simple Paginator
 
-支持自定义内层 data 字段名称，比如 rows、list
+Support custom inner `data` field names, such as `rows` or `list`
 
 ```json
 {
@@ -317,7 +309,7 @@ public function array()
 }
 ```
 
-#### 返回单条数据
+#### Return one row data
 
 ```json
 {
@@ -332,19 +324,19 @@ public function array()
 }
 ```
 
-#### 其他快捷方法
+#### Other shortcuts
 
 ```php
-Response::ok();// 无需返回 data，只返回 message 情形的快捷方法
-Response::localize(200101);// 无需返回 data，message 根据响应码配置返回的快捷方法
+Response::ok();// There is no need to return data, but only message
+Response::localize(200101);// There is no need to return data, return message according to the response code
 Response::accepted();
 Response::created();
 Response::noContent();
 ```
 
-### 失败响应
+### Failure response
 
-#### 不指定 message
+#### Do not specify message
 
 ```php
 public function fail()
@@ -353,7 +345,7 @@ public function fail()
 }
 ```
 
-- 未配置多语言响应描述
+- localization is not configured
 
 ```json
 {
@@ -365,7 +357,7 @@ public function fail()
 }
 ```
 
-- 配置多语言描述
+- localization is configured
 
 ```json
 {
@@ -377,7 +369,7 @@ public function fail()
 }
 ```
 
-#### 指定 message
+#### Specify message
 
 ```php
 public function fail()
@@ -386,7 +378,7 @@ public function fail()
 }
 ```
 
-返回数据
+return response
 
 ```json
 {
@@ -398,7 +390,7 @@ public function fail()
 }
 ```
 
-#### 指定 code
+#### Specify code
 
 ```php
 public function fail()
@@ -407,7 +399,7 @@ public function fail()
 }
 ```
 
-返回数据
+return response
 
 ```json
 {
@@ -419,7 +411,7 @@ public function fail()
 }
 ```
 
-#### 其他快捷方法
+#### Other shortcuts
 
 ```php
 Response::errorBadRequest();
@@ -430,9 +422,9 @@ Response::errorMethodNotAllowed();
 Response::errorInternal();
 ```
 
-### 异常响应
+### Exception response
 
-#### 表单验证异常
+#### Form validation exception
 
 ```json
 {
@@ -448,15 +440,14 @@ Response::errorInternal();
 }
 ```
 
-#### Controller 以外抛出异常
+#### An exception is thrown outside the controller
 
-可以使用 abort 辅助函数抛出 HttpException 异常
+You can throw an `HttpException`  using the `abort` helper function
 
 ```php
 abort(500102,'登录失败');
 
-// 返回数据
-
+// return response
 {
     "status": "fail",
     "code": 500102,
@@ -466,9 +457,9 @@ abort(500102,'登录失败');
 }
 ```
 
-#### 其他异常
+#### Other exceptions
 
-开启 debug（`APP_DEBUG=true`）
+enable debug mode(`APP_DEBUG=true`)
 
 ```json
 {
@@ -501,7 +492,7 @@ abort(500102,'登录失败');
 }
 ```
 
-关闭 debug
+disable debug mode(`APP_DEBUG=false`)
 
 ```json
 {
@@ -513,7 +504,7 @@ abort(500102,'登录失败');
 }
 ```
 
-### 自定义业务码
+### Custom business code
 
 ```php
 <?php
@@ -523,33 +514,26 @@ use Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum;
 
 class ResponseCodeEnum extends HttpStatusCodeEnum
 {
-    // 业务操作正确码：1xx、2xx、3xx 开头，后拼接 3 位
-    // 200 + 001 => 200001，也就是有 001 ~ 999 个编号可以用来表示业务成功的情况，当然你可以根据实际需求继续增加位数，但必须要求是 200 开头
-    // 举个栗子：你可以定义 001 ~ 099 表示系统状态；100 ~ 199 表示授权业务；200 ~ 299 表示用户业务。..
+    // success code,Start with 1xx、2xx、3xx
     const SERVICE_REGISTER_SUCCESS = 200101;
     const SERVICE_LOGIN_SUCCESS = 200102;
 
-    // 客户端错误码：400 ~ 499 开头，后拼接 3 位
+    // client error code,Start with 400 ~ 499
     const CLIENT_PARAMETER_ERROR = 400001;
     const CLIENT_CREATED_ERROR = 400002;
     const CLIENT_DELETED_ERROR = 400003;
+    const CLIENT_VALIDATION_ERROR = 422001; // form validation error
 
-    const CLIENT_VALIDATION_ERROR = 422001; // 表单验证错误
-
-    // 服务端操作错误码：500 ~ 599 开头，后拼接 3 位
+    // service error code,Start with 500 ~ 599
     const SYSTEM_ERROR = 500001;
     const SYSTEM_UNAVAILABLE = 500002;
     const SYSTEM_CACHE_CONFIG_ERROR = 500003;
     const SYSTEM_CACHE_MISSED_ERROR = 500004;
     const SYSTEM_CONFIG_ERROR = 500005;
-
-    // 业务操作错误码（外部服务或内部服务调用。..）
-    const SERVICE_REGISTER_ERROR = 500101;
-    const SERVICE_LOGIN_ERROR = 500102;
 }
 ```
 
-### 本地化业务码描述
+### Localized code description
 
 ```php
 <?php
@@ -588,9 +572,9 @@ return [
 ];
 ```
 
-## 由 JetBrains 赞助
+## Project supported by JetBrains
 
-非常感谢 Jetbrains 为我提供的 IDE 开源许可，让我完成此项目和其他开源项目上的开发工作。
+Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects.
 
 [![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/jiannei)
 
@@ -619,6 +603,6 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 [![Stargazers over time](https://starchart.cc/jiannei/laravel-response.svg)](https://starchart.cc/jiannei/laravel-response)
 
-## 协议
+## License
 
-MIT 许可证（MIT）。有关更多信息，请参见[协议文件](LICENSE)。
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
