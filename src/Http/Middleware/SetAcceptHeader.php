@@ -23,7 +23,6 @@ class SetAcceptHeader
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
      * @param  string  $type
-     *
      * @return \Illuminate\Http\Response
      */
     public function handle(Request $request, Closure $next, string $type = 'json')
