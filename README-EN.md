@@ -16,7 +16,7 @@
 
 `laravel-response` It is mainly used to unify the response data format of "success", "failure" and "exception" in the process of API development.
 
-It is encapsulated in the original `response()-> json()`, there is nothing complicated.
+It is encapsulated in the original `response()->json()`, there is nothing complicated.
 
 Follow certain specifications, return HTTP status codes that are easy to understand, and support the definition of 'enum' to meet the return of descriptive business operation codes in different scenarios.
 
