@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Jiannei\Response\Laravel\Support;
 
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -46,7 +55,6 @@ class Format
     {
         return (int) substr($code, 0, 3);
     }
-
 
     /**
      * Format paginator data.
