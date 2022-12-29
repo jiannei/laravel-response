@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Jiannei\Response\Laravel\Contracts;
 
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,7 +22,7 @@ interface Format
      *
      * @param  array|null  $data
      * @param  string|null  $message
-     * @param int $code
+     * @param  int  $code
      * @param  null  $errors
      * @return array
      */
@@ -37,7 +46,7 @@ interface Format
      * @param  int  $option
      * @return array
      */
-    public function paginator(AbstractPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0):array;
+    public function paginator(AbstractPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array;
 
     /**
      * Format collection resource data.
