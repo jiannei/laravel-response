@@ -25,7 +25,7 @@ class LaravelServiceProvider extends ServiceProvider
         $format = $this->app['config']['response']['format'];
 
         if (is_string($format) && class_exists($format)) {
-            $this->app->bind(\Jiannei\Response\Laravel\Support\Format::class,$format);
+            $this->app->bind(\Jiannei\Response\Laravel\Support\Format::class, $format);
         }
     }
 

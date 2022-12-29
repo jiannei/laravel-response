@@ -27,7 +27,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      *
      * @param  array|null  $data
      * @param  string|null  $message
-     * @param int $code
+     * @param  int  $code
      * @param  null  $errors
      * @return array
      */
