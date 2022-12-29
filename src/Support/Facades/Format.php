@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Facade as IlluminateFacade;
 /**
  * @method static int statusCode(int $code)
  * @method static array data($data, $message, $code, $errors = null)
- * @method static mixed resourceCollection($resource, string $message = '', int $code = 200, array $headers = [], int $option = 0)
- * @method static mixed jsonResource($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
- * @method static mixed paginator($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+ * @method static array resourceCollection($resource, string $message = '', int $code = 200, array $headers = [], int $option = 0)
+ * @method static array jsonResource($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+ * @method static array paginator($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
  *
  * @see \Jiannei\Response\Laravel\Support\Format
  */

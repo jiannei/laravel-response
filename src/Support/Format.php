@@ -12,25 +12,26 @@
 namespace Jiannei\Response\Laravel\Support;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Traits\Macroable;
 
-class Format
+class Format implements \Jiannei\Response\Laravel\Contracts\Format
 {
     use Macroable;
 
     /**
      * Format return data structure.
      *
-     * @param  JsonResource|array|null  $data
-     * @param $message
-     * @param $code
+     * @param  array|null  $data
+     * @param  string|null  $message
+     * @param int $code
      * @param  null  $errors
      * @return array
      */
-    public function data($data, $message, $code, $errors = null): array
+    public function data(?array $data, ?string $message, int $code, $errors = null): array
     {
         if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
@@ -64,9 +65,9 @@ class Format
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return mixed
+     * @return array
      */
-    public function paginator($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    public function paginator(AbstractPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
     {
         $paginated = $resource->toArray();
 
@@ -80,14 +81,14 @@ class Format
     /**
      * Format collection resource data.
      *
-     * @param  JsonResource  $resource
+     * @param  ResourceCollection  $resource
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return mixed
+     * @return array
      */
-    public function resourceCollection($resource, string $message = '', int $code = 200, array $headers = [], int $option = 0)
+    public function resourceCollection(ResourceCollection $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
     {
         $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
         if ($resource->resource instanceof AbstractPaginator) {
@@ -108,9 +109,9 @@ class Format
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return mixed
+     * @return array
      */
-    public function jsonResource($resource, string $message = '', $code = 200, array $headers = [], $option = 0)
+    public function jsonResource(JsonResource $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
     {
         $resourceData = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
 
@@ -143,7 +144,7 @@ class Format
      * @param  array  $paginated
      * @return array
      */
-    protected function formatPaginatedData(array $paginated)
+    protected function formatPaginatedData(array $paginated): array
     {
         return [
             'meta' => [

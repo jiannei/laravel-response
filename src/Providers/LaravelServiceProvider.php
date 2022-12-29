@@ -20,6 +20,15 @@ class LaravelServiceProvider extends ServiceProvider
         $this->setupConfig();
     }
 
+    public function boot()
+    {
+        $format = $this->app['config']['response']['format'];
+
+        if (is_string($format) && class_exists($format)) {
+            $this->app->bind(\Jiannei\Response\Laravel\Support\Format::class,$format);
+        }
+    }
+
     protected function setupConfig()
     {
         $path = dirname(__DIR__, 2).'/config/response.php';
