@@ -18,7 +18,7 @@ class Format extends \Jiannei\Response\Laravel\Support\Format
         return [
             'status' => $this->formatStatus($code),
             'code' => $code,
-            'message' => $this->formatMessage($code,$message),
+            'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
             'extra' => [

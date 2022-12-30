@@ -36,7 +36,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),
             'code' => $code,
-            'message' => $this->formatMessage($code,$message),
+            'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
         ], Config::get('response.format.fields', []));
@@ -121,7 +121,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      * @param  string|null  $message
      * @return string
      */
-    protected function formatMessage(int $code,?string $message): ?string
+    protected function formatMessage(int $code, ?string $message): ?string
     {
         if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
