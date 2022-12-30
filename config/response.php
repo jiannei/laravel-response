@@ -51,50 +51,5 @@ return [
     ],
 
     // Set the structure of the response data
-    'format' => [
-        'fields' => [
-            'status' => ['alias' => 'status', 'show' => true],
-            'code' => ['alias' => 'code', 'show' => true],
-            'message' => ['alias' => 'message', 'show' => true],
-            'error' => ['alias' => 'error', 'show' => true],
-            'data' => [
-                'alias' => 'data',
-                'show' => true,
-
-                'fields' => [
-                    // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
-                    'data' => ['alias' => 'data', 'show' => true], // data/rows/list
-
-                    'meta' => [
-                        'alia' => 'meta',
-                        'show' => true,
-
-                        'fields' => [
-                            'pagination' => [
-                                'alias' => 'pagination',
-                                'show' => true,
-
-                                'fields' => [
-                                    'total' => ['alias' => 'total', 'show' => true],
-                                    'count' => ['alias' => 'count', 'show' => true],
-                                    'per_page' => ['alias' => 'per_page', 'show' => true],
-                                    'current_page' => ['alias' => 'current_page', 'show' => true],
-                                    'total_pages' => ['alias' => 'total_pages', 'show' => true],
-                                    'links' => [
-                                        'alias' => 'links',
-                                        'show' => true,
-
-                                        'fields' => [
-                                            'previous' => ['alias' => 'previous', 'show' => true],
-                                            'next' => ['alias' => 'next', 'show' => true],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
+    'format' => \Jiannei\Response\Laravel\Support\Format::class,
 ];

@@ -22,10 +22,10 @@ class LaravelServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $format = $this->app['config']['response']['format'];
+        $formatter = $this->app['config']['response.format'];
 
-        if (is_string($format) && class_exists($format)) {
-            $this->app->bind(\Jiannei\Response\Laravel\Support\Format::class, $format);
+        if (is_string($formatter) && class_exists($formatter)) {
+            $this->app->bind(\Jiannei\Response\Laravel\Contracts\Format::class, $formatter);
         }
     }
 

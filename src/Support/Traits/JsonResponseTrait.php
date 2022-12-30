@@ -19,7 +19,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use Jiannei\Response\Laravel\Support\Facades\Format;
 
 trait JsonResponseTrait
 {
@@ -173,7 +172,7 @@ trait JsonResponseTrait
     public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
     {
         $response = $this->response(
-            Format::data(null, $message, $code, $errors),
+            $this->formatter->data(null, $message, $code, $errors),
             Config::get('response.error_code') ?: $code,
             $header,
             $options
@@ -200,7 +199,7 @@ trait JsonResponseTrait
     {
         if ($data instanceof ResourceCollection) {
             return tap(
-                $this->response(Format::resourceCollection(...func_get_args()), $code, $headers, $option),
+                $this->response($this->formatter->resourceCollection(...func_get_args()), $code, $headers, $option),
                 function ($response) use ($data) {
                     $response->original = $data->resource->map(
                         function ($item) {
@@ -215,7 +214,7 @@ trait JsonResponseTrait
 
         if ($data instanceof JsonResource) {
             return tap(
-                $this->response(Format::jsonResource(...func_get_args()), $code, $headers, $option),
+                $this->response($this->formatter->jsonResource(...func_get_args()), $code, $headers, $option),
                 function ($response) use ($data) {
                     $response->original = $data->resource;
 
@@ -225,14 +224,14 @@ trait JsonResponseTrait
         }
 
         if ($data instanceof AbstractPaginator) {
-            return $this->response(Format::paginator(...func_get_args()), $code, $headers, $option);
+            return $this->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
         }
 
         if ($data instanceof Arrayable) {
             $data = $data->toArray();
         }
 
-        return $this->response(Format::data(Arr::wrap($data), $message, $code), $code, $headers, $option);
+        return $this->response($this->formatter->data(Arr::wrap($data), $message, $code), $code, $headers, $option);
     }
 
     /**
@@ -246,6 +245,6 @@ trait JsonResponseTrait
      */
     protected function response($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
     {
-        return new JsonResponse($data, Format::statusCode($status), $headers, $options);
+        return new JsonResponse($data, $this->formatter->statusCode($status), $headers, $options);
     }
 }
