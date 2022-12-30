@@ -52,8 +52,8 @@ return [
 
     // Set the structure of the response data
     'format' => [
-        \Jiannei\Response\Laravel\Support\Format::class,
-        [
+        'class' => \Jiannei\Response\Laravel\Support\Format::class,
+        'config' => [
             'status' => ['alias' => 'status', 'show' => true],
             'code' => ['alias' => 'code', 'show' => true],
             'message' => ['alias' => 'message', 'show' => true],

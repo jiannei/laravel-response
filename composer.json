@@ -20,7 +20,10 @@
     "autoload": {
         "psr-4": {
             "Jiannei\\Response\\Laravel\\": "src"
-        }
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

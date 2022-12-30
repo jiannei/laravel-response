@@ -11,7 +11,9 @@
 
 namespace Jiannei\Response\Laravel\Providers;
 
+use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Jiannei\Response\Laravel\Contracts\Format;
 
 class LaravelServiceProvider extends ServiceProvider
 {
@@ -22,14 +24,9 @@ class LaravelServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $formatter = $this->app['config']->get('response.format.0', \Jiannei\Response\Laravel\Support\Format::class);
-        $config = $this->app['config']->get('response.format.1', []);
-
-        if (is_string($formatter) && class_exists($formatter)) {
-            $this->app->bind(\Jiannei\Response\Laravel\Contracts\Format::class, function () use ($formatter, $config) {
-                return new $formatter($config);
-            });
-        }
+        $this->app->bind(Format::class, function (){
+            return make(config('response.format'));
+        });
     }
 
     protected function setupConfig()
