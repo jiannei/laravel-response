@@ -44,7 +44,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         $app['config']->set('response.enum', \Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum::class);
         if ($this instanceof FormatTest) {
-            $app['config']->set('response.format', \Jiannei\Response\Laravel\Tests\Support\Format::class);
+            $app['config']->set('response.format', [\Jiannei\Response\Laravel\Tests\Support\Format::class]);
         }
     }
 }

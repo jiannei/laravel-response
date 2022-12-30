@@ -22,6 +22,13 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
 {
     use Macroable;
 
+    protected $config;
+
+    public function __construct($config = [])
+    {
+        $this->config = $config;
+    }
+
     /**
      * Format return data structure.
      *
@@ -39,7 +46,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
-        ], Config::get('response.format.fields', []));
+        ], $this->config);
     }
 
     /**
