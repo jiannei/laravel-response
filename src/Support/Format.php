@@ -33,14 +33,10 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     public function data(?array $data, ?string $message, int $code, $errors = null): array
     {
-        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
-            $message = $enumClass::fromValue($code)->description;
-        }
-
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),
             'code' => $code,
-            'message' => $message,
+            'message' => $this->formatMessage($code,$message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
         ], Config::get('response.format.fields', []));
@@ -116,6 +112,22 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
         $resourceData = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
 
         return $this->data($resourceData, $message, $code);
+    }
+
+    /**
+     * Format return message.
+     *
+     * @param  int  $code
+     * @param  string|null  $message
+     * @return string
+     */
+    protected function formatMessage(int $code,?string $message): ?string
+    {
+        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
+            $message = $enumClass::fromValue($code)->description;
+        }
+
+        return $message;
     }
 
     /**
