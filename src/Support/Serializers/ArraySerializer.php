@@ -20,11 +20,11 @@ class ArraySerializer extends FractalArraySerializer
     /**
      * Serialize a collection.
      *
-     * @param  string  $resourceKey
+     * @param  string|null  $resourceKey
      * @param  array  $data
      * @return array
      */
-    public function collection($resourceKey, array $data)
+    public function collection(?string $resourceKey, array $data):array
     {
         $paginationDataField = Config::get('response.format.fields.data.fields.data.alias', 'data');
 
@@ -37,7 +37,7 @@ class ArraySerializer extends FractalArraySerializer
      * @param  PaginatorInterface  $paginator
      * @return array
      */
-    public function paginator(PaginatorInterface $paginator)
+    public function paginator(PaginatorInterface $paginator): array
     {
         $currentPage = (int) $paginator->getCurrentPage();
         $lastPage = (int) $paginator->getLastPage();
