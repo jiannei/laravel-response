@@ -9,7 +9,7 @@
 [![Latest Stable Version](http://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](http://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
 [![Monthly Downloads](http://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
-\[![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
+[![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
 ## 社区讨论文章
 
