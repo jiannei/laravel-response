@@ -9,14 +9,13 @@
 [![Latest Stable Version](http://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](http://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
 [![Monthly Downloads](http://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
-[![Latest Unstable Version](http://poser.pugx.org/jiannei/laravel-response/v/unstable)](https://packagist.org/packages/jiannei/laravel-response)
 [![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
 ## Introduce
 
 `laravel-response` It is mainly used to unify the response data format of "success", "failure" and "exception" in the process of API development.
 
-It is encapsulated in the original `response()->json()`, there is nothing complicated.
+It is encapsulated in the original `\Illuminate\Http\JsonResponse`, there is nothing complicated.
 
 Follow certain specifications, return HTTP status codes that are easy to understand, and support the definition of 'enum' to meet the return of descriptive business operation codes in different scenarios.
 
@@ -37,11 +36,12 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 Support for laravel 5.5. *~ Laravel 9.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
 | laravel version | lumen version |  response version |  enum version  |
-|-----------| ----  |  ----  |  ----  |
-| 5.5.*     | 5.5.*  |  ~1.8  | ~1.4  |
-| 6.*       | 6.* |  ^2.0  |  ~1.4  |
-| 7.*       | 7.* |  ^3.0  |  ^2.0  |
-| 8.* - 9.* | 8.*  - 9.* |  ^4.0  |  ^3.0  |
+|------------| ----  |-------------|  ----  |
+| 5.5.*      | 5.5.* | ~1.8        | ~1.4  |
+| 6.*        | 6.* | ^2.0        |  ~1.4  |
+| 7.*        | 7.* | ^3.0        |  ^2.0  |
+| 8.*  | 8.* | ^4.0        |  ^3.0  |
+| 9.*  |  9.* | ^5.0        |  ^3.0  |
 
 
 ```shell
@@ -60,9 +60,14 @@ composer require jiannei/laravel-enum "~1.4" -vvv # optional
 composer require jiannei/laravel-response "^3.0" -vvv
 composer require jiannei/laravel-enum "^2.0" -vvv # optional
 
-# laravel 8.x - 9.x
+# laravel 8.x
 
 composer require jiannei/laravel-response "^4.0" -vvv
+composer require jiannei/laravel-enum "^3.0" -vvv # optional
+
+# laravel 9.x
+
+composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # optional
 ```
 

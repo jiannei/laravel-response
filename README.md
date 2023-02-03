@@ -5,12 +5,11 @@
 > 为 Laravel 和 Lumen API 项目提供一个规范统一的响应数据格式。
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
-[![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main)](https://github.styleci.io/repos/316969462?branch=main)
+[![StyleCI](https://github.styleci.io/repos/316969462/shield?branch=main&style=flat)](https://github.styleci.io/repos/316969462?branch=main&style=flat)
 [![Latest Stable Version](http://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](http://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
 [![Monthly Downloads](http://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
-[![Latest Unstable Version](http://poser.pugx.org/jiannei/laravel-response/v/unstable)](https://packagist.org/packages/jiannei/laravel-response)
-[![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
+\[![License](http://poser.pugx.org/jiannei/laravel-response/license)](https://packagist.org/packages/jiannei/laravel-response)
 
 ## 社区讨论文章
 
@@ -25,7 +24,7 @@
 
 `laravel-response` 主要用来统一 API 开发过程中「成功」、「失败」以及「异常」情况下的响应数据格式。
 
-实现过程简单，在原有的 `response()->json()`进行封装，使用时不需要有额外的心理负担。
+实现过程简单，在原有的 `\Illuminate\Http\JsonResponse`进行封装，使用时不需要有额外的心理负担。
 
 遵循一定的规范，返回易于理解的 HTTP 状态码，并支持定义 `ResponseCodeEnum` 来满足不同场景下返回描述性的业务操作码。
 
@@ -47,12 +46,13 @@
 
 支持 Laravel 5.5.* ~ Laravel 9.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
-| laravel 版本 | lumen 版本 |  response 版本 |  enum 版本  |
-|------------| ----  |  ----  |  ----  |
-| 5.5.*      | 5.5.*  |  ~1.8  | ~1.4  |
-| 6.*        | 6.* |  ^2.0  |  ~1.4  |
-| 7.*        | 7.* |  ^3.0  |  ^2.0  |
-| 8.* - 9.*  | 8.*  - 9.* |  ^4.0  |  ^3.0  |
+| laravel 版本 | lumen 版本 | response 版本 |  enum 版本  |
+|------------| ----  |-------------|  ----  |
+| 5.5.*      | 5.5.* | ~1.8        | ~1.4  |
+| 6.*        | 6.* | ^2.0        |  ~1.4  |
+| 7.*        | 7.* | ^3.0        |  ^2.0  |
+| 8.*  | 8.* | ^4.0        |  ^3.0  |
+| 9.*  |  9.* | ^5.0        |  ^3.0  |
 
 
 ```shell
@@ -71,9 +71,14 @@ composer require jiannei/laravel-enum "~1.4" -vvv # 可选
 composer require jiannei/laravel-response "^3.0" -vvv
 composer require jiannei/laravel-enum "^2.0" -vvv # 可选
 
-# laravel 8.x - 9.x
+# laravel 8.x
 
 composer require jiannei/laravel-response "^4.0" -vvv
+composer require jiannei/laravel-enum "^3.0" -vvv # 可选
+
+# laravel 9.x
+
+composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 ```
 
