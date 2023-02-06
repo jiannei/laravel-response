@@ -171,7 +171,7 @@ trait JsonResponseTrait
      */
     public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
     {
-        $response = $this->response(
+        $response = $this->formatter->response(
             $this->formatter->data(null, $message, $code, $errors),
             Config::get('response.error_code') ?: $code,
             $header,
@@ -199,7 +199,7 @@ trait JsonResponseTrait
     {
         if ($data instanceof ResourceCollection) {
             return tap(
-                $this->response($this->formatter->resourceCollection(...func_get_args()), $code, $headers, $option),
+                $this->formatter->response($this->formatter->resourceCollection(...func_get_args()), $code, $headers, $option),
                 function ($response) use ($data) {
                     $response->original = $data->resource->map(
                         function ($item) {
@@ -214,7 +214,7 @@ trait JsonResponseTrait
 
         if ($data instanceof JsonResource) {
             return tap(
-                $this->response($this->formatter->jsonResource(...func_get_args()), $code, $headers, $option),
+                $this->formatter->response($this->formatter->jsonResource(...func_get_args()), $code, $headers, $option),
                 function ($response) use ($data) {
                     $response->original = $data->resource;
 
@@ -224,27 +224,13 @@ trait JsonResponseTrait
         }
 
         if ($data instanceof AbstractPaginator) {
-            return $this->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
+            return $this->formatter->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
         }
 
         if ($data instanceof Arrayable) {
             $data = $data->toArray();
         }
 
-        return $this->response($this->formatter->data(Arr::wrap($data), $message, $code), $code, $headers, $option);
-    }
-
-    /**
-     * Return a new JSON response from the application.
-     *
-     * @param  mixed  $data
-     * @param  int  $status
-     * @param  array  $headers
-     * @param  int  $options
-     * @return JsonResponse
-     */
-    protected function response($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
-    {
-        return new JsonResponse($data, $this->formatter->statusCode($status), $headers, $options);
+        return $this->formatter->response($this->formatter->data(Arr::wrap($data), $message, $code), $code, $headers, $option);
     }
 }

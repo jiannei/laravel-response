@@ -11,6 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Support;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
@@ -27,6 +28,20 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     public function __construct($config = [])
     {
         $this->config = $config;
+    }
+
+    /**
+     * Return a new JSON response from the application.
+     *
+     * @param  mixed  $data
+     * @param  int  $status
+     * @param  array  $headers
+     * @param  int  $options
+     * @return JsonResponse
+     */
+    public function response($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
+    {
+        return new JsonResponse($data, $this->formatStatusCode($status), $headers, $options);
     }
 
     /**
@@ -47,17 +62,6 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
         ], $this->config);
-    }
-
-    /**
-     * Http status code.
-     *
-     * @param $code
-     * @return int
-     */
-    public function statusCode($code): int
-    {
-        return (int) substr($code, 0, 3);
     }
 
     /**
@@ -145,7 +149,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     protected function formatStatus(int $code): string
     {
-        $statusCode = $this->statusCode($code);
+        $statusCode = $this->formatStatusCode($code);
         if ($statusCode >= 400 && $statusCode <= 499) {// client error
             $status = 'error';
         } elseif ($statusCode >= 500 && $statusCode <= 599) {// service error
@@ -155,6 +159,17 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
         }
 
         return $status;
+    }
+
+    /**
+     * Http status code.
+     *
+     * @param $code
+     * @return int
+     */
+    protected function formatStatusCode($code): int
+    {
+        return (int) substr($code, 0, 3);
     }
 
     /**

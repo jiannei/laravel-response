@@ -29,14 +29,6 @@ interface Format
     public function data(?array $data, ?string $message, int $code, $errors = null): array;
 
     /**
-     * Http status code.
-     *
-     * @param $code
-     * @return int
-     */
-    public function statusCode($code): int;
-
-    /**
      * Format paginator data.
      *
      * @param  AbstractPaginator  $resource
