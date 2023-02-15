@@ -20,10 +20,13 @@ jobs:
                 include:
                     - laravel: 8.*
                       testbench: 6.*
+                      phpunit: ^9.0
                     - laravel: 9.*
                       testbench: 7.*
+                      phpunit: ^9.0
                     - laravel: 10.*
                       testbench: 8.*
+                      phpunit: ^10.0
 
         steps:
             - name: Checkout code
@@ -49,7 +52,7 @@ jobs:
 
             - name: Install dependencies - L${{ matrix.laravel }}
               run: |
-                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "phpunit/phpunit:${{ matrix.phpunit }}" --no-interaction --no-update
                     composer require --dev "jiannei/laravel-enum" --no-interaction --no-update
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
 
