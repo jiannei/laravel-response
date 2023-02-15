@@ -46,13 +46,13 @@
 
 支持 Laravel 5.5.* ~ Laravel 9.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
-| laravel 版本 | lumen 版本 | response 版本 |  enum 版本  |
-|------------| ----  |-------------|  ----  |
-| 5.5.*      | 5.5.* | ~1.8        | ~1.4  |
-| 6.*        | 6.* | ^2.0        |  ~1.4  |
-| 7.*        | 7.* | ^3.0        |  ^2.0  |
-| 8.*  | 8.* | ^4.0        |  ^3.0  |
-| 9.*  |  9.* | ^5.0        |  ^3.0  |
+| laravel 版本 | lumen 版本   | response 版本 |  enum 版本  |
+|------------|------------|-------------|  ----  |
+| 5.5.*      | 5.5.*      | ~1.8        | ~1.4  |
+| 6.*        | 6.*        | ^2.0        |  ~1.4  |
+| 7.*        | 7.*        | ^3.0        |  ^2.0  |
+| 8.*        | 8.*        | ^4.0        |  ^3.0  |
+| 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  |
 
 
 ```shell
@@ -76,7 +76,7 @@ composer require jiannei/laravel-enum "^2.0" -vvv # 可选
 composer require jiannei/laravel-response "^4.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 
-# laravel 9.x
+# laravel 9.x - 10.x
 
 composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # 可选

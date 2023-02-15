@@ -41,7 +41,7 @@ Support for laravel 5.5. *~ Laravel 9.*, the user-defined business operation cod
 | 6.*        | 6.* | ^2.0        |  ~1.4  |
 | 7.*        | 7.* | ^3.0        |  ^2.0  |
 | 8.*  | 8.* | ^4.0        |  ^3.0  |
-| 9.*  |  9.* | ^5.0        |  ^3.0  |
+| 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  |
 
 
 ```shell
@@ -65,7 +65,7 @@ composer require jiannei/laravel-enum "^2.0" -vvv # optional
 composer require jiannei/laravel-response "^4.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # optional
 
-# laravel 9.x
+# laravel 9.x - 10.x
 
 composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # optional
