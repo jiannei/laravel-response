@@ -33,7 +33,7 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 
 ## Install
 
-Support for laravel 5.5. *~ Laravel 9.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
+Support for laravel 5.5. *~ Laravel 10.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
 | laravel version | lumen version |  response version |  enum version  |
 |------------| ----  |-------------|  ----  |

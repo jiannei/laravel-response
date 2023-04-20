@@ -44,7 +44,7 @@
 
 ## 安装
 
-支持 Laravel 5.5.* ~ Laravel 9.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
+支持 Laravel 5.5.* ~ Laravel 10.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
 | laravel 版本 | lumen 版本   | response 版本 |  enum 版本  |
 |------------|------------|-------------|  ----  |
