@@ -165,7 +165,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     /**
      * Http status code.
      *
-     * @param $code
+     * @param  $code
      * @return int
      */
     protected function formatStatusCode($code): int
