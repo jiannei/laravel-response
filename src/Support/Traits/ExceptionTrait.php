@@ -27,7 +27,7 @@ trait ExceptionTrait
     /**
      * Custom Normal Exception response.
      *
-     * @param $request
+     * @param  $request
      * @param  Throwable|Exception  $e
      * @return JsonResponse
      */
