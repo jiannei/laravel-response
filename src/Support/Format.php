@@ -14,6 +14,7 @@ namespace Jiannei\Response\Laravel\Support;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -67,14 +68,14 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     /**
      * Format paginator data.
      *
-     * @param  AbstractPaginator  $resource
+     * @param  AbstractPaginator|AbstractCursorPaginator  $resource
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
      * @return array
      */
-    public function paginator(AbstractPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
     {
         $paginated = $resource->toArray();
 
@@ -98,7 +99,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     public function resourceCollection(ResourceCollection $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
     {
         $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
-        if ($resource->resource instanceof AbstractPaginator) {
+        if ($resource->resource instanceof AbstractPaginator || $resource->resource instanceof AbstractCursorPaginator) {
             $paginated = $resource->resource->toArray();
             $paginationInformation = $this->formatPaginatedData($paginated);
 
@@ -191,6 +192,10 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
                     'links' => [
                         'previous' => $paginated['prev_page_url'] ?? '',
                         'next' => $paginated['next_page_url'] ?? '',
+                    ],
+                    'cursor' => [
+                        'previous' => $paginated['prev_cursor'] ?? '',
+                        'next' => $paginated['next_cursor'] ?? '',
                     ],
                 ],
             ],

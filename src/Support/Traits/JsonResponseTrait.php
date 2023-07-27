@@ -16,6 +16,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -223,7 +224,7 @@ trait JsonResponseTrait
             );
         }
 
-        if ($data instanceof AbstractPaginator) {
+        if ($data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator) {
             return $this->formatter->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
         }
 
