@@ -174,6 +174,7 @@ class SuccessTest extends TestCase
                 'email' => $item->email,
             ];
         })->all();
+
         $data = [
             'data' => $formatData,
             'meta' => [
@@ -186,6 +187,10 @@ class SuccessTest extends TestCase
                     'links' => [
                         'previous' => $paginated['prev_page_url'] ?? '',
                         'next' => $paginated['next_page_url'] ?? '',
+                    ],
+                    'cursor' => [
+                        'previous' => $paginated['prev_cursor'] ?? '',
+                        'next' => $paginated['next_cursor'] ?? '',
                     ],
                 ],
             ],
