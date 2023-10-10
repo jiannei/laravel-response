@@ -24,13 +24,6 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
 {
     use Macroable;
 
-    protected $config;
-
-    public function __construct($config = [])
-    {
-        $this->config = $config;
-    }
-
     /**
      * Return a new JSON response from the application.
      *
@@ -62,7 +55,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
-        ], $this->config);
+        ]);
     }
 
     /**
@@ -135,7 +128,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
-        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
         }
 
@@ -205,36 +198,32 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     /**
      * Format response data fields.
      *
-     * @param  array  $responseData
-     * @param  array  $dataFieldsConfig
+     * @param  array  $data
      * @return array
      */
-    protected function formatDataFields(array $responseData, array $dataFieldsConfig = []): array
+    protected function formatDataFields(array $data): array
     {
-        if (empty($dataFieldsConfig)) {
-            return $responseData;
-        }
+        $formatConfig = \config('response.format.config', []);
 
-        foreach ($responseData as $field => $value) {
-            $fieldConfig = Arr::get($dataFieldsConfig, $field);
-            if (is_null($fieldConfig)) {
+        foreach ($formatConfig as $key => $config) {
+            if (!Arr::has($data, $key)) {
                 continue;
             }
 
-            if ($value && is_array($value) && in_array($field, ['data', 'meta', 'pagination', 'links'])) {
-                $value = $this->formatDataFields($value, Arr::get($dataFieldsConfig, "{$field}.fields", []));
+            $show = $config['show'] ?? true;
+            $alias = $config['alias'] ?? '';
+
+            if ($alias && $alias !== $key) {
+                Arr::set($data, $alias, Arr::get($data, $key));
+                $data = Arr::except($data, $key);
+                $key = $alias;
             }
 
-            $alias = $fieldConfig['alias'] ?? $field;
-            $show = $fieldConfig['show'] ?? true;
-            $map = $fieldConfig['map'] ?? null;
-            unset($responseData[$field]);
-
-            if ($show) {
-                $responseData[$alias] = $map[$value] ?? $value;
+            if (!$show) {
+                $data = Arr::except($data, $key);
             }
         }
 
-        return $responseData;
+        return $data;
     }
 }

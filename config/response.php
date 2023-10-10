@@ -42,7 +42,7 @@ return [
         \Illuminate\Auth\AuthenticationException::class => [
 
         ],
-        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class =>[
+        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class => [
             'message' => '',
         ],
         \Illuminate\Database\Eloquent\ModelNotFoundException::class => [
@@ -50,52 +50,17 @@ return [
         ],
     ],
 
-    // Set the structure of the response data
+    // Any key that returns data exists supports custom aliases and display.
     'format' => [
-        \Jiannei\Response\Laravel\Support\Format::class,
-        [
+        'class' => \Jiannei\Response\Laravel\Support\Format::class,
+        'config' => [
+            // key => config
             'status' => ['alias' => 'status', 'show' => true],
             'code' => ['alias' => 'code', 'show' => true],
             'message' => ['alias' => 'message', 'show' => true],
             'error' => ['alias' => 'error', 'show' => true],
-            'data' => [
-                'alias' => 'data',
-                'show' => true,
-
-                'fields' => [
-                    // When data is nested with data, such as returning paged data, you can also set an alias for the inner data
-                    'data' => ['alias' => 'data', 'show' => true], // data/rows/list
-
-                    'meta' => [
-                        'alias' => 'meta',
-                        'show' => true,
-
-                        'fields' => [
-                            'pagination' => [
-                                'alias' => 'pagination',
-                                'show' => true,
-
-                                'fields' => [
-                                    'total' => ['alias' => 'total', 'show' => true],
-                                    'count' => ['alias' => 'count', 'show' => true],
-                                    'per_page' => ['alias' => 'per_page', 'show' => true],
-                                    'current_page' => ['alias' => 'current_page', 'show' => true],
-                                    'total_pages' => ['alias' => 'total_pages', 'show' => true],
-                                    'links' => [
-                                        'alias' => 'links',
-                                        'show' => true,
-
-                                        'fields' => [
-                                            'previous' => ['alias' => 'previous', 'show' => true],
-                                            'next' => ['alias' => 'next', 'show' => true],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
+            'data' => ['alias' => 'data', 'show' => true,],
+            'data.data' => ['alias' => 'data.data', 'show' => true,],// rows/items/list
         ],
     ],
 ];
