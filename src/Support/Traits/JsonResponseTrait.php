@@ -228,7 +228,7 @@ trait JsonResponseTrait
             return $this->formatter->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
         }
 
-        if ($data instanceof Arrayable) {
+        if ($data instanceof Arrayable || (is_object($data) && method_exists($data, 'toJson'))) {
             $data = $data->toArray();
         }
 
