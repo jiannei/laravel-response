@@ -32,7 +32,7 @@ trait JsonResponseTrait
      * @param  string  $location
      * @return JsonResponse
      */
-    public function accepted($data = [], string $message = '', string $location = '')
+    public function accepted($data = [], string $message = '', string $location = ''): JsonResponse
     {
         $response = $this->success($data, $message, 202);
         if ($location) {
@@ -50,7 +50,7 @@ trait JsonResponseTrait
      * @param  string  $location
      * @return JsonResponse
      */
-    public function created($data = [], string $message = '', string $location = '')
+    public function created($data = [], string $message = '', string $location = ''): JsonResponse
     {
         $response = $this->success($data, $message, 201);
         if ($location) {
@@ -66,7 +66,7 @@ trait JsonResponseTrait
      * @param  string  $message
      * @return JsonResponse
      */
-    public function noContent(string $message = '')
+    public function noContent(string $message = ''): JsonResponse
     {
         return $this->success([], $message, 204);
     }
@@ -104,7 +104,7 @@ trait JsonResponseTrait
      *
      * @param  string|null  $message
      */
-    public function errorBadRequest(string $message = '')
+    public function errorBadRequest(string $message = ''): void
     {
         $this->fail($message, 400);
     }
@@ -114,7 +114,7 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      */
-    public function errorUnauthorized(string $message = '')
+    public function errorUnauthorized(string $message = ''): void
     {
         $this->fail($message, 401);
     }
@@ -124,7 +124,7 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      */
-    public function errorForbidden(string $message = '')
+    public function errorForbidden(string $message = ''): void
     {
         $this->fail($message, 403);
     }
@@ -134,7 +134,7 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      */
-    public function errorNotFound(string $message = '')
+    public function errorNotFound(string $message = ''): void
     {
         $this->fail($message, 404);
     }
@@ -144,7 +144,7 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      */
-    public function errorMethodNotAllowed(string $message = '')
+    public function errorMethodNotAllowed(string $message = ''): void
     {
         $this->fail($message, 405);
     }
@@ -154,7 +154,7 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      */
-    public function errorInternal(string $message = '')
+    public function errorInternal(string $message = ''): void
     {
         $this->fail($message);
     }
@@ -164,21 +164,15 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      * @param  int  $code
-     * @param  array|null  $errors
-     * @param  array  $header
-     * @param  int  $options
+     * @param  null  $errors
+     * @param  array  $headers
+     * @param  int  $option
      * @return JsonResponse
      *
-     * @throws HttpResponseException
      */
-    public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
+    public function fail(string $message = '', int $code = 500, $errors = null, array $headers = [], int $option = 0): JsonResponse
     {
-        $response = Format::response(
-            Format::data(null, $message, $code, $errors),
-            Config::get('response.error_code') ?: $code,
-            $header,
-            $options
-        );
+        $response = Format::response(null, $message, $code, $errors, $headers, $option, 'fail');
 
         if (is_null($errors)) {
             $response->throwResponse();
@@ -190,7 +184,7 @@ trait JsonResponseTrait
     /**
      * Return a success response.
      *
-     * @param  JsonResource|array|mixed  $data
+     * @param  mixed  $data
      * @param  string  $message
      * @param  int  $code
      * @param  array  $headers
@@ -199,6 +193,6 @@ trait JsonResponseTrait
      */
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
-        return Format::response(Format::data($data,$message,$code), $code, $headers, $option);
+        return Format::response(...func_get_args());
     }
 }

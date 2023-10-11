@@ -37,14 +37,17 @@ class Format
      * Return a new JSON response from the application.
      *
      * @param  mixed  $data
-     * @param  int  $status
+     * @param  string  $message
+     * @param  int  $code
+     * @param  null  $errors
      * @param  array  $headers
-     * @param  int  $options
+     * @param  int  $option
+     * @param  string  $from
      * @return JsonResponse
      */
-    public function response($data = [], int $status = 200, array $headers = [], int $options = 0): JsonResponse
+    public function response($data = null, string $message = '', int $code = 200, $errors = null, array $headers = [], int $option = 0, string $from = 'success'): JsonResponse
     {
-        return new JsonResponse($data, $this->formatStatusCode($status), $headers, $options);
+        return new JsonResponse($this->data($data, $message, $code, $errors), $this->formatStatusCode($code, $from), $headers, $option);
     }
 
     /**
@@ -79,13 +82,15 @@ class Format
      * Format paginator data.
      *
      * @param  AbstractPaginator|AbstractCursorPaginator  $resource
+     * @param  null  $transformer
+     * @param  null  $resourceName
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource): array
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, $transformer = null, $resourceName = null): array
     {
-        $fractal = fractal()->collection($resource, function ($item) {
+        $fractal = fractal()->collection($resource, $transformer ?: function ($item) {
             return $item->toArray();
-        })->serializeWith(DataArraySerializer::class);
+        }, $resourceName)->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, $this->formatCollection($resource))->toArray();
     }
@@ -94,13 +99,15 @@ class Format
      * Format collection resource data.
      *
      * @param  ResourceCollection  $collection
+     * @param  null  $transformer
+     * @param  null  $resourceName
      * @return array
      */
-    public function resourceCollection(ResourceCollection $collection): array
+    public function resourceCollection(ResourceCollection $collection, $transformer = null, $resourceName = null): array
     {
-        $fractal = fractal()->collection($collection->resource, function (JsonResource $resource) {
+        $fractal = fractal()->collection($collection->resource, $transformer ?: function (JsonResource $resource) {
             return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
-        })->serializeWith(DataArraySerializer::class);
+        }, $resourceName)->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, $this->formatCollection($collection->resource))->toArray();
     }
@@ -109,13 +116,15 @@ class Format
      * Format JsonResource Data.
      *
      * @param  JsonResource  $resource
+     * @param  null  $transformer
+     * @param  null  $resourceName
      * @return array
      */
-    public function jsonResource(JsonResource $resource): array
+    public function jsonResource(JsonResource $resource, $transformer = null, $resourceName = null): array
     {
         $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
 
-        return fractal()->item($data, fn() => $data)->serializeWith(ArraySerializer::class)->toArray();
+        return fractal()->item($data, $transformer ?: fn() => $data, $resourceName)->serializeWith(ArraySerializer::class)->toArray();
     }
 
     /**
@@ -123,7 +132,7 @@ class Format
      *
      * @param  int  $code
      * @param  string|null  $message
-     * @return string
+     * @return string|null
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
@@ -158,11 +167,12 @@ class Format
      * Http status code.
      *
      * @param  $code
+     * @param  string  $from
      * @return int
      */
-    protected function formatStatusCode($code): int
+    protected function formatStatusCode($code, string $from = 'success'): int
     {
-        return (int) substr($code, 0, 3);
+        return (int) substr($from === 'fail' ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
     }
 
     protected function formatCollection($collection): \Closure
