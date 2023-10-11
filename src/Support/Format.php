@@ -83,7 +83,7 @@ class Format
     {
         return [
             'data' => $resource->toArray()['data'],
-            'meta' => $this->formatMeta($resource)
+            'meta' => $this->formatMeta($resource),
         ];
     }
 
@@ -97,7 +97,7 @@ class Format
     {
         return array_filter([
             'data' => $collection->toArray(request()),
-            'meta' => $this->formatMeta($collection->resource)
+            'meta' => $this->formatMeta($collection->resource),
         ]);
     }
 
@@ -109,7 +109,7 @@ class Format
      */
     public function jsonResource(JsonResource $resource): array
     {
-        return value($this->formatJsonResource(),$resource);
+        return value($this->formatJsonResource(), $resource);
     }
 
     /**
@@ -121,7 +121,7 @@ class Format
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
-        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
         }
 
@@ -185,7 +185,7 @@ class Format
                     'prev' => $collection->previousCursor()?->encode(),
                     'next' => $collection->nextCursor()?->encode(),
                     'count' => count($collection->items()),
-                ]
+                ],
             ],
             $collection instanceof LengthAwarePaginator => [
                 'pagination' => [
@@ -226,7 +226,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -239,7 +239,7 @@ class Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }
