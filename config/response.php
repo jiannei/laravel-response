@@ -59,8 +59,8 @@ return [
             'code' => ['alias' => 'code', 'show' => true],
             'message' => ['alias' => 'message', 'show' => true],
             'error' => ['alias' => 'error', 'show' => true],
-            'data' => ['alias' => 'data', 'show' => true,],
-            'data.data' => ['alias' => 'data.data', 'show' => true,],// rows/items/list
+            'data' => ['alias' => 'data', 'show' => true],
+            'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
         ],
     ],
 ];

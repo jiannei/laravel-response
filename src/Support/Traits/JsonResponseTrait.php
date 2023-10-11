@@ -207,6 +207,6 @@ trait JsonResponseTrait
             default => Arr::wrap($data)
         };
 
-        return Format::response(Format::data($data,$message,$code), $code, $headers, $option);
+        return Format::response(Format::data($data, $message, $code), $code, $headers, $option);
     }
 }
