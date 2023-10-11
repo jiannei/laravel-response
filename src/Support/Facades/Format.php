@@ -10,7 +10,6 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
- *
  * @method static JsonResponse response($data = [], int $status = 200, array $headers = [], int $options = 0)
  * @method static array data($data, ?string $message, int $code, $errors = null)
  * @method static array paginator(AbstractPaginator|AbstractCursorPaginator $resource)

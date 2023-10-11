@@ -199,14 +199,6 @@ trait JsonResponseTrait
      */
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
-        $data = match (true) {
-            $data instanceof ResourceCollection => Format::resourceCollection($data),
-            $data instanceof JsonResource => Format::jsonResource($data),
-            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => Format::paginator($data),
-            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
-            default => Arr::wrap($data)
-        };
-
         return Format::response(Format::data($data,$message,$code), $code, $headers, $option);
     }
 }

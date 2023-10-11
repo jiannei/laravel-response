@@ -12,6 +12,7 @@
 namespace Jiannei\Response\Laravel\Support;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -57,6 +58,14 @@ class Format
      */
     public function data($data, ?string $message, int $code, $errors = null): array
     {
+        $data = match (true) {
+            $data instanceof ResourceCollection => $this->resourceCollection($data),
+            $data instanceof JsonResource => $this->jsonResource($data),
+            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->paginator($data),
+            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
+            default => Arr::wrap($data)
+        };
+
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),
             'code' => $code,
