@@ -18,6 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 
@@ -173,7 +174,7 @@ trait JsonResponseTrait
     public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
     {
         $response = $this->formatter->response(
-            $this->formatter->data(null, $message, $code, $errors),
+            $this->formatter->format(null, $message, $code, $errors),
             Config::get('response.error_code') ?: $code,
             $header,
             $options
@@ -198,22 +199,14 @@ trait JsonResponseTrait
      */
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
-        if ($data instanceof ResourceCollection) {
-            $data = $this->formatter->resourceCollection($data);
-        }
+        $data = match (true) {
+            $data instanceof ResourceCollection => $this->formatter->resourceCollection($data),
+            $data instanceof JsonResource => $this->formatter->jsonResource($data),
+            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->formatter->paginator($data),
+            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
+            default => Arr::wrap($data)
+        };
 
-        if ($data instanceof JsonResource) {
-            $data = $this->formatter->jsonResource($data);
-        }
-
-        if ($data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator) {
-            $data = $this->formatter->paginator($data);
-        }
-
-        if ($data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray'))) {
-            $data = $data->toArray();
-        }
-
-        return $this->formatter->response($this->formatter->format(Arr::wrap($data), $message, $code), $code, $headers, $option);
+        return $this->formatter->response($this->formatter->format($data,$message,$code), $code, $headers, $option);
     }
 }

@@ -72,42 +72,13 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      * @param  AbstractPaginator|AbstractCursorPaginator  $resource
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource)
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource): array
     {
-        $fractal  = fractal()->collection($resource, function ($item) {
+        $fractal = fractal()->collection($resource, function ($item) {
             return $item->toArray();
         })->serializeWith(DataArraySerializer::class);
 
-        return tap($fractal, function (Fractal $item) use ($resource) {
-            if ($resource instanceof CursorPaginator) {
-                return $item->withCursor(new Cursor(
-                        $resource->cursor()?->encode(),
-                        $resource->previousCursor()?->encode(),
-                        $resource->nextCursor()?->encode(),
-                        count($resource->items()))
-                );
-            }
-
-            if ($resource instanceof LengthAwarePaginator) {
-                return $item->paginateWith(new IlluminatePaginatorAdapter($resource));
-            }
-
-            if ($resource instanceof Paginator) {
-                return $item->addMeta([
-                    'pagination' => [
-                        'count' => count($resource->items()),
-                        'per_page' => $resource->perPage(),
-                        'current_page' => $resource->currentPage(),
-                        'links' => [
-                            'previous' => $resource->previousPageUrl(),
-                            'next' => $resource->nextPageUrl()
-                        ]
-                    ],
-                ]);
-            }
-
-            return $item;
-        });
+        return tap($fractal, $this->formatCollection($resource))->toArray();
     }
 
     /**
@@ -118,52 +89,24 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     public function resourceCollection(ResourceCollection $collection): array
     {
-        $fractal  = fractal()->collection($collection->resource,function (JsonResource $resource){
+        $fractal = fractal()->collection($collection->resource, function (JsonResource $resource) {
             return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
         })->serializeWith(DataArraySerializer::class);
 
-        return tap($fractal, function (Fractal $item) use ($collection) {
-            if ($collection->resource instanceof CursorPaginator) {
-                return $item->withCursor(new Cursor(
-                        $collection->resource->cursor()?->encode(),
-                        $collection->resource->previousCursor()?->encode(),
-                        $collection->resource->nextCursor()?->encode(),
-                        count($collection->resource->items()))
-                );
-            }
-
-            if ($collection->resource instanceof LengthAwarePaginator) {
-                return $item->paginateWith(new IlluminatePaginatorAdapter($collection->resource));
-            }
-
-            if ($collection->resource instanceof Paginator) {
-                return $item->addMeta([
-                    'pagination' => [
-                        'count' => count($collection->resource->items()),
-                        'per_page' => $collection->resource->perPage(),
-                        'current_page' => $collection->resource->currentPage(),
-                        'links' => [
-                            'previous' => $collection->resource->previousPageUrl(),
-                            'next' => $collection->resource->nextPageUrl()
-                        ]
-                    ],
-                ]);
-            }
-
-            return $item;
-        });
+        return tap($fractal, $this->formatCollection($collection->resource))->toArray();
     }
 
     /**
      * Format JsonResource Data.
      *
      * @param  JsonResource  $resource
+     * @return array
      */
-    public function jsonResource(JsonResource $resource)
+    public function jsonResource(JsonResource $resource): array
     {
-       return fractal()->item($resource->resource,function (JsonResource $resource){
-            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
-        })->serializeWith(ArraySerializer::class);
+        $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+
+        return fractal()->item($data, fn() => $data)->serializeWith(ArraySerializer::class)->toArray();
     }
 
     /**
@@ -211,6 +154,33 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     protected function formatStatusCode($code): int
     {
         return (int) substr($code, 0, 3);
+    }
+
+    protected function formatCollection($collection): \Closure
+    {
+        return function (Fractal $item) use ($collection) {
+            return match (true) {
+                $collection instanceof CursorPaginator => $item->withCursor(new Cursor(
+                    $collection->cursor()?->encode(),
+                    $collection->previousCursor()?->encode(),
+                    $collection->nextCursor()?->encode(),
+                    count($collection->items())
+                )),
+                $collection instanceof LengthAwarePaginator => $item->paginateWith(new IlluminatePaginatorAdapter($collection)),
+                $collection instanceof Paginator => $item->addMeta([
+                    'pagination' => [
+                        'count' => count($collection->items()),
+                        'per_page' => $collection->perPage(),
+                        'current_page' => $collection->currentPage(),
+                        'links' => array_filter([
+                            'previous' => $paginated['prev_page_url'] ?? '',
+                            'next' => $paginated['next_page_url'] ?? '',
+                        ]),
+                    ],
+                ]),
+                default => $item,
+            };
+        };
     }
 
     /**

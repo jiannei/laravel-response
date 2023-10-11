@@ -184,14 +184,10 @@ class SuccessTest extends TestCase
                     'current_page' => $paginated['current_page'] ?? 0,
                     'total' => $paginated['total'] ?? 0,
                     'total_pages' => $paginated['last_page'] ?? 0,
-                    'links' => [
+                    'links' => array_filter([
                         'previous' => $paginated['prev_page_url'] ?? '',
                         'next' => $paginated['next_page_url'] ?? '',
-                    ],
-                    'cursor' => [
-                        'previous' => $paginated['prev_cursor'] ?? '',
-                        'next' => $paginated['next_cursor'] ?? '',
-                    ],
+                    ]),
                 ],
             ],
         ];

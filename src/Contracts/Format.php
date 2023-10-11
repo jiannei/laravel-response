@@ -33,25 +33,17 @@ interface Format
      * Format paginator data.
      *
      * @param  AbstractPaginator|AbstractCursorPaginator  $resource
-     * @param  string  $message
-     * @param  int  $code
-     * @param  array  $headers
-     * @param  int  $option
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource);
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource): array;
 
     /**
      * Format collection resource data.
      *
-     * @param  ResourceCollection  $resource
-     * @param  string  $message
-     * @param  int  $code
-     * @param  array  $headers
-     * @param  int  $option
+     * @param  ResourceCollection  $collection
      * @return array
      */
-    public function resourceCollection(ResourceCollection $resource);
+    public function resourceCollection(ResourceCollection $collection): array;
 
     /**
      * Format JsonResource Data.
@@ -59,5 +51,5 @@ interface Format
      * @param  JsonResource  $resource
      * @return array
      */
-    public function jsonResource(JsonResource $resource);
+    public function jsonResource(JsonResource $resource): array;
 }
