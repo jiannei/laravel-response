@@ -74,17 +74,17 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     public function paginator(AbstractPaginator|AbstractCursorPaginator $resource)
     {
-        $fractal  = fractal()->collection($resource, function ($item) {
+        $fractal = fractal()->collection($resource, function ($item) {
             return $item->toArray();
         })->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, function (Fractal $item) use ($resource) {
             if ($resource instanceof CursorPaginator) {
                 return $item->withCursor(new Cursor(
-                        $resource->cursor()?->encode(),
-                        $resource->previousCursor()?->encode(),
-                        $resource->nextCursor()?->encode(),
-                        count($resource->items()))
+                    $resource->cursor()?->encode(),
+                    $resource->previousCursor()?->encode(),
+                    $resource->nextCursor()?->encode(),
+                    count($resource->items()))
                 );
             }
 
@@ -100,8 +100,8 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
                         'current_page' => $resource->currentPage(),
                         'links' => [
                             'previous' => $resource->previousPageUrl(),
-                            'next' => $resource->nextPageUrl()
-                        ]
+                            'next' => $resource->nextPageUrl(),
+                        ],
                     ],
                 ]);
             }
@@ -118,17 +118,17 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     public function resourceCollection(ResourceCollection $collection): array
     {
-        $fractal  = fractal()->collection($collection->resource,function (JsonResource $resource){
+        $fractal = fractal()->collection($collection->resource, function (JsonResource $resource) {
             return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
         })->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, function (Fractal $item) use ($collection) {
             if ($collection->resource instanceof CursorPaginator) {
                 return $item->withCursor(new Cursor(
-                        $collection->resource->cursor()?->encode(),
-                        $collection->resource->previousCursor()?->encode(),
-                        $collection->resource->nextCursor()?->encode(),
-                        count($collection->resource->items()))
+                    $collection->resource->cursor()?->encode(),
+                    $collection->resource->previousCursor()?->encode(),
+                    $collection->resource->nextCursor()?->encode(),
+                    count($collection->resource->items()))
                 );
             }
 
@@ -144,8 +144,8 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
                         'current_page' => $collection->resource->currentPage(),
                         'links' => [
                             'previous' => $collection->resource->previousPageUrl(),
-                            'next' => $collection->resource->nextPageUrl()
-                        ]
+                            'next' => $collection->resource->nextPageUrl(),
+                        ],
                     ],
                 ]);
             }
@@ -161,7 +161,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     public function jsonResource(JsonResource $resource)
     {
-       return fractal()->item($resource->resource,function (JsonResource $resource){
+        return fractal()->item($resource->resource, function (JsonResource $resource) {
             return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
         })->serializeWith(ArraySerializer::class);
     }
@@ -175,7 +175,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
-        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
         }
 
@@ -224,7 +224,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -237,7 +237,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }
