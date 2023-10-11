@@ -11,14 +11,22 @@
 
 namespace Jiannei\Response\Laravel\Support;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Pagination\CursorPaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Traits\Macroable;
+use League\Fractal\Pagination\Cursor;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Serializer\DataArraySerializer;
+use Spatie\Fractal\Fractal;
 
 class Format implements \Jiannei\Response\Laravel\Contracts\Format
 {
@@ -47,7 +55,7 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      * @param  null  $errors
      * @return array
      */
-    public function data(?array $data, ?string $message, int $code, $errors = null): array
+    public function format(?array $data, ?string $message, int $code, $errors = null): array
     {
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),
@@ -62,61 +70,100 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
      * Format paginator data.
      *
      * @param  AbstractPaginator|AbstractCursorPaginator  $resource
-     * @param  string  $message
-     * @param  int  $code
-     * @param  array  $headers
-     * @param  int  $option
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource)
     {
-        $paginated = $resource->toArray();
+        $fractal  = fractal()->collection($resource, function ($item) {
+            return $item->toArray();
+        })->serializeWith(DataArraySerializer::class);
 
-        $paginationInformation = $this->formatPaginatedData($paginated);
+        return tap($fractal, function (Fractal $item) use ($resource) {
+            if ($resource instanceof CursorPaginator) {
+                return $item->withCursor(new Cursor(
+                        $resource->cursor()?->encode(),
+                        $resource->previousCursor()?->encode(),
+                        $resource->nextCursor()?->encode(),
+                        count($resource->items()))
+                );
+            }
 
-        $data = array_merge_recursive(['data' => $paginated['data']], $paginationInformation);
+            if ($resource instanceof LengthAwarePaginator) {
+                return $item->paginateWith(new IlluminatePaginatorAdapter($resource));
+            }
 
-        return $this->data($data, $message, $code);
+            if ($resource instanceof Paginator) {
+                return $item->addMeta([
+                    'pagination' => [
+                        'count' => count($resource->items()),
+                        'per_page' => $resource->perPage(),
+                        'current_page' => $resource->currentPage(),
+                        'links' => [
+                            'previous' => $resource->previousPageUrl(),
+                            'next' => $resource->nextPageUrl()
+                        ]
+                    ],
+                ]);
+            }
+
+            return $item;
+        });
     }
 
     /**
      * Format collection resource data.
      *
-     * @param  ResourceCollection  $resource
-     * @param  string  $message
-     * @param  int  $code
-     * @param  array  $headers
-     * @param  int  $option
+     * @param  ResourceCollection  $collection
      * @return array
      */
-    public function resourceCollection(ResourceCollection $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
+    public function resourceCollection(ResourceCollection $collection): array
     {
-        $data = array_merge_recursive(['data' => $resource->resolve(request())], $resource->with(request()), $resource->additional);
-        if ($resource->resource instanceof AbstractPaginator || $resource->resource instanceof AbstractCursorPaginator) {
-            $paginated = $resource->resource->toArray();
-            $paginationInformation = $this->formatPaginatedData($paginated);
+        $fractal  = fractal()->collection($collection->resource,function (JsonResource $resource){
+            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+        })->serializeWith(DataArraySerializer::class);
 
-            $data = array_merge_recursive($data, $paginationInformation);
-        }
+        return tap($fractal, function (Fractal $item) use ($collection) {
+            if ($collection->resource instanceof CursorPaginator) {
+                return $item->withCursor(new Cursor(
+                        $collection->resource->cursor()?->encode(),
+                        $collection->resource->previousCursor()?->encode(),
+                        $collection->resource->nextCursor()?->encode(),
+                        count($collection->resource->items()))
+                );
+            }
 
-        return $this->data($data, $message, $code);
+            if ($collection->resource instanceof LengthAwarePaginator) {
+                return $item->paginateWith(new IlluminatePaginatorAdapter($collection->resource));
+            }
+
+            if ($collection->resource instanceof Paginator) {
+                return $item->addMeta([
+                    'pagination' => [
+                        'count' => count($collection->resource->items()),
+                        'per_page' => $collection->resource->perPage(),
+                        'current_page' => $collection->resource->currentPage(),
+                        'links' => [
+                            'previous' => $collection->resource->previousPageUrl(),
+                            'next' => $collection->resource->nextPageUrl()
+                        ]
+                    ],
+                ]);
+            }
+
+            return $item;
+        });
     }
 
     /**
      * Format JsonResource Data.
      *
      * @param  JsonResource  $resource
-     * @param  string  $message
-     * @param  int  $code
-     * @param  array  $headers
-     * @param  int  $option
-     * @return array
      */
-    public function jsonResource(JsonResource $resource, string $message = '', int $code = 200, array $headers = [], int $option = 0): array
+    public function jsonResource(JsonResource $resource)
     {
-        $resourceData = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
-
-        return $this->data($resourceData, $message, $code);
+       return fractal()->item($resource->resource,function (JsonResource $resource){
+            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+        })->serializeWith(ArraySerializer::class);
     }
 
     /**
@@ -164,35 +211,6 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     protected function formatStatusCode($code): int
     {
         return (int) substr($code, 0, 3);
-    }
-
-    /**
-     * Format paginated data.
-     *
-     * @param  array  $paginated
-     * @return array
-     */
-    protected function formatPaginatedData(array $paginated): array
-    {
-        return [
-            'meta' => [
-                'pagination' => [
-                    'total' => $paginated['total'] ?? 0,
-                    'count' => $paginated['to'] ?? 0,
-                    'per_page' => $paginated['per_page'] ?? 0,
-                    'current_page' => $paginated['current_page'] ?? 0,
-                    'total_pages' => $paginated['last_page'] ?? 0,
-                    'links' => [
-                        'previous' => $paginated['prev_page_url'] ?? '',
-                        'next' => $paginated['next_page_url'] ?? '',
-                    ],
-                    'cursor' => [
-                        'previous' => $paginated['prev_cursor'] ?? '',
-                        'next' => $paginated['next_cursor'] ?? '',
-                    ],
-                ],
-            ],
-        ];
     }
 
     /**

@@ -199,39 +199,21 @@ trait JsonResponseTrait
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
         if ($data instanceof ResourceCollection) {
-            return tap(
-                $this->formatter->response($this->formatter->resourceCollection(...func_get_args()), $code, $headers, $option),
-                function ($response) use ($data) {
-                    $response->original = $data->resource->map(
-                        function ($item) {
-                            return is_array($item) ? Arr::get($item, 'resource') : $item->resource;
-                        }
-                    );
-
-                    $data->withResponse(request(), $response);
-                }
-            );
+            $data = $this->formatter->resourceCollection($data);
         }
 
         if ($data instanceof JsonResource) {
-            return tap(
-                $this->formatter->response($this->formatter->jsonResource(...func_get_args()), $code, $headers, $option),
-                function ($response) use ($data) {
-                    $response->original = $data->resource;
-
-                    $data->withResponse(request(), $response);
-                }
-            );
+            $data = $this->formatter->jsonResource($data);
         }
 
         if ($data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator) {
-            return $this->formatter->response($this->formatter->paginator(...func_get_args()), $code, $headers, $option);
+            $data = $this->formatter->paginator($data);
         }
 
-        if ($data instanceof Arrayable || (is_object($data) && method_exists($data, 'toJson'))) {
+        if ($data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray'))) {
             $data = $data->toArray();
         }
 
-        return $this->formatter->response($this->formatter->data(Arr::wrap($data), $message, $code), $code, $headers, $option);
+        return $this->formatter->response($this->formatter->format(Arr::wrap($data), $message, $code), $code, $headers, $option);
     }
 }
