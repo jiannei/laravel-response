@@ -10,13 +10,11 @@
     ],
     "require": {
         "php": "^8.0",
-        "ext-json": "*",
-        "spatie/laravel-fractal": "^6.0"
+        "ext-json": "*"
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
         "jiannei/laravel-enum": "^3.0",
-        "league/fractal": "^0.20.1",
         "phpunit/phpunit": "^10.0"
     },
     "autoload": {

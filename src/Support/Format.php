@@ -23,11 +23,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Traits\Macroable;
-use League\Fractal\Pagination\Cursor;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Serializer\DataArraySerializer;
-use Spatie\Fractal\Fractal;
 
 class Format
 {
@@ -82,52 +77,39 @@ class Format
      * Format paginator data.
      *
      * @param  AbstractPaginator|AbstractCursorPaginator  $resource
-     * @param  null  $transformer
-     * @param  null  $resourceName
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, $transformer = null, $resourceName = null): array
+    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource): array
     {
-        $fractal = fractal()
-            ->collection($resource, $transformer ?: fn ($item) => $item->toArray(), $resourceName)
-            ->serializeWith(DataArraySerializer::class);
-
-        return tap($fractal, $this->formatCollection($resource))->toArray();
+        return [
+            'data' => $resource->toArray()['data'],
+            'meta' => $this->formatMeta($resource)
+        ];
     }
 
     /**
      * Format collection resource data.
      *
      * @param  ResourceCollection  $collection
-     * @param  null  $transformer
-     * @param  null  $resourceName
      * @return array
      */
-    public function resourceCollection(ResourceCollection $collection, $transformer = null, $resourceName = null): array
+    public function resourceCollection(ResourceCollection $collection): array
     {
-        $fractal = fractal()
-            ->collection($collection->resource, $transformer ?: $this->formatJsonResource(), $resourceName)
-            ->serializeWith(DataArraySerializer::class);
-
-        return tap($fractal, $this->formatCollection($collection->resource))->toArray();
+        return array_filter([
+            'data' => $collection->toArray(request()),
+            'meta' => $this->formatMeta($collection->resource)
+        ]);
     }
 
     /**
      * Format JsonResource Data.
      *
      * @param  JsonResource  $resource
-     * @param  null  $transformer
-     * @param  null  $resourceName
      * @return array
      */
-    public function jsonResource(JsonResource $resource, $transformer = null, $resourceName = null): array
+    public function jsonResource(JsonResource $resource): array
     {
-        $data = value($this->formatJsonResource(), $resource);
-
-        return fractal()
-            ->item($data, $transformer ?: fn () => $data, $resourceName)
-            ->serializeWith(ArraySerializer::class)
-            ->toArray();
+        return value($this->formatJsonResource(),$resource);
     }
 
     /**
@@ -139,7 +121,7 @@ class Format
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
-        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
         }
 
@@ -182,6 +164,8 @@ class Format
      */
     protected function formatJsonResource(): \Closure
     {
+        // vendor/laravel/framework/src/Illuminate/Http/Resources/Json/ResourceResponse.php
+        // toResponse
         return function (JsonResource $resource) {
             return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
         };
@@ -191,32 +175,43 @@ class Format
      * Format paginator data.
      *
      * @param  $collection
-     * @return \Closure
      */
-    protected function formatCollection($collection): \Closure
+    protected function formatMeta($collection)
     {
-        return function (Fractal $item) use ($collection) {
-            return match (true) {
-                $collection instanceof CursorPaginator => $item->withCursor(new Cursor(
-                    $collection->cursor()?->encode(),
-                    $collection->previousCursor()?->encode(),
-                    $collection->nextCursor()?->encode(),
-                    count($collection->items())
-                )),
-                $collection instanceof LengthAwarePaginator => $item->paginateWith(new IlluminatePaginatorAdapter($collection)),
-                $collection instanceof Paginator => $item->addMeta([
-                    'pagination' => [
-                        'count' => $collection->lastItem(),
-                        'per_page' => $collection->perPage(),
-                        'current_page' => $collection->currentPage(),
-                        'links' => array_filter([
-                            'previous' => $collection->previousPageUrl(),
-                            'next' => $collection->nextPageUrl(),
-                        ]),
-                    ],
-                ]),
-                default => $item,
-            };
+        return match (true) {
+            $collection instanceof CursorPaginator => [
+                'cursor' => [
+                    'current' => $collection->cursor()?->encode(),
+                    'prev' => $collection->previousCursor()?->encode(),
+                    'next' => $collection->nextCursor()?->encode(),
+                    'count' => count($collection->items()),
+                ]
+            ],
+            $collection instanceof LengthAwarePaginator => [
+                'pagination' => [
+                    'count' => $collection->lastItem(),
+                    'per_page' => $collection->perPage(),
+                    'current_page' => $collection->currentPage(),
+                    'total' => $collection->total(),
+                    'total_pages' => $collection->lastPage(),
+                    'links' => array_filter([
+                        'previous' => $collection->previousPageUrl(),
+                        'next' => $collection->nextPageUrl(),
+                    ]),
+                ],
+            ],
+            $collection instanceof Paginator => [
+                'pagination' => [
+                    'count' => $collection->lastItem(),
+                    'per_page' => $collection->perPage(),
+                    'current_page' => $collection->currentPage(),
+                    'links' => array_filter([
+                        'previous' => $collection->previousPageUrl(),
+                        'next' => $collection->nextPageUrl(),
+                    ]),
+                ],
+            ],
+            default => [],
         };
     }
 
@@ -231,7 +226,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (! Arr::has($data, $key)) {
+            if (!Arr::has($data, $key)) {
                 continue;
             }
 
@@ -244,7 +239,7 @@ class Format
                 $key = $alias;
             }
 
-            if (! $show) {
+            if (!$show) {
                 $data = Arr::except($data, $key);
             }
         }
