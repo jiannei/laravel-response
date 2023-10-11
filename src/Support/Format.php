@@ -124,7 +124,7 @@ class Format
     {
         $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
 
-        return fractal()->item($data, $transformer ?: fn() => $data, $resourceName)->serializeWith(ArraySerializer::class)->toArray();
+        return fractal()->item($data, $transformer ?: fn () => $data, $resourceName)->serializeWith(ArraySerializer::class)->toArray();
     }
 
     /**
@@ -136,7 +136,7 @@ class Format
      */
     protected function formatMessage(int $code, ?string $message): ?string
     {
-        if (!$message && class_exists($enumClass = Config::get('response.enum'))) {
+        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
             $message = $enumClass::fromValue($code)->description;
         }
 
@@ -153,7 +153,7 @@ class Format
     {
         $statusCode = $this->formatStatusCode($code);
 
-        return match(true) {
+        return match (true) {
             ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
             ($statusCode >= 500 && $statusCode <= 599) => 'fail',// service error
             default => 'success'
@@ -210,7 +210,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -223,7 +223,7 @@ class Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }
