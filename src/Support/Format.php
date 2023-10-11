@@ -206,7 +206,7 @@ class Format
                 $collection instanceof LengthAwarePaginator => $item->paginateWith(new IlluminatePaginatorAdapter($collection)),
                 $collection instanceof Paginator => $item->addMeta([
                     'pagination' => [
-                        'count' => count($collection->items()),
+                        'count' => $collection->lastItem(),
                         'per_page' => $collection->perPage(),
                         'current_page' => $collection->currentPage(),
                         'links' => array_filter([
