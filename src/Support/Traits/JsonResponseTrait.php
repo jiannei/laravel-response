@@ -72,7 +72,7 @@ trait JsonResponseTrait
      * @param  int  $option
      * @return JsonResponse
      */
-    public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
+    public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0): JsonResponse
     {
         return $this->success([], $message, $code, $headers, $option);
     }
@@ -86,7 +86,7 @@ trait JsonResponseTrait
      * @param  int  $option
      * @return JsonResponse
      */
-    public function localize(int $code = 200, array $headers = [], int $option = 0)
+    public function localize(int $code = 200, array $headers = [], int $option = 0): JsonResponse
     {
         return $this->ok('', $code, $headers, $option);
     }
@@ -94,7 +94,7 @@ trait JsonResponseTrait
     /**
      * Return a 400 bad request error.
      *
-     * @param  string|null  $message
+     * @param  string  $message
      */
     public function errorBadRequest(string $message = ''): void
     {

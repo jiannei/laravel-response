@@ -12,6 +12,7 @@
 namespace Jiannei\Response\Laravel\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Arr;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum;
 use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
@@ -161,32 +162,29 @@ class SuccessTest extends TestCase
     {
         // 方式八：返回分页的 Api collection
         User::factory()->count(20)->create();
-        $users = User::paginate();
+        $users = User::query()->paginate();
 
         $response = Response::success(new UserCollection($users));
 
         $this->assertEquals(200, $response->status());
 
-        $paginated = $users->toArray();
-        $formatData = $users->map(function ($item) {
-            return [
-                'nickname' => $item->name,
-                'email' => $item->email,
-            ];
-        })->all();
+        $formatData = Arr::map($users->items(),fn($item) => [
+            'nickname' => $item->name,
+            'email' => $item->email,
+        ]);
 
         $data = [
             'data' => $formatData,
             'meta' => [
                 'pagination' => [
-                    'count' => $paginated['to'] ?? 0,
-                    'per_page' => $paginated['per_page'] ?? 0,
-                    'current_page' => $paginated['current_page'] ?? 0,
-                    'total' => $paginated['total'] ?? 0,
-                    'total_pages' => $paginated['last_page'] ?? 0,
+                    'count' => $users->lastItem(),
+                    'per_page' => $users->perPage(),
+                    'current_page' => $users->currentPage(),
+                    'total' => $users->total(),
+                    'total_pages' => $users->lastPage(),
                     'links' => array_filter([
-                        'previous' => $paginated['prev_page_url'] ?? '',
-                        'next' => $paginated['next_page_url'] ?? '',
+                        'previous' => $users->previousPageUrl(),
+                        'next' => $users->nextPageUrl(),
                     ]),
                 ],
             ],
@@ -228,6 +226,113 @@ class SuccessTest extends TestCase
             'code' => ResponseCodeEnum::SERVICE_LOGIN_SUCCESS, // 返回自定义的业务码
             'message' => ResponseCodeEnum::fromValue(ResponseCodeEnum::SERVICE_LOGIN_SUCCESS)->description, // 根据业务码取多语言的业务描述
             'data' => (object) [],
+            'error' => (object) [],
+        ]);
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    }
+
+    public function testLengthAwarePaginator()
+    {
+        User::factory()->count(20)->create();
+        $users = User::query()->paginate();
+
+        $response = Response::success($users);
+
+        $this->assertEquals(200, $response->status());
+
+        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+
+        $data = [
+            'data' => $formatData,
+            'meta' => [
+                'pagination' => [
+                    'count' => $users->lastItem(),
+                    'per_page' => $users->perPage(),
+                    'current_page' => $users->currentPage(),
+                    'total' => $users->total(),
+                    'total_pages' => $users->lastPage(),
+                    'links' => array_filter([
+                        'previous' => $users->previousPageUrl(),
+                        'next' => $users->nextPageUrl(),
+                    ]),
+                ],
+            ],
+        ];
+        $expectedJson = json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'message' => ResponseCodeEnum::fromValue(200)->description,
+            'data' => $data,
+            'error' => (object) [],
+        ]);
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    }
+
+    public function testSimplePaginator()
+    {
+        User::factory()->count(20)->create();
+        $users = User::query()->simplePaginate();
+
+        $response = Response::success($users);
+
+        $this->assertEquals(200, $response->status());
+
+        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+
+        $data = [
+            'data' => $formatData,
+            'meta' => [
+                'pagination' => [
+                    'count' => $users->lastItem(),
+                    'per_page' => $users->perPage(),
+                    'current_page' => $users->currentPage(),
+                    'links' => array_filter([
+                        'previous' => $users->previousPageUrl(),
+                        'next' => $users->nextPageUrl(),
+                    ]),
+                ],
+            ],
+        ];
+        $expectedJson = json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'message' => ResponseCodeEnum::fromValue(200)->description,
+            'data' => $data,
+            'error' => (object) [],
+        ]);
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    }
+
+    public function testCursorPaginator()
+    {
+        User::factory()->count(20)->create();
+        $users = User::query()->cursorPaginate();
+
+        $response = Response::success($users);
+
+        $this->assertEquals(200, $response->status());
+
+        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+
+        $data = [
+            'data' => $formatData,
+            'meta' => [
+                'cursor' => [
+                    'current' => $users->cursor()?->encode(),
+                    'prev' => $users->previousCursor()?->encode(),
+                    'next' => $users->nextCursor()?->encode(),
+                    'count' =>  count($users->items())
+                ],
+            ],
+        ];
+        $expectedJson = json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'message' => ResponseCodeEnum::fromValue(200)->description,
+            'data' => $data,
             'error' => (object) [],
         ]);
 

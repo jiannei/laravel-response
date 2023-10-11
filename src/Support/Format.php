@@ -88,9 +88,9 @@ class Format
      */
     public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, $transformer = null, $resourceName = null): array
     {
-        $fractal = fractal()->collection($resource, $transformer ?: function ($item) {
-            return $item->toArray();
-        }, $resourceName)->serializeWith(DataArraySerializer::class);
+        $fractal = fractal()
+            ->collection($resource, $transformer ?: fn($item) => $item->toArray(), $resourceName)
+            ->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, $this->formatCollection($resource))->toArray();
     }
@@ -105,9 +105,9 @@ class Format
      */
     public function resourceCollection(ResourceCollection $collection, $transformer = null, $resourceName = null): array
     {
-        $fractal = fractal()->collection($collection->resource, $transformer ?: function (JsonResource $resource) {
-            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
-        }, $resourceName)->serializeWith(DataArraySerializer::class);
+        $fractal = fractal()
+            ->collection($collection->resource, $transformer ?: $this->formatJsonResource(), $resourceName)
+            ->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, $this->formatCollection($collection->resource))->toArray();
     }
@@ -122,9 +122,12 @@ class Format
      */
     public function jsonResource(JsonResource $resource, $transformer = null, $resourceName = null): array
     {
-        $data = array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+        $data = value($this->formatJsonResource(),$resource);
 
-        return fractal()->item($data, $transformer ?: fn () => $data, $resourceName)->serializeWith(ArraySerializer::class)->toArray();
+        return fractal()
+            ->item($data, $transformer ?: fn () => $data, $resourceName)
+            ->serializeWith(ArraySerializer::class)
+            ->toArray();
     }
 
     /**
@@ -172,6 +175,24 @@ class Format
         return (int) substr($from === 'fail' ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
     }
 
+    /**
+     * Get JsonResource resource data.
+     *
+     * @return \Closure
+     */
+    protected function formatJsonResource(): \Closure
+    {
+        return function (JsonResource $resource) {
+            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
+        };
+    }
+
+    /**
+     * Format paginator data.
+     *
+     * @param $collection
+     * @return \Closure
+     */
     protected function formatCollection($collection): \Closure
     {
         return function (Fractal $item) use ($collection) {
@@ -189,8 +210,8 @@ class Format
                         'per_page' => $collection->perPage(),
                         'current_page' => $collection->currentPage(),
                         'links' => array_filter([
-                            'previous' => $paginated['prev_page_url'] ?? '',
-                            'next' => $paginated['next_page_url'] ?? '',
+                            'previous' => $collection->previousPageUrl(),
+                            'next' => $collection->nextPageUrl(),
                         ]),
                     ],
                 ]),
