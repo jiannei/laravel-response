@@ -18,7 +18,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 
@@ -207,6 +206,6 @@ trait JsonResponseTrait
             default => Arr::wrap($data)
         };
 
-        return $this->formatter->response($this->formatter->format($data,$message,$code), $code, $headers, $option);
+        return $this->formatter->response($this->formatter->format($data, $message, $code), $code, $headers, $option);
     }
 }
