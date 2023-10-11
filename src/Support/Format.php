@@ -89,7 +89,7 @@ class Format
     public function paginator(AbstractPaginator|AbstractCursorPaginator $resource, $transformer = null, $resourceName = null): array
     {
         $fractal = fractal()
-            ->collection($resource, $transformer ?: fn($item) => $item->toArray(), $resourceName)
+            ->collection($resource, $transformer ?: fn ($item) => $item->toArray(), $resourceName)
             ->serializeWith(DataArraySerializer::class);
 
         return tap($fractal, $this->formatCollection($resource))->toArray();
@@ -122,7 +122,7 @@ class Format
      */
     public function jsonResource(JsonResource $resource, $transformer = null, $resourceName = null): array
     {
-        $data = value($this->formatJsonResource(),$resource);
+        $data = value($this->formatJsonResource(), $resource);
 
         return fractal()
             ->item($data, $transformer ?: fn () => $data, $resourceName)
@@ -190,7 +190,7 @@ class Format
     /**
      * Format paginator data.
      *
-     * @param $collection
+     * @param  $collection
      * @return \Closure
      */
     protected function formatCollection($collection): \Closure

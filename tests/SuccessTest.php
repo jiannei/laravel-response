@@ -168,7 +168,7 @@ class SuccessTest extends TestCase
 
         $this->assertEquals(200, $response->status());
 
-        $formatData = Arr::map($users->items(),fn($item) => [
+        $formatData = Arr::map($users->items(), fn ($item) => [
             'nickname' => $item->name,
             'email' => $item->email,
         ]);
@@ -241,7 +241,7 @@ class SuccessTest extends TestCase
 
         $this->assertEquals(200, $response->status());
 
-        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+        $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
         $data = [
             'data' => $formatData,
@@ -279,7 +279,7 @@ class SuccessTest extends TestCase
 
         $this->assertEquals(200, $response->status());
 
-        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+        $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
         $data = [
             'data' => $formatData,
@@ -315,7 +315,7 @@ class SuccessTest extends TestCase
 
         $this->assertEquals(200, $response->status());
 
-        $formatData = Arr::map($users->items(),fn($item) => $item->toArray());
+        $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
         $data = [
             'data' => $formatData,
@@ -324,7 +324,7 @@ class SuccessTest extends TestCase
                     'current' => $users->cursor()?->encode(),
                     'prev' => $users->previousCursor()?->encode(),
                     'next' => $users->nextCursor()?->encode(),
-                    'count' =>  count($users->items())
+                    'count' =>  count($users->items()),
                 ],
             ],
         ];
