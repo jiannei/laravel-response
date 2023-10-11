@@ -18,9 +18,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
+use Jiannei\Response\Laravel\Support\Facades\Format;
 
 trait JsonResponseTrait
 {
@@ -30,7 +30,7 @@ trait JsonResponseTrait
      * @param  array  $data
      * @param  string  $message
      * @param  string  $location
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function accepted($data = [], string $message = '', string $location = '')
     {
@@ -48,7 +48,7 @@ trait JsonResponseTrait
      * @param  null  $data
      * @param  string  $message
      * @param  string  $location
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function created($data = [], string $message = '', string $location = '')
     {
@@ -64,7 +64,7 @@ trait JsonResponseTrait
      * Respond with a no content response.
      *
      * @param  string  $message
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function noContent(string $message = '')
     {
@@ -78,7 +78,7 @@ trait JsonResponseTrait
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
@@ -92,7 +92,7 @@ trait JsonResponseTrait
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function localize(int $code = 200, array $headers = [], int $option = 0)
     {
@@ -173,8 +173,8 @@ trait JsonResponseTrait
      */
     public function fail(string $message = '', int $code = 500, $errors = null, array $header = [], int $options = 0)
     {
-        $response = $this->formatter->response(
-            $this->formatter->format(null, $message, $code, $errors),
+        $response = Format::response(
+            Format::data(null, $message, $code, $errors),
             Config::get('response.error_code') ?: $code,
             $header,
             $options
@@ -195,18 +195,18 @@ trait JsonResponseTrait
      * @param  int  $code
      * @param  array  $headers
      * @param  int  $option
-     * @return JsonResponse|JsonResource
+     * @return JsonResponse
      */
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
         $data = match (true) {
-            $data instanceof ResourceCollection => $this->formatter->resourceCollection($data),
-            $data instanceof JsonResource => $this->formatter->jsonResource($data),
-            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->formatter->paginator($data),
+            $data instanceof ResourceCollection => Format::resourceCollection($data),
+            $data instanceof JsonResource => Format::jsonResource($data),
+            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => Format::paginator($data),
             $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
             default => Arr::wrap($data)
         };
 
-        return $this->formatter->response($this->formatter->format($data,$message,$code), $code, $headers, $option);
+        return Format::response(Format::data($data,$message,$code), $code, $headers, $option);
     }
 }

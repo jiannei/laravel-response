@@ -11,6 +11,8 @@
 
 namespace Jiannei\Response\Laravel\Tests;
 
+use Jiannei\Response\Laravel\Tests\Support\Format;
+
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     protected function getPackageProviders($app)

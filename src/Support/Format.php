@@ -28,7 +28,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Serializer\DataArraySerializer;
 use Spatie\Fractal\Fractal;
 
-class Format implements \Jiannei\Response\Laravel\Contracts\Format
+class Format
 {
     use Macroable;
 
@@ -49,13 +49,13 @@ class Format implements \Jiannei\Response\Laravel\Contracts\Format
     /**
      * Format return data structure.
      *
-     * @param  array|null  $data
+     * @param  JsonResource|array|mixed  $data
      * @param  string|null  $message
      * @param  int  $code
      * @param  null  $errors
      * @return array
      */
-    public function format(?array $data, ?string $message, int $code, $errors = null): array
+    public function data($data, ?string $message, int $code, $errors = null): array
     {
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),

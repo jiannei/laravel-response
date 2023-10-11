@@ -16,12 +16,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
- * @method static JsonResponse|JsonResource accepted($data = null, string $message = '', string $location = '')
- * @method static JsonResponse|JsonResource created($data = null, string $message = '', string $location = '')
- * @method static noContent(string $message = '')
- * @method static JsonResponse|JsonResource localize(int $code = 200, array $headers = [], int $option = 0)
- * @method static JsonResponse|JsonResource ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
- * @method static JsonResponse|JsonResource success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
+ * @method static JsonResponse accepted($data = null, string $message = '', string $location = '')
+ * @method static JsonResponse created($data = null, string $message = '', string $location = '')
+ * @method static JsonResponse noContent(string $message = '')
+ * @method static JsonResponse localize(int $code = 200, array $headers = [], int $option = 0)
+ * @method static JsonResponse ok(string $message = '', int $code = 200, array $headers = [], int $option = 0)
+ * @method static JsonResponse success($data = null, string $message = '', int $code = 200, array $headers = [], int $option = 0)
  * @method static void errorBadRequest(?string $message = '')
  * @method static void errorUnauthorized(string $message = '')
  * @method static void errorForbidden(string $message = '')
