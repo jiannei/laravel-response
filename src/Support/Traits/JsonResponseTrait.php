@@ -11,14 +11,9 @@
 
 namespace Jiannei\Response\Laravel\Support\Traits;
 
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Pagination\AbstractCursorPaginator;
-use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Jiannei\Response\Laravel\Support\Facades\Format;
 
@@ -199,6 +194,6 @@ trait JsonResponseTrait
      */
     public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
     {
-        return Format::response(Format::data($data,$message,$code), $code, $headers, $option);
+        return Format::response(Format::data($data, $message, $code), $code, $headers, $option);
     }
 }
