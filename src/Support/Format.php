@@ -152,15 +152,12 @@ class Format
     protected function formatStatus(int $code): string
     {
         $statusCode = $this->formatStatusCode($code);
-        if ($statusCode >= 400 && $statusCode <= 499) {// client error
-            $status = 'error';
-        } elseif ($statusCode >= 500 && $statusCode <= 599) {// service error
-            $status = 'fail';
-        } else {
-            $status = 'success';
-        }
 
-        return $status;
+        return match(true) {
+            ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
+            ($statusCode >= 500 && $statusCode <= 599) => 'fail',// service error
+            default => 'success'
+        };
     }
 
     /**
