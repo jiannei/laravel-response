@@ -72,7 +72,7 @@ trait JsonResponseTrait
      * @param  int  $option
      * @return JsonResponse
      */
-    public function ok(string $message = '', int $code = 200, array $headers = [], int $option = 0): JsonResponse
+    public function ok(string $message = '', int|\BackedEnum $code = 200, array $headers = [], int $option = 0): JsonResponse
     {
         return $this->success([], $message, $code, $headers, $option);
     }
@@ -86,7 +86,7 @@ trait JsonResponseTrait
      * @param  int  $option
      * @return JsonResponse
      */
-    public function localize(int $code = 200, array $headers = [], int $option = 0): JsonResponse
+    public function localize(int|\BackedEnum $code = 200, array $headers = [], int $option = 0): JsonResponse
     {
         return $this->ok('', $code, $headers, $option);
     }
@@ -155,13 +155,13 @@ trait JsonResponseTrait
      * Return an fail response.
      *
      * @param  string  $message
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  null  $errors
      * @param  array  $headers
      * @param  int  $option
      * @return JsonResponse
      */
-    public function fail(string $message = '', int $code = 500, $errors = null, array $headers = [], int $option = 0): JsonResponse
+    public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null, array $headers = [], int $option = 0): JsonResponse
     {
         $response = Format::response(null, $message, $code, $errors, $headers, $option, 'fail');
 
@@ -182,7 +182,7 @@ trait JsonResponseTrait
      * @param  int  $option
      * @return JsonResponse
      */
-    public function success($data = [], string $message = '', int $code = 200, array $headers = [], int $option = 0)
+    public function success($data = [], string $message = '', int|\BackedEnum $code = 200, array $headers = [], int $option = 0)
     {
         return Format::response(...func_get_args());
     }

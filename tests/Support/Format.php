@@ -13,7 +13,7 @@ namespace Jiannei\Response\Laravel\Tests\Support;
 
 class Format extends \Jiannei\Response\Laravel\Support\Format
 {
-    public function data(mixed $data, ?string $message, int $code, $errors = null): array
+    public function data(mixed $data, ?string $message, int|\BackedEnum $code, $errors = null): array
     {
         return [
             'status' => $this->formatStatus($code),

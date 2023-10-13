@@ -22,6 +22,7 @@ use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Traits\Macroable;
 
 class Format
@@ -31,18 +32,30 @@ class Format
     /**
      * Return a new JSON response from the application.
      *
-     * @param  mixed  $data
+     * @param  mixed|null  $data
      * @param  string  $message
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  null  $errors
      * @param  array  $headers
      * @param  int  $option
      * @param  string  $from
      * @return JsonResponse
      */
-    public function response($data = null, string $message = '', int $code = 200, $errors = null, array $headers = [], int $option = 0, string $from = 'success'): JsonResponse
-    {
-        return new JsonResponse($this->data($data, $message, $code, $errors), $this->formatStatusCode($code, $from), $headers, $option);
+    public function response(
+        mixed $data = null,
+        string $message = '',
+        int|\BackedEnum $code = 200,
+        $errors = null,
+        array $headers = [],
+        int $option = 0,
+        string $from = 'success'
+    ): JsonResponse {
+        return new JsonResponse(
+            $this->data($data, $message, $code, $errors),
+            $this->formatStatusCode($code, $from),
+            $headers,
+            $option
+        );
     }
 
     /**
@@ -50,11 +63,11 @@ class Format
      *
      * @param  JsonResource|array|mixed  $data
      * @param  string|null  $message
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  null  $errors
      * @return array
      */
-    public function data($data, ?string $message, int $code, $errors = null): array
+    public function data($data, ?string $message, int|\BackedEnum $code, $errors = null): array
     {
         $data = match (true) {
             $data instanceof ResourceCollection => $this->resourceCollection($data),
@@ -66,7 +79,7 @@ class Format
 
         return $this->formatDataFields([
             'status' => $this->formatStatus($code),
-            'code' => $code,
+            'code' => $this->formatBusinessCode($code),
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
             'error' => $errors ?: (object) [],
@@ -115,26 +128,38 @@ class Format
     /**
      * Format return message.
      *
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  string|null  $message
      * @return string|null
      */
-    protected function formatMessage(int $code, ?string $message): ?string
+    protected function formatMessage(int|\BackedEnum $code, ?string $message): ?string
     {
-        if (! $message && class_exists($enumClass = Config::get('response.enum'))) {
-            $message = $enumClass::fromValue($code)->description;
-        }
+        $localizationKey = Config::get('response.localization', 'response');
 
-        return $message;
+        return match (true) {
+            !$message && Lang::has($localizationKey.$code) => Lang::get($localizationKey),
+            default => $message
+        };
+    }
+
+    /**
+     * Format business code
+     *
+     * @param  int|\BackedEnum  $code
+     * @return int
+     */
+    protected function formatBusinessCode(int|\BackedEnum $code): int
+    {
+        return enum_exists($code) ? $code->value : $code;
     }
 
     /**
      * Format http status description.
      *
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @return string
      */
-    protected function formatStatus(int $code): string
+    protected function formatStatus(int|\BackedEnum $code): string
     {
         $statusCode = $this->formatStatusCode($code);
 
@@ -148,13 +173,18 @@ class Format
     /**
      * Http status code.
      *
-     * @param  $code
+     * @param  int|\BackedEnum  $code
      * @param  string  $from
      * @return int
      */
-    protected function formatStatusCode($code, string $from = 'success'): int
+    protected function formatStatusCode(int|\BackedEnum $code, string $from = 'success'): int
     {
-        return (int) substr($from === 'fail' ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
+        $code = match (true) {
+            $from === 'fail' => (Config::get('response.error_code') ?: $code),
+            default => $this->formatBusinessCode($code)
+        };
+
+        return (int) substr($code, 0, 3);
     }
 
     /**
@@ -227,7 +257,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (! Arr::has($data, $key)) {
+            if (!Arr::has($data, $key)) {
                 continue;
             }
 
@@ -240,7 +270,7 @@ class Format
                 $key = $alias;
             }
 
-            if (! $show) {
+            if (!$show) {
                 $data = Arr::except($data, $key);
             }
         }
