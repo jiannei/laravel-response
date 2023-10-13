@@ -196,7 +196,6 @@ test('success with paginated data', function () {
             'data' => Format::resourceCollection($collection),
             'error' => [],
         ]);
-
 });
 
 test('success with message', function () {

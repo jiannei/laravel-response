@@ -12,6 +12,7 @@
 namespace Jiannei\Response\Laravel\Support;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +24,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Traits\Macroable;
-use Illuminate\Contracts\Pagination\Paginator;
 
 class Format
 {
