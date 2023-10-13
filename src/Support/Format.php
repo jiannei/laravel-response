@@ -42,6 +42,12 @@ class Format
         return new JsonResponse($this->data, $this->statusCode);
     }
 
+    /**
+     * Core format.
+     *
+     * @param $data
+     * @return array|$this
+     */
     public function data($data = null): static|array
     {
         if (is_null($data)) {
