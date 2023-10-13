@@ -45,6 +45,11 @@ class Format
         });
     }
 
+    /**
+     * Get formatted data.
+     *
+     * @return array|null
+     */
     public function get(): ?array
     {
         return $this->data;
