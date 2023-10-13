@@ -13,17 +13,14 @@ namespace Jiannei\Response\Laravel\Tests\Support;
 
 class Format extends \Jiannei\Response\Laravel\Support\Format
 {
-    public function data(mixed $data, ?string $message, int|\BackedEnum $code, $errors = null, $from = 'success'): array
+    protected function formatDataFields(array $data): array
     {
-        return [
-            'status' => $this->formatStatus($code),
-            'code' => $code,
-            'message' => $this->formatMessage($code, $message),
-            'data' => $data ?: (object) $data,
-            'error' => $errors ?: (object) [],
+        $data = parent::formatDataFields($data);
+
+        return array_merge($data, [
             'extra' => [
                 'time' => time(),
             ],
-        ];
+        ]);
     }
 }

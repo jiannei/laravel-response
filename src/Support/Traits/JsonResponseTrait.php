@@ -60,7 +60,7 @@ trait JsonResponseTrait
      */
     public function noContent(string $message = ''): JsonResponse
     {
-        return $this->success([], $message, 204);
+        return $this->success(message: $message, code: 204);
     }
 
     /**
@@ -68,13 +68,11 @@ trait JsonResponseTrait
      *
      * @param  string  $message
      * @param  int|\BackedEnum  $code
-     * @param  array  $headers
-     * @param  int  $option
      * @return JsonResponse
      */
-    public function ok(string $message = '', int|\BackedEnum $code = 200, array $headers = [], int $option = 0): JsonResponse
+    public function ok(string $message = '', int|\BackedEnum $code = 200): JsonResponse
     {
-        return $this->success([], $message, $code, $headers, $option);
+        return $this->success(message: $message, code: $code);
     }
 
     /**
@@ -82,13 +80,11 @@ trait JsonResponseTrait
      * You can use ResponseCodeEnum to localize the message.
      *
      * @param  int|\BackedEnum  $code
-     * @param  array  $headers
-     * @param  int  $option
      * @return JsonResponse
      */
-    public function localize(int|\BackedEnum $code = 200, array $headers = [], int $option = 0): JsonResponse
+    public function localize(int|\BackedEnum $code = 200): JsonResponse
     {
-        return $this->ok('', $code, $headers, $option);
+        return $this->ok(code: $code);
     }
 
     /**
@@ -157,13 +153,11 @@ trait JsonResponseTrait
      * @param  string  $message
      * @param  int|\BackedEnum  $code
      * @param  null  $errors
-     * @param  array  $headers
-     * @param  int  $option
      * @return JsonResponse
      */
-    public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null, array $headers = [], int $option = 0): JsonResponse
+    public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
     {
-        $response = Format::response(null, $message, $code, $errors, $headers, $option, 'fail');
+        $response = Format::data(compact('message', 'code', 'errors'))->response();
 
         if (is_null($errors)) {
             $response->throwResponse();
@@ -178,12 +172,10 @@ trait JsonResponseTrait
      * @param  mixed  $data
      * @param  string  $message
      * @param  int|\BackedEnum  $code
-     * @param  array  $headers
-     * @param  int  $option
      * @return JsonResponse
      */
-    public function success($data = [], string $message = '', int|\BackedEnum $code = 200, array $headers = [], int $option = 0)
+    public function success($data = [], string $message = '', int|\BackedEnum $code = 200)
     {
-        return Format::response($data, $message, $code, null, $headers, $option);
+        return Format::data(compact('data', 'message', 'code'))->response();
     }
 }

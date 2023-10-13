@@ -19,11 +19,11 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
- * @method static JsonResponse response($data = null, string $message = '', int $code = 200, $errors = null, array $headers = [], int $option = 0, string $from = 'success')
- * @method static array data($data, ?string $message, int $code, $errors = null)
+ * @method static array|\Jiannei\Response\Laravel\Support\Format data($data = null)
  * @method static array paginator(AbstractPaginator|AbstractCursorPaginator $resource)
  * @method static array resourceCollection(ResourceCollection $collection)
  * @method static array jsonResource(JsonResource $resource)
+ * @method static JsonResponse response()
  *
  * @see \Jiannei\Response\Laravel\Support\Format
  */

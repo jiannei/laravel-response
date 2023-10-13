@@ -29,61 +29,41 @@ class Format
 {
     use Macroable;
 
+    protected ?array $data = null;
+    protected int $statusCode = 200;
+
     /**
      * Return a new JSON response from the application.
      *
-     * @param  mixed|null  $data
-     * @param  string  $message
-     * @param  int|\BackedEnum  $code
-     * @param  null  $errors
-     * @param  array  $headers
-     * @param  int  $option
-     * @param  string  $from
      * @return JsonResponse
      */
-    public function response(
-        mixed $data = null,
-        string $message = '',
-        int|\BackedEnum $code = 200,
-        $errors = null,
-        array $headers = [],
-        int $option = 0,
-        string $from = 'success'
-    ): JsonResponse {
-        return new JsonResponse(
-            $this->data($data, $message, $code, $errors, $from),
-            $this->formatStatusCode($code, $from),
-            $headers,
-            $option
-        );
+    public function response(): JsonResponse
+    {
+        return new JsonResponse($this->data, $this->statusCode);
     }
 
-    /**
-     * Format return data structure.
-     *
-     * @param  JsonResource|array|mixed  $data
-     * @param  string|null  $message
-     * @param  int|\BackedEnum  $code
-     * @param  null  $errors
-     * @return array
-     */
-    public function data($data, ?string $message, int|\BackedEnum $code, $errors = null, $from = 'success'): array
+    public function data($data = null): static|array
     {
-        $data = match (true) {
-            $data instanceof ResourceCollection => $this->resourceCollection($data),
-            $data instanceof JsonResource => $this->jsonResource($data),
-            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->paginator($data),
-            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
-            default => Arr::wrap($data)
-        };
+        if (is_null($data)) {
+            return $this->data;
+        }
 
-        return $this->formatDataFields([
-            'status' => $this->formatStatus($code, $from),
-            'code' => $this->formatBusinessCode($code),
-            'message' => $this->formatMessage($code, $message),
-            'data' => $data ?: (object) $data,
-            'error' => $errors ?: (object) [],
-        ]);
+        $bizCode = $data['code'] ?? 200;
+        $oriData = $data['data'] ?? null;
+        $message = $data['message'] ?? '';
+        $error = $data['error'] ?? [];
+
+        return tap($this, function () use ($bizCode, $oriData, $message, $error) {
+            $this->statusCode = $this->formatStatusCode($this->formatBusinessCode($bizCode), $oriData);
+
+            $this->data = $this->formatDataFields([
+                'status' => $this->formatStatus($this->statusCode),
+                'code' => $this->formatBusinessCode($bizCode),
+                'message' => $this->formatMessage($this->formatBusinessCode($bizCode), $message),
+                'data' => $this->formatData($oriData),
+                'error' => $this->formatError($error),
+            ]);
+        });
     }
 
     /**
@@ -126,19 +106,37 @@ class Format
     }
 
     /**
+     * Format data.
+     *
+     * @param $data
+     * @return array|object
+     */
+    protected function formatData($data): array|object
+    {
+        $formattedData = match (true) {
+            $data instanceof ResourceCollection => $this->resourceCollection($data),
+            $data instanceof JsonResource => $this->jsonResource($data),
+            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->paginator($data),
+            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
+            default => Arr::wrap($data)
+        };
+
+        return $formattedData ?: (object) $data;
+    }
+
+    /**
      * Format return message.
      *
-     * @param  int|\BackedEnum  $code
-     * @param  string|null  $message
+     * @param  int  $code
+     * @param  string  $message
      * @return string|null
      */
-    protected function formatMessage(int|\BackedEnum $code, ?string $message): ?string
+    protected function formatMessage(int $code, string $message = ''): ?string
     {
-        $localizationKey = join('.', [Config::get('response.locale', 'enums'), $this->formatBusinessCode($code)]);
+        $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
-            $code instanceof \BackedEnum && method_exists($code, 'description') => $code->description(),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -157,13 +155,11 @@ class Format
     /**
      * Format http status description.
      *
-     * @param  int|\BackedEnum  $code
+     * @param  int  $statusCode
      * @return string
      */
-    protected function formatStatus(int|\BackedEnum $code, string $from = 'success'): string
+    protected function formatStatus(int $statusCode): string
     {
-        $statusCode = $this->formatStatusCode($code, $from);
-
         return match (true) {
             ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
             ($statusCode >= 500 && $statusCode <= 599) => 'fail',// service error
@@ -174,15 +170,13 @@ class Format
     /**
      * Http status code.
      *
-     * @param  int|\BackedEnum  $code
-     * @param  string  $from
+     * @param  int  $code
+     * @param $oriData
      * @return int
      */
-    protected function formatStatusCode(int|\BackedEnum $code, string $from = 'success'): int
+    protected function formatStatusCode(int $code, $oriData): int
     {
-        $code = $from === 'fail' ? (Config::get('response.error_code') ?: $code) : $code;
-
-        return (int) substr($this->formatBusinessCode($code), 0, 3);
+        return (int) substr(is_null($oriData) ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
     }
 
     /**
@@ -245,6 +239,17 @@ class Format
     }
 
     /**
+     * Format error.
+     *
+     * @param  array  $error
+     * @return array|object
+     */
+    protected function formatError(array $error): object|array
+    {
+        return Config::get('app.debug') ? $error : (object) [];
+    }
+
+    /**
      * Format response data fields.
      *
      * @param  array  $data
@@ -255,7 +260,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (! Arr::has($data, $key)) {
+            if (!Arr::has($data, $key)) {
                 continue;
             }
 
@@ -268,7 +273,7 @@ class Format
                 $key = $alias;
             }
 
-            if (! $show) {
+            if (!$show) {
                 $data = Arr::except($data, $key);
             }
         }
