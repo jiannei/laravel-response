@@ -267,3 +267,42 @@ test('success with custom message and code', function () {
             'error' => [],
         ]);
 });
+
+test('get formatted data before response', function () {
+    $data = Format::data([
+        'name' => 'Jiannei',
+        'email' => 'longjian.huang@foxmail.com',
+    ], '创建成功', 201);
+
+    expect($data->get())->toMatchArray([
+        'status' => 'success',
+        'code' => 201,
+        'message' => '创建成功',
+        'data' => [
+            'name' => 'Jiannei',
+            'email' => 'longjian.huang@foxmail.com',
+        ],
+        'error' => (object) [],
+    ]);
+
+    $response = $data->response();
+
+    expect($response->status())->toEqual(201)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 201,
+            'message' => '创建成功',
+            'data' => [
+                'name' => 'Jiannei',
+                'email' => 'longjian.huang@foxmail.com',
+            ],
+            'error' => [],
+        ]);
+});
+
+test('compare data and success', function () {
+    expect(Response::success()->status())->toEqual(Format::data(null, '', 200)->response()->status())
+        ->and(Response::success()->content())->toEqual(Format::data(null, '', 200)->response()->content());
+});
+
+

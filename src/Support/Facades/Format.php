@@ -20,7 +20,7 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
- * @method static array|\Jiannei\Response\Laravel\Support\Format data($data = null)
+ * @method static \Jiannei\Response\Laravel\Support\Format data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null)
  * @method static array paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource)
  * @method static array resourceCollection(ResourceCollection $collection)
  * @method static array jsonResource(JsonResource $resource)

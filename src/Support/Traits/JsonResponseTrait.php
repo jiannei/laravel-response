@@ -152,7 +152,7 @@ trait JsonResponseTrait
      */
     public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
     {
-        return Format::data(compact('message', 'code', 'errors'))->response();
+        return Format::data(message: $message, code: $code, error: $errors)->response();
     }
 
     /**
@@ -165,6 +165,6 @@ trait JsonResponseTrait
      */
     public function success($data = [], string $message = '', int|\BackedEnum $code = 200)
     {
-        return Format::data(compact('data', 'message', 'code'))->response();
+        return Format::data(data: $data, message: $message, code: $code)->response();
     }
 }

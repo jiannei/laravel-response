@@ -39,34 +39,36 @@ class Format
      */
     public function response(): JsonResponse
     {
-        return new JsonResponse($this->data, $this->statusCode);
+        return tap(new JsonResponse($this->data, $this->statusCode), function () {
+            $this->data = null;
+            $this->statusCode = 200;
+        });
+    }
+
+    public function get(): ?array
+    {
+        return $this->data;
     }
 
     /**
      * Core format.
      *
-     * @param  $data
-     * @return array|$this
+     * @param  null  $data
+     * @param  string  $message
+     * @param  int|\BackedEnum  $code
+     * @param  null  $error
+     * @return Format
      */
-    public function data($data = null): static|array
+    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
     {
-        if (is_null($data)) {
-            return $this->data;
-        }
-
-        $bizCode = $data['code'] ?? 200;
-        $oriData = $data['data'] ?? null;
-        $message = $data['message'] ?? '';
-        $error = $data['error'] ?? [];
-
-        return tap($this, function () use ($bizCode, $oriData, $message, $error) {
-            $this->statusCode = $this->formatStatusCode($this->formatBusinessCode($bizCode), $oriData);
+        return tap($this, function () use ($data, $message, $code, $error) {
+            $this->statusCode = $this->formatStatusCode($this->formatBusinessCode($code), $data);
 
             $this->data = $this->formatDataFields([
                 'status' => $this->formatStatus($this->statusCode),
-                'code' => $this->formatBusinessCode($bizCode),
-                'message' => $this->formatMessage($this->formatBusinessCode($bizCode), $message),
-                'data' => $this->formatData($oriData),
+                'code' => $this->formatBusinessCode($code),
+                'message' => $this->formatMessage($this->formatBusinessCode($code), $message),
+                'data' => $this->formatData($data),
                 'error' => $this->formatError($error),
             ]);
         });
@@ -142,7 +144,7 @@ class Format
         $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -247,12 +249,12 @@ class Format
     /**
      * Format error.
      *
-     * @param  array  $error
+     * @param  array|null  $error
      * @return array|object
      */
-    protected function formatError(array $error): object|array
+    protected function formatError(?array $error): object|array
     {
-        return Config::get('app.debug') ? $error : (object) [];
+        return $error ?: (object) [];
     }
 
     /**
@@ -266,7 +268,7 @@ class Format
         $formatConfig = Config::get('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (! Arr::has($data, $key)) {
+            if (!Arr::has($data, $key)) {
                 continue;
             }
 
@@ -279,7 +281,7 @@ class Format
                 $key = $alias;
             }
 
-            if (! $show) {
+            if (!$show) {
                 $data = Arr::except($data, $key);
             }
         }
