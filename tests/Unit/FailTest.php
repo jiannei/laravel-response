@@ -13,7 +13,6 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 
-
 test('fail', function () {
     try {
         // 方式一：Controller 中直接返回失败，这里本质上是通过 JsonResponse 是抛出了一个 HttpResponseException，需要捕获异常后才能拿到真实响应
