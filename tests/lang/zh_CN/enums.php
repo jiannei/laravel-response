@@ -13,7 +13,7 @@ use Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 
 return [
-    200 => '成功',// 直接通过状态码取多语言
+    200 => '成功', // 直接通过状态码取多语言
 
     // 结合 Enum 取多语言
     ResponseEnum::class => [
