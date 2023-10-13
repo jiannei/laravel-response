@@ -19,11 +19,11 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\CursorPaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class Format
 {
@@ -75,10 +75,10 @@ class Format
     /**
      * Format paginator data.
      *
-     * @param  AbstractPaginator|AbstractCursorPaginator  $resource
+     * @param  AbstractPaginator|AbstractCursorPaginator|Paginator  $resource
      * @return array
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator $resource): array
+    public function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array
     {
         return [
             'data' => $resource->toArray()['data'],

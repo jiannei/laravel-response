@@ -49,7 +49,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             $config->set('response.locale', 'enums.'.ResponseEnum::class);
         });
 
-        if ($this instanceof \P\Tests\Unit\FormatTest) {
+        if ($this instanceof \P\Tests\Unit\CustomFormatTest) {
             $app['config']->set('response.format', [
                 'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
             ]);

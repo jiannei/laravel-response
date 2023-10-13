@@ -9,7 +9,8 @@
  * with this source code in the file LICENSE.
  */
 
-use Illuminate\Support\Arr;
+use Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode;
+use Jiannei\Response\Laravel\Support\Facades\Format;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
@@ -19,296 +20,251 @@ use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserResource;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('success', function () {
-    // 方式一：直接返回响应成功
+    // 直接返回响应成功
     $response = Response::success();
 
     expect($response->status())->toEqual(200)
-        ->and($response->getContent())->toBeJson(json_encode([
+        ->and($response->getData(true))->toMatchArray([
             'status' => 'success',
             'code' => 200,
             'message' => '操作成功',
             'data' => [],
-            'error' => (object) [],
-        ]));
-});
-
-test('created', function () {
-    // 方式二：返回创建成功
-    $response = Response::created();
-
-    expect($response->status())->toEqual(201)
-        ->and($response->getContent())->toBeJson(json_encode([
-            'status' => 'success',
-            'code' => 201,
-            'message' => '',
-            'data' => (object) [],
-            'error' => (object) [],
-        ]));
+            'error' => [],
+        ]);
 });
 
 test('accepted', function () {
-    // 方式三：返回接收成功
+    // 返回接收成功
     $response = Response::accepted();
 
     expect($response->status())->toEqual(202)
-    ->and($response->getContent())->toBeJson(json_encode([
-        'status' => 'success',
-        'code' => 202,
-        'message' => '',
-        'data' => (object) [],
-        'error' => (object) [],
-    ]));
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 202,
+            'message' => '',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('created', function () {
+    // 返回创建成功
+    $response = Response::created();
+
+    expect($response->status())->toEqual(201)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 201,
+            'message' => '',
+            'data' => [],
+            'error' => [],
+        ]);
 });
 
 test('no content', function () {
-    // 方式四：返回空内容；创建成功或删除成功等场景
+    // 返回空内容；创建成功或删除成功等场景
     $response = Response::noContent();
 
     expect($response->status())->toEqual(204)
-    ->and($response->getContent())->toBeJson(json_encode([
-        'status' => 'success',
-        'code' => 204,
-        'message' => '',
-        'data' => (object) [],
-        'error' => (object) [],
-    ]));
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 204,
+            'message' => '',
+            'data' => [],
+            'error' => [],
+        ]);
 });
 
 test('success with array data', function () {
-    // 方式五：返回普通的数组
+    // 返回普通的数组
     $data = [
         'name' => 'Jiannei',
         'email' => 'longjian.huang@foxmail.com',
     ];
     $response = Response::success($data);
 
-    expect($response->status())->toEqual(200);
-
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => $data,
-        'error' => (object) [],
-    ]);
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
-});
-
-test('success with resource data', function () {
-    // 方式六：返回 Api resource
-    $user = User::factory()->make();
-    $response = Response::success(new UserResource($user));
-
-    expect($response->status())->toEqual(200);
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => [
-            'nickname' => $user->name,
-            'email' => $user->email,
-        ],
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
-});
-
-test('success with collection data', function () {
-    // 方式七：返回 Api collection
-    User::factory()->count(3)->create();
-    $users = User::all();
-    $response = Response::success(new UserCollection($users));
-
-    expect($response->status())->toEqual(200);
-
-    $data = $users->map(function ($item) {
-        return [
-            'nickname' => $item->name,
-            'email' => $item->email,
-        ];
-    })->all();
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => ['data' => $data],
-        'error' => (object) [],
-    ]);
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
-});
-
-test('success with paginated data', function () {
-    // 方式八：返回分页的 Api collection
-    User::factory()->count(20)->create();
-    $users = User::query()->paginate();
-
-    $response = Response::success(new UserCollection($users));
-
-    expect($response->status())->toEqual(200);
-
-    $formatData = Arr::map($users->items(), fn ($item) => [
-        'nickname' => $item->name,
-        'email' => $item->email,
-    ]);
-
-    $data = [
-        'data' => $formatData,
-        'meta' => [
-            'pagination' => [
-                'count' => $users->lastItem(),
-                'per_page' => $users->perPage(),
-                'current_page' => $users->currentPage(),
-                'total' => $users->total(),
-                'total_pages' => $users->lastPage(),
-                'links' => array_filter([
-                    'previous' => $users->previousPageUrl(),
-                    'next' => $users->nextPageUrl(),
-                ]),
-            ],
-        ],
-    ];
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => $data,
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
-});
-
-test('success with message', function () {
-    // 方式九：返回指定的 Message
-    $response = Response::success([], '成功');
-
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '成功',
-        'data' => (object) [],
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
-});
-
-test('success with custom message and code', function () {
-    // 方式十：根据预定义的「业务码」和「对应的描述信息」返回
-    $response = Response::success([], '', ResponseEnum::SERVICE_LOGIN_SUCCESS);
-
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => ResponseEnum::SERVICE_LOGIN_SUCCESS->value, // 返回自定义的业务码
-        'message' => ResponseEnum::fromValue(ResponseEnum::SERVICE_LOGIN_SUCCESS->value)->description(), // 根据业务码取多语言的业务描述
-        'data' => (object) [],
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => $data,
+            'error' => [],
+        ]);
 });
 
 test('length aware paginator', function () {
     User::factory()->count(20)->create();
     $users = User::query()->paginate();
 
+    // 返回分页数据
     $response = Response::success($users);
 
-    expect($response->status())->toEqual(200);
-
-    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
-
-    $data = [
-        'data' => $formatData,
-        'meta' => [
-            'pagination' => [
-                'count' => $users->lastItem(),
-                'per_page' => $users->perPage(),
-                'current_page' => $users->currentPage(),
-                'total' => $users->total(),
-                'total_pages' => $users->lastPage(),
-                'links' => array_filter([
-                    'previous' => $users->previousPageUrl(),
-                    'next' => $users->nextPageUrl(),
-                ]),
-            ],
-        ],
-    ];
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => $data,
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::paginator($users),
+            'error' => [],
+        ]);
 });
 
 test('simple paginator', function () {
     User::factory()->count(20)->create();
     $users = User::query()->simplePaginate();
 
+    // 返回简单分页数据
     $response = Response::success($users);
 
-    expect($response->status())->toEqual(200);
-
-    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
-
-    $data = [
-        'data' => $formatData,
-        'meta' => [
-            'pagination' => [
-                'count' => $users->lastItem(),
-                'per_page' => $users->perPage(),
-                'current_page' => $users->currentPage(),
-                'links' => array_filter([
-                    'previous' => $users->previousPageUrl(),
-                    'next' => $users->nextPageUrl(),
-                ]),
-            ],
-        ],
-    ];
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => $data,
-        'error' => (object) [],
-    ]);
-
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::paginator($users),
+            'error' => [],
+        ]);
 });
 
 test('cursor paginator', function () {
     User::factory()->count(20)->create();
     $users = User::query()->cursorPaginate();
 
+    // 返回游标分页数据
     $response = Response::success($users);
 
-    expect($response->status())->toEqual(200);
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::paginator($users),
+            'error' => [],
+        ]);
+});
 
-    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
+test('success with resource data', function () {
+    // 返回 Api resource
+    $user = User::factory()->make();
 
-    $data = [
-        'data' => $formatData,
-        'meta' => [
-            'cursor' => [
-                'current' => $users->cursor()?->encode(),
-                'prev' => $users->previousCursor()?->encode(),
-                'next' => $users->nextCursor()?->encode(),
-                'count' => count($users->items()),
-            ],
-        ],
-    ];
-    $expectedJson = json_encode([
-        'status' => 'success',
-        'code' => 200,
-        'message' => '操作成功',
-        'data' => $data,
-        'error' => (object) [],
-    ]);
+    $resource = new UserResource($user);
+    $response = Response::success($resource);
 
-    $this->assertJsonStringEqualsJsonString($expectedJson, $response->getContent());
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::jsonResource($resource),
+            'error' => [],
+        ]);
+});
+
+test('success with collection data', function () {
+    // 返回 Api collection
+    User::factory()->count(3)->create();
+    $users = User::all();
+
+    $collection = new UserCollection($users);
+    $response = Response::success($collection);
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::resourceCollection($collection),
+            'error' => [],
+        ]);
+});
+
+test('success with paginated data', function () {
+    // 返回分页的 Api collection
+    User::factory()->count(20)->create();
+    $users = User::query()->paginate();
+
+    $collection = new UserCollection($users);
+
+    $response = Response::success($collection);
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => Format::resourceCollection($collection),
+            'error' => [],
+        ]);
+
+});
+
+test('success with message', function () {
+    //返回指定的 Message
+    $response = Response::success(message: '成功');
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '成功',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('success alias ok', function () {
+    // 返回指定的 message
+    $response = Response::ok('成功');
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '成功',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('localize', function () {
+    // 结合标准 HttpStatus Enum 返回多语言提示
+    $response = Response::localize(HttpStatusCode::HTTP_OK);
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200,
+            'message' => '操作成功',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('localize and biz code', function () {
+    // 根据业务 ResponseEnum 指定 http 状态码，且有多语言提示
+    $response = Response::localize(ResponseEnum::CLIENT_PARAMETER_ERROR);
+
+    expect($response->status())->toEqual(400)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'error',
+            'code' => 400001,
+            'message' => '参数错误',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('success with custom message and code', function () {
+    // 根据预定义的「业务码」和「对应的描述信息」返回
+    $response = Response::success(code: ResponseEnum::SERVICE_LOGIN_SUCCESS);
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'success',
+            'code' => 200102, // 返回自定义的业务码
+            'message' => '登录成功', // 根据业务码取多语言的业务描述
+            'data' => [],
+            'error' => [],
+        ]);
 });

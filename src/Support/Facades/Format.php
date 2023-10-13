@@ -11,6 +11,7 @@
 
 namespace Jiannei\Response\Laravel\Support\Facades;
 
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
  * @method static array|\Jiannei\Response\Laravel\Support\Format data($data = null)
- * @method static array paginator(AbstractPaginator|AbstractCursorPaginator $resource)
+ * @method static array paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource)
  * @method static array resourceCollection(ResourceCollection $collection)
  * @method static array jsonResource(JsonResource $resource)
  * @method static JsonResponse response()
