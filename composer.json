@@ -14,8 +14,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
-        "jiannei/laravel-enum": "^3.0",
-        "phpunit/phpunit": "^10.0"
+        "pestphp/pest": "^2.23",
+        "jiannei/laravel-enum": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -38,8 +38,13 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/pest"
     },
     "minimum-stability": "dev",
-    "prefer-stable" : true
+    "prefer-stable" : true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

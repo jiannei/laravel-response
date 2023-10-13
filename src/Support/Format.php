@@ -51,7 +51,7 @@ class Format
         string $from = 'success'
     ): JsonResponse {
         return new JsonResponse(
-            $this->data($data, $message, $code, $errors),
+            $this->data($data, $message, $code, $errors, $from),
             $this->formatStatusCode($code, $from),
             $headers,
             $option
@@ -67,7 +67,7 @@ class Format
      * @param  null  $errors
      * @return array
      */
-    public function data($data, ?string $message, int|\BackedEnum $code, $errors = null): array
+    public function data($data, ?string $message, int|\BackedEnum $code, $errors = null, $from = 'success'): array
     {
         $data = match (true) {
             $data instanceof ResourceCollection => $this->resourceCollection($data),
@@ -78,7 +78,7 @@ class Format
         };
 
         return $this->formatDataFields([
-            'status' => $this->formatStatus($code),
+            'status' => $this->formatStatus($code,$from),
             'code' => $this->formatBusinessCode($code),
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
@@ -134,10 +134,11 @@ class Format
      */
     protected function formatMessage(int|\BackedEnum $code, ?string $message): ?string
     {
-        $localizationKey = Config::get('response.localization', 'response');
+        $localizationKey = join('.', [Config::get('response.locale', 'enums'), $this->formatBusinessCode($code)]);
 
         return match (true) {
-            !$message && Lang::has($localizationKey.$code) => Lang::get($localizationKey),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            $code instanceof \BackedEnum && method_exists($code, 'description') => $code->description(),
             default => $message
         };
     }
@@ -150,7 +151,7 @@ class Format
      */
     protected function formatBusinessCode(int|\BackedEnum $code): int
     {
-        return enum_exists($code) ? $code->value : $code;
+        return $code instanceof \BackedEnum ? $code->value : $code;
     }
 
     /**
@@ -159,9 +160,9 @@ class Format
      * @param  int|\BackedEnum  $code
      * @return string
      */
-    protected function formatStatus(int|\BackedEnum $code): string
+    protected function formatStatus(int|\BackedEnum $code, string $from = 'success'): string
     {
-        $statusCode = $this->formatStatusCode($code);
+        $statusCode = $this->formatStatusCode($code, $from);
 
         return match (true) {
             ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
@@ -179,12 +180,9 @@ class Format
      */
     protected function formatStatusCode(int|\BackedEnum $code, string $from = 'success'): int
     {
-        $code = match (true) {
-            $from === 'fail' => (Config::get('response.error_code') ?: $code),
-            default => $this->formatBusinessCode($code)
-        };
+        $code = $from === 'fail' ? (Config::get('response.error_code') ?: $code) : $code;
 
-        return (int) substr($code, 0, 3);
+        return (int) substr($this->formatBusinessCode($code), 0, 3);
     }
 
     /**

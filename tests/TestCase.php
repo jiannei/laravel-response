@@ -11,6 +11,9 @@
 
 namespace Jiannei\Response\Laravel\Tests;
 
+use Illuminate\Contracts\Config\Repository;
+use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
+
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     protected function getPackageProviders($app)
@@ -34,16 +37,19 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     {
         $app['path.lang'] = __DIR__.'/lang';
 
-        $app['config']->set('database.default', 'sqlite');
+        tap($app['config'], function (Repository $config) {
+            $config->set('app.locale', 'zh_CN');
+            $config->set('database.default', 'sqlite');
+            $config->set('database.connections.sqlite', [
+                'driver' => 'sqlite',
+                'database' => ':memory:',
+                'prefix' => '',
+            ]);
 
-        $app['config']->set('database.connections.sqlite', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
+            $config->set('response.locale', 'enums.'.ResponseEnum::class);
+        });
 
-        $app['config']->set('response.enum', \Jiannei\Response\Laravel\Tests\Repositories\Enums\ResponseCodeEnum::class);
-        if ($this instanceof FormatTest) {
+        if ($this instanceof \P\Tests\Unit\FormatTest) {
             $app['config']->set('response.format', [
                 'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
             ]);

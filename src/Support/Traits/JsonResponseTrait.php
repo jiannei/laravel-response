@@ -67,7 +67,7 @@ trait JsonResponseTrait
      * Alias of success method, no need to specify data parameter.
      *
      * @param  string  $message
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  array  $headers
      * @param  int  $option
      * @return JsonResponse
@@ -81,7 +81,7 @@ trait JsonResponseTrait
      * Alias of the successful method, no need to specify the message and data parameters.
      * You can use ResponseCodeEnum to localize the message.
      *
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  array  $headers
      * @param  int  $option
      * @return JsonResponse
@@ -177,13 +177,13 @@ trait JsonResponseTrait
      *
      * @param  mixed  $data
      * @param  string  $message
-     * @param  int  $code
+     * @param  int|\BackedEnum  $code
      * @param  array  $headers
      * @param  int  $option
      * @return JsonResponse
      */
     public function success($data = [], string $message = '', int|\BackedEnum $code = 200, array $headers = [], int $option = 0)
     {
-        return Format::response(...func_get_args());
+        return Format::response($data, $message, $code, null, $headers, $option);
     }
 }

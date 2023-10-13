@@ -24,15 +24,8 @@ return [
 
     'error_code' => false,
 
-    // You can use enumerations to define the code when the response is returned,
-    // and set the response message according to the locale
-    //
-    // The following two enumeration packages are good choices
-    //
-    // https://github.com/Jiannei/laravel-enum
-    // https://github.com/BenSampo/laravel-enum
-
-    'enum' => '', // \Jiannei\Enum\Laravel\Repositories\Enums\HttpStatusCodeEnum::class
+    // lang/zh_CN/enums.php
+    'locale' => 'enums',// enums.\Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode::class
 
     //  You can set some attributes (eg:code/message/header/options) for the exception, and it will override the default attributes of the exception
     'exception' => [
