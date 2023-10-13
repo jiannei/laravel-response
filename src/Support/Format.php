@@ -137,13 +137,13 @@ class Format
         $localizationKey = Config::get('response.localization', 'response');
 
         return match (true) {
-            !$message && Lang::has($localizationKey.$code) => Lang::get($localizationKey),
+            ! $message && Lang::has($localizationKey.$code) => Lang::get($localizationKey),
             default => $message
         };
     }
 
     /**
-     * Format business code
+     * Format business code.
      *
      * @param  int|\BackedEnum  $code
      * @return int
@@ -257,7 +257,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -270,7 +270,7 @@ class Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }
