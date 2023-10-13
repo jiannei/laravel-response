@@ -108,7 +108,7 @@ class Format
     /**
      * Format data.
      *
-     * @param $data
+     * @param  $data
      * @return array|object
      */
     protected function formatData($data): array|object
@@ -136,7 +136,7 @@ class Format
         $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -171,7 +171,7 @@ class Format
      * Http status code.
      *
      * @param  int  $code
-     * @param $oriData
+     * @param  $oriData
      * @return int
      */
     protected function formatStatusCode(int $code, $oriData): int
@@ -260,7 +260,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -273,7 +273,7 @@ class Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }
