@@ -257,7 +257,7 @@ class Format
      */
     protected function formatDataFields(array $data): array
     {
-        $formatConfig = \config('response.format.config', []);
+        $formatConfig = Config::get('response.format.config',[]);
 
         foreach ($formatConfig as $key => $config) {
             if (!Arr::has($data, $key)) {
