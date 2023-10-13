@@ -45,7 +45,7 @@ class Format
     /**
      * Core format.
      *
-     * @param $data
+     * @param  $data
      * @return array|$this
      */
     public function data($data = null): static|array
