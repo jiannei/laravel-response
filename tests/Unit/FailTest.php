@@ -9,7 +9,6 @@
  * with this source code in the file LICENSE.
  */
 
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 
