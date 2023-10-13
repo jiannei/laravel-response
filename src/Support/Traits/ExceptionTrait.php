@@ -36,6 +36,8 @@ trait ExceptionTrait
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
         $exceptionConfig = Arr::get(Config::get('response.exception'), get_class($e));
+
+        /** @var \Illuminate\Foundation\Exceptions\Handler $this */
         $isHttpException = $this->isHttpException($e);
 
         $message = $exceptionConfig['message'] ?? ($isHttpException ? $e->getMessage() : 'Server Error');
@@ -43,7 +45,9 @@ trait ExceptionTrait
         $header = $exceptionConfig['header'] ?? ($isHttpException ? $e->getHeaders() : []);
         $options = $exceptionConfig['options'] ?? (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
-        return Response::fail($message, $code, $this->convertExceptionToArray($e), $header, $options);
+        return Response::fail($message, $code, $this->convertExceptionToArray($e))
+            ->withHeaders($header)
+            ->setEncodingOptions($options);
     }
 
     /**

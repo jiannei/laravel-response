@@ -91,60 +91,55 @@ trait JsonResponseTrait
      * Return a 400 bad request error.
      *
      * @param  string  $message
+     * @return JsonResponse
      */
-    public function errorBadRequest(string $message = ''): void
+    public function errorBadRequest(string $message = ''): JsonResponse
     {
-        $this->fail($message, 400);
+        return $this->fail($message, 400);
     }
 
     /**
      * Return a 401 unauthorized error.
      *
      * @param  string  $message
+     * @return JsonResponse
      */
-    public function errorUnauthorized(string $message = ''): void
+    public function errorUnauthorized(string $message = ''): JsonResponse
     {
-        $this->fail($message, 401);
+        return $this->fail($message, 401);
     }
 
     /**
      * Return a 403 forbidden error.
      *
      * @param  string  $message
+     * @return JsonResponse
      */
-    public function errorForbidden(string $message = ''): void
+    public function errorForbidden(string $message = ''): JsonResponse
     {
-        $this->fail($message, 403);
+        return $this->fail($message, 403);
     }
 
     /**
      * Return a 404 not found error.
      *
      * @param  string  $message
+     * @return JsonResponse
      */
-    public function errorNotFound(string $message = ''): void
+    public function errorNotFound(string $message = ''): JsonResponse
     {
-        $this->fail($message, 404);
+        return $this->fail($message, 404);
     }
 
     /**
      * Return a 405 method not allowed error.
      *
      * @param  string  $message
+     * @return JsonResponse
      */
-    public function errorMethodNotAllowed(string $message = ''): void
+    public function errorMethodNotAllowed(string $message = ''): JsonResponse
     {
-        $this->fail($message, 405);
-    }
-
-    /**
-     * Return a 500 internal server error.
-     *
-     * @param  string  $message
-     */
-    public function errorInternal(string $message = ''): void
-    {
-        $this->fail($message);
+        return $this->fail($message, 405);
     }
 
     /**
@@ -157,13 +152,7 @@ trait JsonResponseTrait
      */
     public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
     {
-        $response = Format::data(compact('message', 'code', 'errors'))->response();
-
-        if (is_null($errors)) {
-            $response->throwResponse();
-        }
-
-        return $response;
+        return Format::data(compact('message', 'code', 'errors'))->response();
     }
 
     /**

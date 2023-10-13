@@ -13,9 +13,9 @@ use Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode;
 use Jiannei\Response\Laravel\Support\Facades\Format;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
-use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
-use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserCollection;
-use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserResource;
+use Jiannei\Response\Laravel\Tests\Models\User;
+use Jiannei\Response\Laravel\Tests\Resources\UserCollection;
+use Jiannei\Response\Laravel\Tests\Resources\UserResource;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 

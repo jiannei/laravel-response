@@ -12,7 +12,7 @@
 namespace Jiannei\Response\Laravel\Tests\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
+use Jiannei\Response\Laravel\Tests\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
