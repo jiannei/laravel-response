@@ -78,7 +78,7 @@ class Format
         };
 
         return $this->formatDataFields([
-            'status' => $this->formatStatus($code,$from),
+            'status' => $this->formatStatus($code, $from),
             'code' => $this->formatBusinessCode($code),
             'message' => $this->formatMessage($code, $message),
             'data' => $data ?: (object) $data,
@@ -137,14 +137,14 @@ class Format
         $localizationKey = join('.', [Config::get('response.locale', 'enums'), $this->formatBusinessCode($code)]);
 
         return match (true) {
-            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
             $code instanceof \BackedEnum && method_exists($code, 'description') => $code->description(),
             default => $message
         };
     }
 
     /**
-     * Format business code
+     * Format business code.
      *
      * @param  int|\BackedEnum  $code
      * @return int
@@ -255,7 +255,7 @@ class Format
         $formatConfig = \config('response.format.config', []);
 
         foreach ($formatConfig as $key => $config) {
-            if (!Arr::has($data, $key)) {
+            if (! Arr::has($data, $key)) {
                 continue;
             }
 
@@ -268,7 +268,7 @@ class Format
                 $key = $alias;
             }
 
-            if (!$show) {
+            if (! $show) {
                 $data = Arr::except($data, $key);
             }
         }

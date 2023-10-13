@@ -25,7 +25,7 @@ return [
     'error_code' => false,
 
     // lang/zh_CN/enums.php
-    'locale' => 'enums',// enums.\Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode::class
+    'locale' => 'enums', // enums.\Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode::class
 
     //  You can set some attributes (eg:code/message/header/options) for the exception, and it will override the default attributes of the exception
     'exception' => [

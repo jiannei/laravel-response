@@ -1,13 +1,20 @@
 <?php
 
+/*
+ * This file is part of the jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 use Illuminate\Support\Arr;
-use Jiannei\Enum\Laravel\Support\Enums\HttpStatusCode;
 use Jiannei\Response\Laravel\Support\Facades\Response;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 use Jiannei\Response\Laravel\Tests\Repositories\Models\User;
 use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserCollection;
 use Jiannei\Response\Laravel\Tests\Repositories\Resources\UserResource;
-
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -45,12 +52,12 @@ test('accepted', function () {
 
     expect($response->status())->toEqual(202)
     ->and($response->getContent())->toBeJson(json_encode([
-            'status' => 'success',
-            'code' => 202,
-            'message' => '',
-            'data' => (object) [],
-            'error' => (object) [],
-        ]));
+        'status' => 'success',
+        'code' => 202,
+        'message' => '',
+        'data' => (object) [],
+        'error' => (object) [],
+    ]));
 });
 
 test('no content', function () {
@@ -59,12 +66,12 @@ test('no content', function () {
 
     expect($response->status())->toEqual(204)
     ->and($response->getContent())->toBeJson(json_encode([
-            'status' => 'success',
-            'code' => 204,
-            'message' => '',
-            'data' => (object) [],
-            'error' => (object) [],
-        ]));
+        'status' => 'success',
+        'code' => 204,
+        'message' => '',
+        'data' => (object) [],
+        'error' => (object) [],
+    ]));
 });
 
 test('success with array data', function () {
@@ -140,7 +147,7 @@ test('success with paginated data', function () {
 
     expect($response->status())->toEqual(200);
 
-    $formatData = Arr::map($users->items(), fn($item) => [
+    $formatData = Arr::map($users->items(), fn ($item) => [
         'nickname' => $item->name,
         'email' => $item->email,
     ]);
@@ -210,7 +217,7 @@ test('length aware paginator', function () {
 
     expect($response->status())->toEqual(200);
 
-    $formatData = Arr::map($users->items(), fn($item) => $item->toArray());
+    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
     $data = [
         'data' => $formatData,
@@ -247,7 +254,7 @@ test('simple paginator', function () {
 
     expect($response->status())->toEqual(200);
 
-    $formatData = Arr::map($users->items(), fn($item) => $item->toArray());
+    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
     $data = [
         'data' => $formatData,
@@ -282,7 +289,7 @@ test('cursor paginator', function () {
 
     expect($response->status())->toEqual(200);
 
-    $formatData = Arr::map($users->items(), fn($item) => $item->toArray());
+    $formatData = Arr::map($users->items(), fn ($item) => $item->toArray());
 
     $data = [
         'data' => $formatData,
