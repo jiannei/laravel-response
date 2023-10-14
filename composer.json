@@ -15,7 +15,8 @@
     "require-dev": {
         "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.23",
-        "jiannei/laravel-enum": "dev-main"
+        "jiannei/laravel-enum": "dev-main",
+        "laravel/pint": "^1.13"
     },
     "autoload": {
         "psr-4": {
@@ -38,7 +39,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest"
+        "test": "vendor/bin/pest",
+        "style": "vendor/bin/pint"
     },
     "minimum-stability": "dev",
     "prefer-stable" : true,

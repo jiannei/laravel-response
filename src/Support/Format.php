@@ -31,6 +31,7 @@ class Format implements ResponseFormat
     use Macroable;
 
     protected ?array $data = null;
+
     protected int $statusCode = 200;
 
     public function __construct(protected array $config = [])
@@ -39,8 +40,6 @@ class Format implements ResponseFormat
 
     /**
      * Return a new JSON response from the application.
-     *
-     * @return JsonResponse
      */
     public function response(): JsonResponse
     {
@@ -52,8 +51,6 @@ class Format implements ResponseFormat
 
     /**
      * Get formatted data.
-     *
-     * @return array|null
      */
     public function get(): ?array
     {
@@ -64,8 +61,6 @@ class Format implements ResponseFormat
      * Core format.
      *
      * @param  null  $data
-     * @param  string  $message
-     * @param  int|\BackedEnum  $code
      * @param  null  $error
      * @return Format
      */
@@ -86,9 +81,6 @@ class Format implements ResponseFormat
 
     /**
      * Format paginator data.
-     *
-     * @param  AbstractPaginator|AbstractCursorPaginator|Paginator  $resource
-     * @return array
      */
     public function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array
     {
@@ -100,9 +92,6 @@ class Format implements ResponseFormat
 
     /**
      * Format collection resource data.
-     *
-     * @param  ResourceCollection  $collection
-     * @return array
      */
     public function resourceCollection(ResourceCollection $collection): array
     {
@@ -114,9 +103,6 @@ class Format implements ResponseFormat
 
     /**
      * Format JsonResource Data.
-     *
-     * @param  JsonResource  $resource
-     * @return array
      */
     public function jsonResource(JsonResource $resource): array
     {
@@ -125,9 +111,6 @@ class Format implements ResponseFormat
 
     /**
      * Format data.
-     *
-     * @param  $data
-     * @return array|object
      */
     protected function formatData($data): array|object
     {
@@ -143,14 +126,10 @@ class Format implements ResponseFormat
 
     /**
      * Format return message.
-     *
-     * @param  int  $code
-     * @param  string  $message
-     * @return string|null
      */
     protected function formatMessage(int $code, string $message = ''): ?string
     {
-        $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
+        $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
             ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
@@ -160,9 +139,6 @@ class Format implements ResponseFormat
 
     /**
      * Format business code.
-     *
-     * @param  int|\BackedEnum  $code
-     * @return int
      */
     protected function formatBusinessCode(int|\BackedEnum $code): int
     {
@@ -171,9 +147,6 @@ class Format implements ResponseFormat
 
     /**
      * Format http status description.
-     *
-     * @param  int  $statusCode
-     * @return string
      */
     protected function formatStatus(int $statusCode): string
     {
@@ -186,10 +159,6 @@ class Format implements ResponseFormat
 
     /**
      * Http status code.
-     *
-     * @param  int  $code
-     * @param  $oriData
-     * @return int
      */
     protected function formatStatusCode(int $code, $oriData): int
     {
@@ -198,8 +167,6 @@ class Format implements ResponseFormat
 
     /**
      * Get JsonResource resource data.
-     *
-     * @return \Closure
      */
     protected function formatJsonResource(): \Closure
     {
@@ -212,9 +179,6 @@ class Format implements ResponseFormat
 
     /**
      * Format paginator data.
-     *
-     * @param  $collection
-     * @return array
      */
     protected function formatMeta($collection): array
     {
@@ -257,9 +221,6 @@ class Format implements ResponseFormat
 
     /**
      * Format error.
-     *
-     * @param  array|null  $error
-     * @return array|object
      */
     protected function formatError(?array $error): object|array
     {
@@ -268,9 +229,6 @@ class Format implements ResponseFormat
 
     /**
      * Format response data fields.
-     *
-     * @param  array  $data
-     * @return array
      */
     protected function formatDataFields(array $data): array
     {

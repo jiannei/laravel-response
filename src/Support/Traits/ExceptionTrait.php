@@ -27,7 +27,6 @@ trait ExceptionTrait
     /**
      * Custom Normal Exception response.
      *
-     * @param  $request
      * @param  Throwable|Exception  $e
      * @return JsonResponse
      */
@@ -53,8 +52,6 @@ trait ExceptionTrait
     /**
      * Custom Failed Validation Response for Lumen.
      *
-     * @param  Request  $request
-     * @param  array  $errors
      * @return mixed
      *
      * @throws HttpResponseException
@@ -78,7 +75,6 @@ trait ExceptionTrait
      * Custom Failed Validation Response for Laravel.
      *
      * @param  Request  $request
-     * @param  ValidationException  $exception
      * @return JsonResponse
      */
     protected function invalidJson($request, ValidationException $exception)
@@ -94,7 +90,6 @@ trait ExceptionTrait
      * Custom Failed Authentication Response for Laravel.
      *
      * @param  Request  $request
-     * @param  AuthenticationException  $exception
      * @return \Illuminate\Http\RedirectResponse | JsonResponse
      */
     protected function unauthenticated($request, AuthenticationException $exception)

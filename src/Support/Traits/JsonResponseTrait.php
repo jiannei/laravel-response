@@ -20,9 +20,6 @@ trait JsonResponseTrait
      *  Respond with an accepted response and associate a location and/or content if provided.
      *
      * @param  array  $data
-     * @param  string  $message
-     * @param  string  $location
-     * @return JsonResponse
      */
     public function accepted($data = [], string $message = '', string $location = ''): JsonResponse
     {
@@ -37,9 +34,6 @@ trait JsonResponseTrait
      * Respond with a created response and associate a location if provided.
      *
      * @param  null  $data
-     * @param  string  $message
-     * @param  string  $location
-     * @return JsonResponse
      */
     public function created($data = [], string $message = '', string $location = ''): JsonResponse
     {
@@ -52,9 +46,6 @@ trait JsonResponseTrait
 
     /**
      * Respond with a no content response.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function noContent(string $message = ''): JsonResponse
     {
@@ -63,10 +54,6 @@ trait JsonResponseTrait
 
     /**
      * Alias of success method, no need to specify data parameter.
-     *
-     * @param  string  $message
-     * @param  int|\BackedEnum  $code
-     * @return JsonResponse
      */
     public function ok(string $message = '', int|\BackedEnum $code = 200): JsonResponse
     {
@@ -76,9 +63,6 @@ trait JsonResponseTrait
     /**
      * Alias of the successful method, no need to specify the message and data parameters.
      * You can use ResponseCodeEnum to localize the message.
-     *
-     * @param  int|\BackedEnum  $code
-     * @return JsonResponse
      */
     public function localize(int|\BackedEnum $code = 200): JsonResponse
     {
@@ -87,9 +71,6 @@ trait JsonResponseTrait
 
     /**
      * Return a 400 bad request error.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function errorBadRequest(string $message = ''): JsonResponse
     {
@@ -98,9 +79,6 @@ trait JsonResponseTrait
 
     /**
      * Return a 401 unauthorized error.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function errorUnauthorized(string $message = ''): JsonResponse
     {
@@ -109,9 +87,6 @@ trait JsonResponseTrait
 
     /**
      * Return a 403 forbidden error.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function errorForbidden(string $message = ''): JsonResponse
     {
@@ -120,9 +95,6 @@ trait JsonResponseTrait
 
     /**
      * Return a 404 not found error.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function errorNotFound(string $message = ''): JsonResponse
     {
@@ -131,9 +103,6 @@ trait JsonResponseTrait
 
     /**
      * Return a 405 method not allowed error.
-     *
-     * @param  string  $message
-     * @return JsonResponse
      */
     public function errorMethodNotAllowed(string $message = ''): JsonResponse
     {
@@ -143,10 +112,7 @@ trait JsonResponseTrait
     /**
      * Return an fail response.
      *
-     * @param  string  $message
-     * @param  int|\BackedEnum  $code
      * @param  null  $errors
-     * @return JsonResponse
      */
     public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
     {
@@ -157,8 +123,6 @@ trait JsonResponseTrait
      * Return a success response.
      *
      * @param  mixed  $data
-     * @param  string  $message
-     * @param  int|\BackedEnum  $code
      * @return JsonResponse
      */
     public function success($data = [], string $message = '', int|\BackedEnum $code = 200)
