@@ -126,15 +126,14 @@ class Format
      */
     protected function formatData($data): array|object
     {
-        $formattedData = match (true) {
+        return match (true) {
             $data instanceof ResourceCollection => $this->resourceCollection($data),
             $data instanceof JsonResource => $this->jsonResource($data),
             $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->paginator($data),
             $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
+            empty($data) => (object) $data,
             default => Arr::wrap($data)
         };
-
-        return $formattedData ?: (object) $data;
     }
 
     /**
