@@ -33,7 +33,6 @@ class Format implements ResponseFormat
     protected ?array $data = null;
     protected int $statusCode = 200;
 
-
     public function __construct(protected array $config = [])
     {
     }
@@ -154,7 +153,7 @@ class Format implements ResponseFormat
         $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -277,7 +276,7 @@ class Format implements ResponseFormat
     {
         return tap($data, function (&$item) {
             foreach ($this->config as $key => $config) {
-                if (!Arr::has($item, $key)) {
+                if (! Arr::has($item, $key)) {
                     continue;
                 }
 
@@ -290,7 +289,7 @@ class Format implements ResponseFormat
                     $key = $alias;
                 }
 
-                if (!$show) {
+                if (! $show) {
                     $item = Arr::except($item, $key);
                 }
             }

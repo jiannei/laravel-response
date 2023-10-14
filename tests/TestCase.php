@@ -60,7 +60,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
                     'error' => ['alias' => 'error', 'show' => false],
                     'data' => ['alias' => 'data', 'show' => true],
                     'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
-                ]
+                ],
             ]);
         }
     }

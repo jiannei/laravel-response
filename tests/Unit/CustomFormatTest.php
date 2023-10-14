@@ -30,7 +30,7 @@ test('add extra field', function () {
  *      'error' => ['alias' => 'error', 'show' => false],
  *      'data' => ['alias' => 'data', 'show' => true],
  *      'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
- * ]
+ * ].
  */
 test('hide some field', function () {
     // 隐藏 status，message 字段名称修改成 msg
@@ -38,7 +38,7 @@ test('hide some field', function () {
 
     expect($data)->toMatchArray([
         'code' => 200,
-        'data' => (object)[],
-        'msg' => '操作成功'
+        'data' => (object) [],
+        'msg' => '操作成功',
     ]);
 });
