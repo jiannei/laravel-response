@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the jiannei/laravel-response.
+ *
+ * (c) Jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Jiannei\Response\Laravel\Contract;
 
 use Illuminate\Contracts\Pagination\Paginator;
@@ -23,19 +32,16 @@ interface ResponseFormat
      */
     public function get(): ?array;
 
-
     /**
-     *
      * Format data structures.
      *
      * @param  mixed|null  $data
      * @param  string  $message
      * @param  int|\BackedEnum  $code
-     * @param $error
+     * @param  $error
      * @return $this
      */
     public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static;
-
 
     /**
      * Format paginator data.
