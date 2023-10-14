@@ -26,12 +26,11 @@ trait JsonResponseTrait
      */
     public function accepted($data = [], string $message = '', string $location = ''): JsonResponse
     {
-        $response = $this->success($data, $message, 202);
-        if ($location) {
-            $response->header('Location', $location);
-        }
-
-        return $response;
+        return tap($this->success($data, $message, 202), function ($response) use ($location) {
+            if ($location) {
+                $response->header('Location', $location);
+            }
+        });
     }
 
     /**
@@ -44,12 +43,11 @@ trait JsonResponseTrait
      */
     public function created($data = [], string $message = '', string $location = ''): JsonResponse
     {
-        $response = $this->success($data, $message, 201);
-        if ($location) {
-            $response->header('Location', $location);
-        }
-
-        return $response;
+        return tap($this->success($data, $message, 201), function ($response) use ($location) {
+            if ($location) {
+                $response->header('Location', $location);
+            }
+        });
     }
 
     /**
