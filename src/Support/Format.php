@@ -24,13 +24,19 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Traits\Macroable;
+use Jiannei\Response\Laravel\Contract\ResponseFormat;
 
-class Format
+class Format implements ResponseFormat
 {
     use Macroable;
 
     protected ?array $data = null;
     protected int $statusCode = 200;
+
+
+    public function __construct(protected array $config = [])
+    {
+    }
 
     /**
      * Return a new JSON response from the application.
@@ -148,7 +154,7 @@ class Format
         $localizationKey = join('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -269,27 +275,25 @@ class Format
      */
     protected function formatDataFields(array $data): array
     {
-        $formatConfig = Config::get('response.format.config', []);
+        return tap($data, function (&$item) {
+            foreach ($this->config as $key => $config) {
+                if (!Arr::has($item, $key)) {
+                    continue;
+                }
 
-        foreach ($formatConfig as $key => $config) {
-            if (! Arr::has($data, $key)) {
-                continue;
+                $show = $config['show'] ?? true;
+                $alias = $config['alias'] ?? '';
+
+                if ($alias && $alias !== $key) {
+                    Arr::set($item, $alias, Arr::get($item, $key));
+                    $item = Arr::except($item, $key);
+                    $key = $alias;
+                }
+
+                if (!$show) {
+                    $item = Arr::except($item, $key);
+                }
             }
-
-            $show = $config['show'] ?? true;
-            $alias = $config['alias'] ?? '';
-
-            if ($alias && $alias !== $key) {
-                Arr::set($data, $alias, Arr::get($data, $key));
-                $data = Arr::except($data, $key);
-                $key = $alias;
-            }
-
-            if (! $show) {
-                $data = Arr::except($data, $key);
-            }
-        }
-
-        return $data;
+        });
     }
 }

@@ -52,6 +52,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         if ($this instanceof \P\Tests\Unit\CustomFormatTest) {
             $app['config']->set('response.format', [
                 'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
+                'config' => [
+                    // key => config
+                    'status' => ['alias' => 'status', 'show' => false],
+                    'code' => ['alias' => 'code', 'show' => true],
+                    'message' => ['alias' => 'msg', 'show' => true],
+                    'error' => ['alias' => 'error', 'show' => false],
+                    'data' => ['alias' => 'data', 'show' => true],
+                    'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
+                ]
             ]);
         }
     }

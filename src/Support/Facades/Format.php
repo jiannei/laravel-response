@@ -33,6 +33,6 @@ class Format extends IlluminateFacade
 {
     protected static function getFacadeAccessor()
     {
-        return config('response.format.class', \Jiannei\Response\Laravel\Support\Format::class);
+        return \Jiannei\Response\Laravel\Contract\ResponseFormat::class;
     }
 }
