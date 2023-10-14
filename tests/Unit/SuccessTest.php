@@ -304,5 +304,3 @@ test('compare data and success', function () {
     expect(Response::success()->status())->toEqual(Format::data(null, '', 200)->response()->status())
         ->and(Response::success()->content())->toEqual(Format::data(null, '', 200)->response()->content());
 });
-
-
