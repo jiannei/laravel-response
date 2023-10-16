@@ -95,10 +95,10 @@ class Format implements ResponseFormat
      */
     public function resourceCollection(ResourceCollection $collection): array
     {
-        return array_filter([
+        return [
             'data' => $collection->resolve(),
             'meta' => $this->formatMeta($collection->resource),
-        ]);
+        ];
     }
 
     /**
@@ -182,6 +182,7 @@ class Format implements ResponseFormat
      */
     protected function formatMeta($collection): array
     {
+        // vendor/laravel/framework/src/Illuminate/Http/Resources/Json/PaginatedResourceResponse.php
         return match (true) {
             $collection instanceof CursorPaginator => [
                 'cursor' => [
