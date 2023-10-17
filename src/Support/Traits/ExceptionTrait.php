@@ -34,7 +34,9 @@ trait ExceptionTrait
     {
         // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
-        $exceptionConfig = Arr::get(Config::get('response.exception'), get_class($e));
+        $exceptionConfig = Config::get('response.exception.'.get_class($e));
+
+        if (!is_null($exceptionConfig)) return parent::prepareJsonResponse($request, $e);
 
         /** @var \Illuminate\Foundation\Exceptions\Handler $this */
         $isHttpException = $this->isHttpException($e);
@@ -79,11 +81,13 @@ trait ExceptionTrait
      */
     protected function invalidJson($request, ValidationException $exception)
     {
-        return Response::fail(
+        $exceptionConfig = Config::get('response.exception.'.ValidationException::class);
+
+        return !is_null($exceptionConfig) ? Response::fail(
             $exception->validator->errors()->first(),
-            Arr::get(Config::get('response.exception'), ValidationException::class.'.code', 422),
+            Arr::get($exceptionConfig, 'code', 422),
             $exception->errors()
-        );
+        ) : parent::invalidJson($request, $exception);
     }
 
     /**
@@ -94,10 +98,10 @@ trait ExceptionTrait
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        $exceptionConfig = Arr::get(Config::get('response.exception'), AuthenticationException::class);
+        $exceptionConfig = Config::get('response.exception.'.AuthenticationException::class);
 
-        return $request->expectsJson()
+        return $exceptionConfig && $request->expectsJson()
             ? Response::errorUnauthorized($exceptionConfig['message'] ?? $exception->getMessage())
-            : redirect()->guest($exception->redirectTo() ?? route('login'));
+            : parent::unauthenticated($request, $exception);
     }
 }
