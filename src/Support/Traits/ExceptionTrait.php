@@ -36,7 +36,9 @@ trait ExceptionTrait
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
         $exceptionConfig = Config::get('response.exception.'.get_class($e));
 
-        if (!is_null($exceptionConfig)) return parent::prepareJsonResponse($request, $e);
+        if (! is_null($exceptionConfig)) {
+            return parent::prepareJsonResponse($request, $e);
+        }
 
         /** @var \Illuminate\Foundation\Exceptions\Handler $this */
         $isHttpException = $this->isHttpException($e);
@@ -83,7 +85,7 @@ trait ExceptionTrait
     {
         $exceptionConfig = Config::get('response.exception.'.ValidationException::class);
 
-        return !is_null($exceptionConfig) ? Response::fail(
+        return ! is_null($exceptionConfig) ? Response::fail(
             $exception->validator->errors()->first(),
             Arr::get($exceptionConfig, 'code', 422),
             $exception->errors()
