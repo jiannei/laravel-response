@@ -36,7 +36,9 @@ trait ExceptionTrait
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
         $exceptionConfig = Config::get('response.exception.'.get_class($e));
 
-        if ($exceptionConfig === false) return parent::prepareJsonResponse($request, $e);
+        if ($exceptionConfig === false) {
+            return parent::prepareJsonResponse($request, $e);
+        }
 
         /** @var \Illuminate\Foundation\Exceptions\Handler $this */
         $isHttpException = $this->isHttpException($e);
