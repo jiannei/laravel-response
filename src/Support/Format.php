@@ -97,7 +97,7 @@ class Format implements ResponseFormat
     {
         return [
             'data' => $collection->resolve(),
-            'meta' => $this->formatMeta($collection->resource),
+            'meta' => array_merge_recursive($this->formatMeta($collection->resource), $collection->with(request()), $collection->additional),
         ];
     }
 
