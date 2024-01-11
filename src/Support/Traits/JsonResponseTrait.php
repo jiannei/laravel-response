@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -19,7 +19,7 @@ trait JsonResponseTrait
     /**
      *  Respond with an accepted response and associate a location and/or content if provided.
      *
-     * @param  array  $data
+     * @param array $data
      */
     public function accepted($data = [], string $message = '', string $location = ''): JsonResponse
     {
@@ -33,7 +33,7 @@ trait JsonResponseTrait
     /**
      * Respond with a created response and associate a location if provided.
      *
-     * @param  null  $data
+     * @param null $data
      */
     public function created($data = [], string $message = '', string $location = ''): JsonResponse
     {
@@ -112,7 +112,7 @@ trait JsonResponseTrait
     /**
      * Return an fail response.
      *
-     * @param  null  $errors
+     * @param null $errors
      */
     public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
     {
@@ -122,7 +122,8 @@ trait JsonResponseTrait
     /**
      * Return a success response.
      *
-     * @param  mixed  $data
+     * @param mixed $data
+     *
      * @return JsonResponse
      */
     public function success($data = [], string $message = '', int|\BackedEnum $code = 200)

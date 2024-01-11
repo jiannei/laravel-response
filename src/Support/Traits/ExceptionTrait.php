@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -27,7 +27,8 @@ trait ExceptionTrait
     /**
      * Custom Normal Exception response.
      *
-     * @param  Throwable|Exception  $e
+     * @param Throwable|Exception $e
+     *
      * @return JsonResponse
      */
     protected function prepareJsonResponse($request, $e)
@@ -36,7 +37,7 @@ trait ExceptionTrait
         // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
         $exceptionConfig = Config::get('response.exception.'.get_class($e));
 
-        if ($exceptionConfig === false) {
+        if (false === $exceptionConfig) {
             return parent::prepareJsonResponse($request, $e);
         }
 
@@ -78,14 +79,15 @@ trait ExceptionTrait
     /**
      * Custom Failed Validation Response for Laravel.
      *
-     * @param  Request  $request
+     * @param Request $request
+     *
      * @return JsonResponse
      */
     protected function invalidJson($request, ValidationException $exception)
     {
         $exceptionConfig = Config::get('response.exception.'.ValidationException::class);
 
-        return $exceptionConfig !== false ? Response::fail(
+        return false !== $exceptionConfig ? Response::fail(
             $exception->validator->errors()->first(),
             Arr::get($exceptionConfig, 'code', 422),
             $exception->errors()
@@ -95,14 +97,15 @@ trait ExceptionTrait
     /**
      * Custom Failed Authentication Response for Laravel.
      *
-     * @param  Request  $request
-     * @return \Illuminate\Http\RedirectResponse | JsonResponse
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse|JsonResponse
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         $exceptionConfig = Config::get('response.exception.'.AuthenticationException::class);
 
-        return $exceptionConfig !== false && $request->expectsJson()
+        return false !== $exceptionConfig && $request->expectsJson()
             ? Response::errorUnauthorized($exceptionConfig['message'] ?? $exception->getMessage())
             : parent::unauthenticated($request, $exception);
     }

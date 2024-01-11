@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -60,8 +60,9 @@ class Format implements ResponseFormat
     /**
      * Core format.
      *
-     * @param  null  $data
-     * @param  null  $error
+     * @param null $data
+     * @param null $error
+     *
      * @return Format
      */
     public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
@@ -132,7 +133,7 @@ class Format implements ResponseFormat
         $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -235,7 +236,7 @@ class Format implements ResponseFormat
     {
         return tap($data, function (&$item) {
             foreach ($this->config as $key => $config) {
-                if (! Arr::has($item, $key)) {
+                if (!Arr::has($item, $key)) {
                     continue;
                 }
 
@@ -248,7 +249,7 @@ class Format implements ResponseFormat
                     $key = $alias;
                 }
 
-                if (! $show) {
+                if (!$show) {
                     $item = Arr::except($item, $key);
                 }
             }

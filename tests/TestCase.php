@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -51,7 +51,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         if ($this instanceof \P\Tests\Unit\CustomFormatTest) {
             $app['config']->set('response.format', [
-                'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
+                'class' => Support\Format::class,
                 'config' => [
                     // key => config
                     'status' => ['alias' => 'status', 'show' => false],
