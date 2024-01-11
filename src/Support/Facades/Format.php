@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -21,11 +21,11 @@ use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
 /**
  * @method static \Jiannei\Response\Laravel\Support\Format data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null)
- * @method static array|null get()
- * @method static array paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource)
- * @method static array resourceCollection(ResourceCollection $collection)
- * @method static array jsonResource(JsonResource $resource)
- * @method static JsonResponse response()
+ * @method static array|null                               get()
+ * @method static array                                    paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource)
+ * @method static array                                    resourceCollection(ResourceCollection $collection)
+ * @method static array                                    jsonResource(JsonResource $resource)
+ * @method static JsonResponse                             response()
  *
  * @see \Jiannei\Response\Laravel\Support\Format
  */

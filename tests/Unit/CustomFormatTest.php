@@ -3,7 +3,7 @@
 /*
  * This file is part of the jiannei/laravel-response.
  *
- * (c) Jiannei <longjian.huang@foxmail.com>
+ * (c) Jiannei <jiannei@sinan.fun>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -20,7 +20,7 @@ test('add extra field', function () {
         ->and($response->getData(true)['extra'])->toHaveKey('time');
 });
 
-/**
+/*
  * 'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
  * 'config' => [
  *      // key => config
