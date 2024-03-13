@@ -53,6 +53,7 @@
 | 7.*        | 7.*        | ^3.0        |  ^2.0  |
 | 8.*        | 8.*        | ^4.0        |  ^3.0  |
 | 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  |
+| 11.* | 不支持        | ^6.0        |  ^3.0  |
 
 
 ```shell
@@ -80,6 +81,11 @@ composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 
 composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # 可选
+
+# laravel 11.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 ```
 
 ## 配置
@@ -92,7 +98,7 @@ composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 $ php artisan vendor:publish --provider="Jiannei\Response\Laravel\Providers\LaravelServiceProvider"
 ```
 
-- 格式化异常响应
+- 格式化异常响应（laravel 11 可省略这一步）
 
 
 ```php
@@ -354,7 +360,7 @@ Response::noContent();
 ```php
 public function fail()
 {
-    Response::fail();// 不需要加 return
+    return Response::fail();
 }
 ```
 
@@ -387,7 +393,7 @@ public function fail()
 ```php
 public function fail()
 {
-    Response::fail('error');// 不需要加 return
+    return Response::fail('error');
 }
 ```
 
@@ -408,7 +414,7 @@ public function fail()
 ```php
 public function fail()
 {
-    Response::fail('',ResponseCodeEnum::SERVICE_LOGIN_ERROR);
+    return Response::fail('',ResponseCodeEnum::SERVICE_LOGIN_ERROR);
 }
 ```
 
@@ -598,27 +604,6 @@ return [
 非常感谢 Jetbrains 为我提供的 IDE 开源许可，让我完成此项目和其他开源项目上的开发工作。
 
 [![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/jiannei)
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/vanthao03596"><img src="https://avatars.githubusercontent.com/u/34786441?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Pham Thao</b></sub></a><br /><a href="#design-vanthao03596" title="Design">🎨</a></td>
-    <td align="center"><a href="https://www.guanguans.cn"><img src="https://avatars.githubusercontent.com/u/22309277?v=4?s=100" width="100px;" alt=""/><br /><sub><b>guanguans</b></sub></a><br /><a href="https://github.com/jiannei/laravel-response/issues?q=author%3Aguanguans" title="Bug reports">🐛</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
 ## Stargazers over time
 
