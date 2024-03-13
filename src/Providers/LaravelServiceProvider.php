@@ -13,6 +13,7 @@ namespace Jiannei\Response\Laravel\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Jiannei\Response\Laravel\Contract\ResponseFormat;
+use Jiannei\Response\Laravel\Http\Exceptions\Handler;
 use Jiannei\Response\Laravel\Support\Format;
 
 class LaravelServiceProvider extends ServiceProvider
@@ -20,6 +21,11 @@ class LaravelServiceProvider extends ServiceProvider
     public function register()
     {
         $this->setupConfig();
+
+        $this->app->singleton(
+            \Illuminate\Contracts\Debug\ExceptionHandler::class,
+            Handler::class
+        );
 
         $this->app->singleton(ResponseFormat::class, function ($app) {
             $formatter = $app->config->get('response.format.class');
