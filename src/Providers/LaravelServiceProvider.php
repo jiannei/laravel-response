@@ -13,7 +13,6 @@ namespace Jiannei\Response\Laravel\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Jiannei\Response\Laravel\Contract\ResponseFormat;
-use Jiannei\Response\Laravel\Http\Exceptions\Handler;
 use Jiannei\Response\Laravel\Support\Format;
 
 class LaravelServiceProvider extends ServiceProvider
