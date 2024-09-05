@@ -20,8 +20,7 @@ class LaravelServiceProvider extends ServiceProvider
     public function register()
     {
         $this->setupConfig();
-
-
+        
         $this->app->singleton(ResponseFormat::class, function ($app) {
             $formatter = $app->config->get('response.format.class');
             $config = $app->config->get('response.format.config');
