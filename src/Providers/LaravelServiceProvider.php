@@ -22,10 +22,6 @@ class LaravelServiceProvider extends ServiceProvider
     {
         $this->setupConfig();
 
-        $this->app->singleton(
-            \Illuminate\Contracts\Debug\ExceptionHandler::class,
-            Handler::class
-        );
 
         $this->app->singleton(ResponseFormat::class, function ($app) {
             $formatter = $app->config->get('response.format.class');
