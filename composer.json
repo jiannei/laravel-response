@@ -14,7 +14,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^9.2",
-        "pestphp/pest": "^2.23",
+        "pestphp/pest": "^3.0",
         "jiannei/laravel-enum": "dev-main",
         "laravel/pint": "^1.13"
     },
