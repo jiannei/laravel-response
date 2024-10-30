@@ -78,7 +78,7 @@ class Format implements ResponseFormat
                 'error' => $this->formatError($error),
             ]);
 
-            $this->statusCode = $this->formatStatusCode($bizCode, $error);
+            $this->statusCode = $this->formatStatusCode($bizCode);
         });
     }
 
@@ -165,9 +165,9 @@ class Format implements ResponseFormat
     /**
      * Http status code.
      */
-    protected function formatStatusCode(int $code, $errors): int
+    protected function formatStatusCode(int $code): int
     {
-        return (int) substr(is_null($errors) ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
+        return (int) substr(Config::get('response.error_code') ?: $code, 0, 3);
     }
 
     /**
