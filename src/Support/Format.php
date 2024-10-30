@@ -34,7 +34,9 @@ class Format implements ResponseFormat
 
     protected int $statusCode = 200;
 
-    public function __construct(protected array $config = []) {}
+    public function __construct(protected array $config = [])
+    {
+    }
 
     /**
      * Return a new JSON response from the application.
@@ -58,15 +60,15 @@ class Format implements ResponseFormat
     /**
      * Core format.
      *
-     * @param  null  $data
-     * @param  null  $error
+     * @param null $data
+     * @param null $error
+     *
      * @return Format
      */
     public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
     {
         return tap($this, function () use ($data, $message, $code, $error) {
             $bizCode = $this->formatBusinessCode($code);
-
 
             $this->data = $this->formatDataFields([
                 'status' => $this->formatStatus($bizCode),
@@ -133,7 +135,7 @@ class Format implements ResponseFormat
         $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -238,7 +240,7 @@ class Format implements ResponseFormat
     {
         return tap($data, function (&$item) {
             foreach ($this->config as $key => $config) {
-                if (! Arr::has($item, $key)) {
+                if (!Arr::has($item, $key)) {
                     continue;
                 }
 
@@ -251,7 +253,7 @@ class Format implements ResponseFormat
                     $key = $alias;
                 }
 
-                if (! $show) {
+                if (!$show) {
                     $item = Arr::except($item, $key);
                 }
             }
