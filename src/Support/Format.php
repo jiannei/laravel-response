@@ -34,9 +34,7 @@ class Format implements ResponseFormat
 
     protected int $statusCode = 200;
 
-    public function __construct(protected array $config = [])
-    {
-    }
+    public function __construct(protected array $config = []) {}
 
     /**
      * Return a new JSON response from the application.
@@ -60,23 +58,25 @@ class Format implements ResponseFormat
     /**
      * Core format.
      *
-     * @param null $data
-     * @param null $error
-     *
+     * @param  null  $data
+     * @param  null  $error
      * @return Format
      */
     public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
     {
         return tap($this, function () use ($data, $message, $code, $error) {
-            $this->statusCode = $this->formatStatusCode($this->formatBusinessCode($code), $data);
+            $bizCode = $this->formatBusinessCode($code);
+
 
             $this->data = $this->formatDataFields([
-                'status' => $this->formatStatus($this->statusCode),
-                'code' => $this->formatBusinessCode($code),
-                'message' => $this->formatMessage($this->formatBusinessCode($code), $message),
+                'status' => $this->formatStatus($bizCode),
+                'code' => $bizCode,
+                'message' => $this->formatMessage($bizCode, $message),
                 'data' => $this->formatData($data),
                 'error' => $this->formatError($error),
             ]);
+
+            $this->statusCode = $this->formatStatusCode($bizCode, $error);
         });
     }
 
@@ -133,7 +133,7 @@ class Format implements ResponseFormat
         $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
 
         return match (true) {
-            !$message && Lang::has($localizationKey) => Lang::get($localizationKey),
+            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
             default => $message
         };
     }
@@ -149,8 +149,10 @@ class Format implements ResponseFormat
     /**
      * Format http status description.
      */
-    protected function formatStatus(int $statusCode): string
+    protected function formatStatus(int $bizCode): string
     {
+        $statusCode = (int) substr($bizCode, 0, 3);
+
         return match (true) {
             ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
             ($statusCode >= 500 && $statusCode <= 599) => 'fail',// service error
@@ -161,9 +163,9 @@ class Format implements ResponseFormat
     /**
      * Http status code.
      */
-    protected function formatStatusCode(int $code, $oriData): int
+    protected function formatStatusCode(int $code, $errors): int
     {
-        return (int) substr(is_null($oriData) ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
+        return (int) substr(is_null($errors) ? (Config::get('response.error_code') ?: $code) : $code, 0, 3);
     }
 
     /**
@@ -236,7 +238,7 @@ class Format implements ResponseFormat
     {
         return tap($data, function (&$item) {
             foreach ($this->config as $key => $config) {
-                if (!Arr::has($item, $key)) {
+                if (! Arr::has($item, $key)) {
                     continue;
                 }
 
@@ -249,7 +251,7 @@ class Format implements ResponseFormat
                     $key = $alias;
                 }
 
-                if (!$show) {
+                if (! $show) {
                     $item = Arr::except($item, $key);
                 }
             }

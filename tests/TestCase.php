@@ -63,5 +63,13 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
                 ],
             ]);
         }
+
+        if ($this instanceof \P\Tests\Unit\Fail200Test) {
+            $app['config']->set('response.error_code', 200);
+        }
+
+        if ($this instanceof \P\Tests\Unit\Fail500Test) {
+            $app['config']->set('response.error_code', 500);
+        }
     }
 }
