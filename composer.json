@@ -13,10 +13,10 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.2",
-        "pestphp/pest": "^3.0",
+        "orchestra/testbench": "^9.5.2",
+        "pestphp/pest": "^3.5",
         "jiannei/laravel-enum": "dev-main",
-        "laravel/pint": "^1.13"
+        "laravel/pint": "^1.18.1"
     },
     "autoload": {
         "psr-4": {
