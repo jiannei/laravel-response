@@ -24,13 +24,13 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Validate composer.json and composer.lock
               run: composer validate --strict
 
             - name: Cache Composer packages
-              uses: actions/cache@v2
+              uses: actions/cache@v4
               with:
                   path: vendor
                   key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
