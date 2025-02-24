@@ -13,7 +13,7 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.5.2",
+        "orchestra/testbench": "^10.0.0",
         "pestphp/pest": "^3.5",
         "jiannei/laravel-enum": "dev-main",
         "laravel/pint": "^1.18.1"
