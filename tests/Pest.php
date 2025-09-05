@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-uses(\Jiannei\Response\Laravel\Tests\TestCase::class)->in('Unit');
+uses(Jiannei\Response\Laravel\Tests\TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------

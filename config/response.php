@@ -29,22 +29,22 @@ return [
 
     //  You can set some attributes (eg:code/message/header/options) for the exception, and it will override the default attributes of the exception
     'exception' => [
-        \Illuminate\Validation\ValidationException::class => [
+        Illuminate\Validation\ValidationException::class => [
             'code' => 422,
         ],
-        \Illuminate\Auth\AuthenticationException::class => [
+        Illuminate\Auth\AuthenticationException::class => [
         ],
-        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class => [
+        Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class => [
             'message' => '',
         ],
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class => [
+        Illuminate\Database\Eloquent\ModelNotFoundException::class => [
             'message' => '',
         ],
     ],
 
     // Any key that returns data exists supports custom aliases and display.
     'format' => [
-        'class' => \Jiannei\Response\Laravel\Support\Format::class,
+        'class' => Jiannei\Response\Laravel\Support\Format::class,
         'config' => [
             // key => config
             'status' => ['alias' => 'status', 'show' => true],

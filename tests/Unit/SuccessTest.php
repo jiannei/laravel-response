@@ -17,7 +17,7 @@ use Jiannei\Response\Laravel\Tests\Models\User;
 use Jiannei\Response\Laravel\Tests\Resources\UserCollection;
 use Jiannei\Response\Laravel\Tests\Resources\UserResource;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('success', function () {
     // 直接返回响应成功
