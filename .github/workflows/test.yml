@@ -49,7 +49,7 @@ jobs:
                       ${{ runner.os }}-php-
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2.30.1
+              uses: shivammathur/setup-php@v2
               with:
                 php-version: ${{ matrix.php }}
                 extensions: curl, mbstring, zip, pcntl, sqlite, pdo_sqlite, iconv
