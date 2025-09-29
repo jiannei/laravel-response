@@ -19,15 +19,14 @@ class Etag
     /**
      * Implement Etag support.
      *
-     * @param \Illuminate\Http\Request $request the HTTP request
-     * @param \Closure                 $next    closure for the response
-     *
+     * @param  \Illuminate\Http\Request  $request  the HTTP request
+     * @param  \Closure  $next  closure for the response
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
         // If this was not a get or head request, just return
-        if (!$request->isMethod('get') && !$request->isMethod('head')) {
+        if (! $request->isMethod('get') && ! $request->isMethod('head')) {
             return $next($request);
         }
 
