@@ -24,6 +24,8 @@ interface ResponseFormat
 
     /**
      * Get formatted data.
+     *
+     * @return array<string, mixed>|null
      */
     public function get(): ?array;
 
@@ -32,20 +34,27 @@ interface ResponseFormat
      *
      * @return $this
      */
-    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static;
+    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, mixed $error = null): static;
 
     /**
      * Format paginator data.
+     *
+     * @param  AbstractPaginator<int|string, mixed>|AbstractCursorPaginator<int|string, mixed>|Paginator<int|string, mixed>  $resource
+     * @return array<string, mixed>
      */
     public function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array;
 
     /**
      * Format collection resource data.
+     *
+     * @return array<string, mixed>
      */
     public function resourceCollection(ResourceCollection $collection): array;
 
     /**
      * Format JsonResource Data.
+     *
+     * @return array<string, mixed>
      */
     public function jsonResource(JsonResource $resource): array;
 }

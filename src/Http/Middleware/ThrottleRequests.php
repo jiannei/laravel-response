@@ -60,7 +60,7 @@ class ThrottleRequests
             throw $this->buildException($key, $maxAttempts);
         }
 
-        $this->limiter->hit($key, $decayMinutes * 60);
+        $this->limiter->hit($key, (int) ($decayMinutes * 60));
 
         $response = $next($request);
 
@@ -74,13 +74,12 @@ class ThrottleRequests
      * Resolve the number of attempts if the user is authenticated or not.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int|string  $maxAttempts
      * @return int
      */
-    protected function resolveMaxAttempts($request, $maxAttempts)
+    protected function resolveMaxAttempts($request, int|string $maxAttempts)
     {
-        if (Str::contains($maxAttempts, '|')) {
-            $maxAttempts = explode('|', $maxAttempts, 2)[$request->user() ? 1 : 0];
+        if (Str::contains((string) $maxAttempts, '|')) {
+            $maxAttempts = explode('|', (string) $maxAttempts, 2)[$request->user() ? 1 : 0];
         }
 
         if (! is_numeric($maxAttempts) && $request->user()) {
@@ -101,10 +100,14 @@ class ThrottleRequests
     protected function resolveRequestSignature($request)
     {
         if ($user = $request->user()) {
-            return sha1($user->getAuthIdentifier());
+            $identifier = $user->getAuthIdentifier();
+
+            return sha1(is_scalar($identifier) ? (string) $identifier : '');
         }
 
-        return sha1($request->fingerprint());
+        $fingerprint = $request->fingerprint();
+
+        return sha1((string) $fingerprint);
     }
 
     /**
@@ -163,7 +166,7 @@ class ThrottleRequests
      * @param  int  $maxAttempts
      * @param  int  $remainingAttempts
      * @param  int|null  $retryAfter
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getHeaders($maxAttempts, $remainingAttempts, $retryAfter = null)
     {

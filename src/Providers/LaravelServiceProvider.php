@@ -38,7 +38,7 @@ class LaravelServiceProvider extends ServiceProvider
         });
     }
 
-    protected function setupConfig()
+    protected function setupConfig(): void
     {
         $path = dirname(__DIR__, 2).'/config/response.php';
 

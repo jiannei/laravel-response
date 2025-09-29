@@ -8,6 +8,8 @@
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)
+[![PHPStan](https://img.shields.io/badge/PHPStan-Level%206-brightgreen?style=flat)](https://phpstan.org)
+[![Code Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat)](https://github.com/Jiannei/laravel-response)
 [![Pint](https://img.shields.io/badge/Code%20Style-Pint-orange?style=flat)](https://laravel.com/docs/pint)
 [![Latest Stable Version](https://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](https://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)

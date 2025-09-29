@@ -19,9 +19,9 @@ trait JsonResponseTrait
     /**
      *  Respond with an accepted response and associate a location and/or content if provided.
      *
-     * @param  array  $data
+     * @param  array<string, mixed>  $data
      */
-    public function accepted($data = [], string $message = '', string $location = ''): JsonResponse
+    public function accepted(array $data = [], string $message = '', string $location = ''): JsonResponse
     {
         return tap($this->success($data, $message, 202), function ($response) use ($location) {
             if ($location) {
@@ -33,9 +33,9 @@ trait JsonResponseTrait
     /**
      * Respond with a created response and associate a location if provided.
      *
-     * @param  null  $data
+     * @param  array<string, mixed>  $data
      */
-    public function created($data = [], string $message = '', string $location = ''): JsonResponse
+    public function created(array $data = [], string $message = '', string $location = ''): JsonResponse
     {
         return tap($this->success($data, $message, 201), function ($response) use ($location) {
             if ($location) {
@@ -111,21 +111,16 @@ trait JsonResponseTrait
 
     /**
      * Return an fail response.
-     *
-     * @param  null  $errors
      */
-    public function fail(string $message = '', int|\BackedEnum $code = 500, $errors = null): JsonResponse
+    public function fail(string $message = '', int|\BackedEnum $code = 500, mixed $errors = null): JsonResponse
     {
         return Format::data(message: $message, code: $code, error: $errors)->response();
     }
 
     /**
      * Return a success response.
-     *
-     * @param  mixed  $data
-     * @return JsonResponse
      */
-    public function success($data = [], string $message = '', int|\BackedEnum $code = 200)
+    public function success(mixed $data = [], string $message = '', int|\BackedEnum $code = 200): JsonResponse
     {
         return Format::data(data: $data, message: $message, code: $code)->response();
     }

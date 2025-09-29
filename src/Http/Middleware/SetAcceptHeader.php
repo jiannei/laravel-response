@@ -20,11 +20,12 @@ class SetAcceptHeader
     /**
      * Handle an incoming request.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Closure(\Illuminate\Http\Request): mixed  $next
+     * @return mixed
      */
     public function handle(Request $request, Closure $next, string $type = 'json')
     {
-        Str::contains($request->header('Accept'), $contentType = "application/$type") or
+        Str::contains($request->header('Accept') ?? '', $contentType = "application/$type") or
         $request->headers->set('Accept', $contentType);
 
         return $next($request);

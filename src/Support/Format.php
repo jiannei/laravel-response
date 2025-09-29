@@ -30,10 +30,16 @@ class Format implements ResponseFormat
 {
     use Macroable;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     protected ?array $data = null;
 
     protected int $statusCode = 200;
 
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(protected array $config = []) {}
 
     /**
@@ -49,6 +55,8 @@ class Format implements ResponseFormat
 
     /**
      * Get formatted data.
+     *
+     * @return array<string, mixed>|null
      */
     public function get(): ?array
     {
@@ -57,41 +65,44 @@ class Format implements ResponseFormat
 
     /**
      * Core format.
-     *
-     * @param  null  $data
-     * @param  null  $error
-     * @return Format
      */
-    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, $error = null): static
+    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, mixed $error = null): static
     {
-        return tap($this, function () use ($data, $message, $code, $error) {
-            $bizCode = $this->formatBusinessCode($code);
+        $bizCode = $this->formatBusinessCode($code);
 
-            $this->data = $this->formatDataFields([
-                'status' => $this->formatStatus($bizCode),
-                'code' => $bizCode,
-                'message' => $this->formatMessage($bizCode, $message),
-                'data' => $this->formatData($data),
-                'error' => $this->formatError($error),
-            ]);
+        $this->data = $this->formatDataFields([
+            'status' => $this->formatStatus($bizCode),
+            'code' => $bizCode,
+            'message' => $this->formatMessage($bizCode, $message),
+            'data' => $this->formatData($data),
+            'error' => $this->formatError(null),
+        ]);
 
-            $this->statusCode = $this->formatStatusCode($bizCode);
-        });
+        $this->statusCode = $this->formatStatusCode($bizCode);
+
+        return $this;
     }
 
     /**
      * Format paginator data.
+     *
+     * @param  AbstractPaginator<int|string, mixed>|AbstractCursorPaginator<int|string, mixed>|Paginator<int|string, mixed>  $resource
+     * @return array<string, mixed>
      */
     public function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array
     {
+        $data = method_exists($resource, 'toArray') ? $resource->toArray()['data'] : $resource->items();
+
         return [
-            'data' => $resource->toArray()['data'],
+            'data' => $data,
             'meta' => $this->formatMeta($resource),
         ];
     }
 
     /**
      * Format collection resource data.
+     *
+     * @return array<string, mixed>
      */
     public function resourceCollection(ResourceCollection $collection): array
     {
@@ -103,6 +114,8 @@ class Format implements ResponseFormat
 
     /**
      * Format JsonResource Data.
+     *
+     * @return array<string, mixed>
      */
     public function jsonResource(JsonResource $resource): array
     {
@@ -111,14 +124,16 @@ class Format implements ResponseFormat
 
     /**
      * Format data.
+     *
+     * @return array<string, mixed>|object
      */
-    protected function formatData($data): array|object
+    protected function formatData(mixed $data): array|object
     {
         return match (true) {
             $data instanceof ResourceCollection => $this->resourceCollection($data),
             $data instanceof JsonResource => $this->jsonResource($data),
-            $data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator => $this->paginator($data),
-            $data instanceof Arrayable || (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
+            $data instanceof AbstractPaginator, $data instanceof AbstractCursorPaginator => $this->paginator($data),
+            $data instanceof Arrayable, (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
             empty($data) => (object) $data,
             default => Arr::wrap($data)
         };
@@ -142,7 +157,7 @@ class Format implements ResponseFormat
      */
     protected function formatBusinessCode(int|\BackedEnum $code): int
     {
-        return $code instanceof \BackedEnum ? $code->value : $code;
+        return $code instanceof \BackedEnum ? (int) $code->value : $code;
     }
 
     /**
@@ -150,7 +165,7 @@ class Format implements ResponseFormat
      */
     protected function formatStatus(int $bizCode): string
     {
-        $statusCode = (int) substr($bizCode, 0, 3);
+        $statusCode = (int) substr((string) $bizCode, 0, 3);
 
         return match (true) {
             ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
@@ -164,7 +179,10 @@ class Format implements ResponseFormat
      */
     protected function formatStatusCode(int $code): int
     {
-        return (int) substr(Config::get('response.error_code') ?: $code, 0, 3);
+        $errorCode = Config::get('response.error_code');
+        $codeToUse = is_numeric($errorCode) ? $errorCode : $code;
+
+        return (int) substr((string) $codeToUse, 0, 3);
     }
 
     /**
@@ -181,8 +199,10 @@ class Format implements ResponseFormat
 
     /**
      * Format paginator data.
+     *
+     * @return array<string, mixed>
      */
-    protected function formatMeta($collection): array
+    protected function formatMeta(mixed $collection): array
     {
         // vendor/laravel/framework/src/Illuminate/Http/Resources/Json/PaginatedResourceResponse.php
         return match (true) {
@@ -224,6 +244,9 @@ class Format implements ResponseFormat
 
     /**
      * Format error.
+     *
+     * @param  array<string, mixed>|null  $error
+     * @return object|array<string, mixed>
      */
     protected function formatError(?array $error): object|array
     {
@@ -232,28 +255,32 @@ class Format implements ResponseFormat
 
     /**
      * Format response data fields.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
      */
     protected function formatDataFields(array $data): array
     {
-        return tap($data, function (&$item) {
-            foreach ($this->config as $key => $config) {
-                if (! Arr::has($item, $key)) {
-                    continue;
-                }
-
-                $show = $config['show'] ?? true;
-                $alias = $config['alias'] ?? '';
-
-                if ($alias && $alias !== $key) {
-                    Arr::set($item, $alias, Arr::get($item, $key));
-                    $item = Arr::except($item, $key);
-                    $key = $alias;
-                }
-
-                if (! $show) {
-                    $item = Arr::except($item, $key);
-                }
+        foreach ($this->config as $key => $config) {
+            if (! is_string($key) && ! is_int($key) || ! Arr::has($data, $key)) {
+                continue;
             }
-        });
+
+            $show = is_array($config) ? ($config['show'] ?? true) : true;
+            $alias = is_array($config) ? ($config['alias'] ?? '') : '';
+
+            if (! $show) {
+                unset($data[$key]);
+
+                continue;
+            }
+
+            if ($alias && $alias !== $key) {
+                $data[$alias] = Arr::get($data, $key);
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
     }
 }
