@@ -34,7 +34,9 @@ class Format implements ResponseFormat
 
     protected int $statusCode = 200;
 
-    public function __construct(protected array $config = []) {}
+    public function __construct(protected array $config = [])
+    {
+    }
 
     /**
      * Return a new JSON response from the application.
