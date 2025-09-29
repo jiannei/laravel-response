@@ -2,10 +2,7 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 9
+    level: 6
     paths:
         - src
-    ignoreErrors:
-        - '#Call to function is_(string|int)\(\) with .* will always evaluate to true#'
-        - '#Result of && is always false#'
-        - '#Possibly invalid array key type mixed#'
+    treatPhpDocTypesAsCertain: false

@@ -262,7 +262,7 @@ class Format implements ResponseFormat
     protected function formatDataFields(array $data): array
     {
         foreach ($this->config as $key => $config) {
-            if (! is_string($key) && ! is_int($key) || ! Arr::has($data, $key)) {
+            if (! is_string($key) || ! Arr::has($data, $key)) {
                 continue;
             }
 
