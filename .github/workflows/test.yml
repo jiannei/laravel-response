@@ -21,17 +21,22 @@ jobs:
                     - laravel: 10.*
                       testbench: 8.*
                       pest: ^2.34
+                      enum: ^3.0
                     - laravel: 11.*
                       testbench: 9.*
                       pest: ^3.11
+                      enum: ^4.0
                     - laravel: 12.*
                       testbench: 10.*
                       pest: ^3.11
+                      enum: ^4.0
                 exclude:
-                    - php: 8.1
-                      laravel: 11.*
+                    # Laravel 12 requires PHP 8.2+
                     - php: 8.1
                       laravel: 12.*
+                    # Laravel 11 requires PHP 8.2+  
+                    - php: 8.1
+                      laravel: 11.*
 
         steps:
             - name: Checkout code
@@ -39,6 +44,9 @@ jobs:
 
             - name: Validate composer.json and composer.lock
               run: composer validate --strict
+
+            - name: Security audit
+              run: composer audit --no-dev || true
 
             - name: Cache Composer packages
               uses: actions/cache@v4
@@ -58,7 +66,9 @@ jobs:
             - name: Install dependencies - L${{ matrix.laravel }}
               run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "pestphp/pest:${{ matrix.pest }}" --no-interaction --no-update
-                    if [[ "${{ matrix.laravel }}" == "12.*" ]]; then
+                    if [[ "${{ matrix.enum }}" != "" ]]; then
+                      composer require --dev "jiannei/laravel-enum:${{ matrix.enum }}" --no-interaction --no-update
+                    elif [[ "${{ matrix.laravel }}" == "12.*" ]]; then
                       composer require --dev "jiannei/laravel-enum:^4.0" --no-interaction --no-update
                     elif [[ "${{ matrix.laravel }}" == "11.*" ]]; then
                       composer require --dev "jiannei/laravel-enum:^4.0" --no-interaction --no-update
@@ -66,6 +76,9 @@ jobs:
                       composer require --dev "jiannei/laravel-enum:^3.0" --no-interaction --no-update
                     fi
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+
+            - name: Run code style check
+              run: vendor/bin/pint --test
 
             - name: Execute tests
               run: vendor/bin/pest
