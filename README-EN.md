@@ -4,6 +4,8 @@
 
 > Provide a standardized and unified response data format for Laravel and Lumen API projects.
 
+> **🎉 Latest Update: Now supports Laravel 12!** Supports Laravel 5.5 ~ 12.x all versions, PHP 7.0 ~ 8.3.
+
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![StyleCI](https://github.styleci.io/repos/316969462/shield?style=flat&branch=main)](https://github.styleci.io/repos/316969462?style=flat&branch=main)
 [![Latest Stable Version](https://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
@@ -33,15 +35,17 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 
 ## Install
 
-Support for laravel 5.5. *~ Laravel 10.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
+Support for Laravel 5.5.* ~ Laravel 12.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
-| laravel version | lumen version |  response version |  enum version  |
-|------------| ----  |-------------|  ----  |
-| 5.5.*      | 5.5.* | ~1.8        | ~1.4  |
-| 6.*        | 6.* | ^2.0        |  ~1.4  |
-| 7.*        | 7.* | ^3.0        |  ^2.0  |
-| 8.*  | 8.* | ^4.0        |  ^3.0  |
-| 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  |
+| laravel version | lumen version |  response version |  enum version  | PHP version |
+|------------| ----  |-------------|  ----  |------------|
+| 5.5.*      | 5.5.* | ~1.8        | ~1.4  | ^7.0       |
+| 6.*        | 6.* | ^2.0        |  ~1.4  | ^7.2       |
+| 7.*        | 7.* | ^3.0        |  ^2.0  | ^7.2.5     |
+| 8.*  | 8.* | ^4.0        |  ^3.0  | ^7.3       |
+| 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  | ^8.0       |
+| 11.*       | Not supported | ^6.0        |  ^4.0  | ^8.2       |
+| 12.*       | Not supported | ^6.0        |  ^4.0  | ^8.2       |
 
 
 ```shell
@@ -69,7 +73,22 @@ composer require jiannei/laravel-enum "^3.0" -vvv # optional
 
 composer require jiannei/laravel-response "^5.0" -vvv
 composer require jiannei/laravel-enum "^3.0" -vvv # optional
+
+# laravel 11.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^4.0" -vvv # optional
+
+# laravel 12.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^4.0" -vvv # optional
 ```
+
+> **📝 Version Notes:**
+> - Laravel 11+ has built-in better exception handling mechanism, you can skip manual exception handling configuration
+> - Lumen is no longer maintained since Laravel 9, it's recommended to use Laravel for API development
+> - It's recommended to use the latest version for better performance and security
 
 ## Configuration
 
@@ -81,7 +100,7 @@ composer require jiannei/laravel-enum "^3.0" -vvv # optional
 $ php artisan vendor:publish --provider="Jiannei\Response\Laravel\Providers\LaravelServiceProvider"
 ```
 
-- format exception response
+- format exception response (Laravel 11+ can skip this step)
 
 ```php
 // app/Exceptions/Handler.php

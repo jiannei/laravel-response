@@ -4,6 +4,8 @@
 
 > 为 Laravel 和 Lumen API 项目提供一个规范统一的响应数据格式。
 
+> **🎉 最新更新：现已支持 Laravel 12！** 支持 Laravel 5.5 ~ 12.x 全版本，PHP 7.0 ~ 8.3。
+
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![StyleCI](https://github.styleci.io/repos/316969462/shield?style=flat&branch=main)](https://github.styleci.io/repos/316969462?style=flat&branch=main)
 [![Latest Stable Version](https://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
@@ -44,17 +46,22 @@
 
 ## 安装
 
-支持 Laravel 5.5.* ~ Laravel 11.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
+支持 Laravel 5.5.* ~ Laravel 12.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
-| laravel 版本 | lumen 版本   | response 版本 | enum 版本 |
-|------------|------------|-------------|---------|
-| 5.5.*      | 5.5.*      | ~1.8        | ~1.4    |
-| 6.*        | 6.*        | ^2.0        | ~1.4    |
-| 7.*        | 7.*        | ^3.0        | ^2.0    |
-| 8.*        | 8.*        | ^4.0        | ^3.0    |
-| 9.* - 10.* | 9.* - 10.* | ^5.0        | ^3.0    |
-| 11.* | 不支持        | ^6.0        | ^4.0    |
+| laravel 版本 | lumen 版本   | response 版本 | enum 版本 | PHP 版本要求 |
+|------------|------------|-------------|---------|------------|
+| 5.5.*      | 5.5.*      | ~1.8        | ~1.4    | ^7.0       |
+| 6.*        | 6.*        | ^2.0        | ~1.4    | ^7.2       |
+| 7.*        | 7.*        | ^3.0        | ^2.0    | ^7.2.5     |
+| 8.*        | 8.*        | ^4.0        | ^3.0    | ^7.3       |
+| 9.* - 10.* | 9.* - 10.* | ^5.0        | ^3.0    | ^8.0       |
+| 11.*       | 不支持      | ^6.0        | ^4.0    | ^8.2       |
+| 12.*       | 不支持      | ^6.0        | ^4.0    | ^8.2       |
 
+> **📝 版本说明：**
+> - Laravel 11+ 版本内置了更好的异常处理机制，可以省略手动配置异常处理步骤
+> - Lumen 从 Laravel 9 开始不再维护，建议使用 Laravel 进行 API 开发
+> - 推荐使用最新版本以获得更好的性能和安全性
 
 ```shell
 # laravel 5.5
@@ -86,6 +93,11 @@ composer require jiannei/laravel-enum "^3.0" -vvv # 可选
 
 composer require jiannei/laravel-response "^6.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # 可选
+
+# laravel 12.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^4.0" -vvv # 可选
 ```
 
 ## 配置
@@ -98,7 +110,7 @@ composer require jiannei/laravel-enum "^4.0" -vvv # 可选
 $ php artisan vendor:publish --provider="Jiannei\Response\Laravel\Providers\LaravelServiceProvider"
 ```
 
-- 格式化异常响应（laravel 11 可省略这一步）
+- 格式化异常响应（Laravel 11+ 可省略这一步）
 
 
 ```php
