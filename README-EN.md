@@ -7,7 +7,8 @@
 > **🎉 Latest Update: Now supports Laravel 12!** Supports Laravel 5.5 ~ 12.x all versions, PHP 7.0 ~ 8.3.
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
-[![StyleCI](https://github.styleci.io/repos/316969462/shield?style=flat&branch=main)](https://github.styleci.io/repos/316969462?style=flat&branch=main)
+[![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)
+[![Pint](https://img.shields.io/badge/Code%20Style-Pint-orange?style=flat)](https://laravel.com/docs/pint)
 [![Latest Stable Version](https://poser.pugx.org/jiannei/laravel-response/v)](https://packagist.org/packages/jiannei/laravel-response)
 [![Total Downloads](https://poser.pugx.org/jiannei/laravel-response/downloads)](https://packagist.org/packages/jiannei/laravel-response)
 [![Monthly Downloads](https://poser.pugx.org/jiannei/laravel-response/d/monthly)](https://packagist.org/packages/jiannei/laravel-response)
