@@ -7,6 +7,28 @@ on:
         branches: [ main ]
 
 jobs:
+    static-analysis:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.2'
+                extensions: curl, mbstring, zip, pcntl, sqlite, pdo_sqlite, iconv
+                coverage: none
+
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist
+
+            - name: Run code style check
+              run: vendor/bin/pint --test --config=pint.json
+
+            - name: Run PHPStan
+              run: vendor/bin/phpstan analyse --memory-limit=512M
+
     tests:
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
         runs-on: ${{ matrix.os }}
@@ -63,12 +85,6 @@ jobs:
               run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "pestphp/pest:${{ matrix.pest }}" "jiannei/laravel-enum:${{ matrix.enum }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
-
-            - name: Run code style check
-              run: vendor/bin/pint --test
-
-            - name: Run PHPStan
-              run: vendor/bin/phpstan analyse --memory-limit=512M
 
             - name: Execute tests
               run: vendor/bin/pest
