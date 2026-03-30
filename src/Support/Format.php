@@ -135,7 +135,7 @@ class Format implements ResponseFormat
             $data instanceof AbstractPaginator, $data instanceof AbstractCursorPaginator => $this->paginator($data),
             $data instanceof Arrayable, (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
             empty($data) => (object) $data,
-            default => Arr::wrap($data)
+            default => Arr::wrap($data),
         };
     }
 
@@ -144,12 +144,13 @@ class Format implements ResponseFormat
      */
     protected function formatMessage(int $code, string $message = ''): ?string
     {
+        if ($message !== '') {
+            return $message;
+        }
+
         $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
 
-        return match (true) {
-            ! $message && Lang::has($localizationKey) => Lang::get($localizationKey),
-            default => $message
-        };
+        return Lang::has($localizationKey) ? Lang::get($localizationKey) : null;
     }
 
     /**
@@ -180,9 +181,8 @@ class Format implements ResponseFormat
     protected function formatStatusCode(int $code): int
     {
         $errorCode = Config::get('response.error_code');
-        $codeToUse = is_numeric($errorCode) ? $errorCode : $code;
 
-        return (int) substr((string) $codeToUse, 0, 3);
+        return (int) substr((string) ($errorCode ?: $code), 0, 3);
     }
 
     /**
@@ -262,12 +262,12 @@ class Format implements ResponseFormat
     protected function formatDataFields(array $data): array
     {
         foreach ($this->config as $key => $config) {
-            if (! is_string($key) || ! Arr::has($data, $key)) {
+            if (! is_string($key) || ! Arr::has($data, $key) || ! is_array($config)) {
                 continue;
             }
 
-            $show = is_array($config) ? ($config['show'] ?? true) : true;
-            $alias = is_array($config) ? ($config['alias'] ?? '') : '';
+            $show = $config['show'] ?? true;
+            $alias = $config['alias'] ?? '';
 
             if (! $show) {
                 unset($data[$key]);

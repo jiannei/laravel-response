@@ -40,8 +40,6 @@ trait ExceptionTrait
      */
     protected function prepareJsonResponse($request, $e)
     {
-        // 要求请求头 header 中包含 /json 或 +json，如：Accept:application/json
-        // 或者是 ajax 请求，header 中包含 X-Requested-With：XMLHttpRequest;
         $exceptionConfig = Config::get('response.exception.'.get_class($e));
 
         if ($exceptionConfig === false) {
@@ -49,11 +47,10 @@ trait ExceptionTrait
         }
 
         $isHttpException = $this->isHttpException($e);
-
-        $message = is_array($exceptionConfig) && isset($exceptionConfig['message']) && is_scalar($exceptionConfig['message']) ? (string) $exceptionConfig['message'] : ($isHttpException ? $e->getMessage() : 'Server Error');
-        $code = is_array($exceptionConfig) && isset($exceptionConfig['code']) ? $exceptionConfig['code'] : ($isHttpException && method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
-        $header = is_array($exceptionConfig) && isset($exceptionConfig['header']) ? $exceptionConfig['header'] : ($isHttpException && method_exists($e, 'getHeaders') ? $e->getHeaders() : []);
-        $options = is_array($exceptionConfig) && isset($exceptionConfig['options']) ? $exceptionConfig['options'] : (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $message = $exceptionConfig['message'] ?? ($isHttpException ? $e->getMessage() : 'Server Error');
+        $code = $exceptionConfig['code'] ?? ($isHttpException && method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
+        $header = $exceptionConfig['header'] ?? ($isHttpException && method_exists($e, 'getHeaders') ? $e->getHeaders() : []);
+        $options = $exceptionConfig['options'] ?? (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         return Response::fail($message, $code, $this->convertExceptionToArray($e))
             ->withHeaders($header)
@@ -74,14 +71,10 @@ trait ExceptionTrait
             return (static::$responseBuilder)($request, $errors);
         }
 
-        $firstMessage = Arr::first($errors, null, '');
-        $message = $this->extractStringFromMessage($firstMessage);
+        $message = $this->extractStringFromMessage(Arr::first($errors, null, ''));
+        $code = Config::get('response.exception.'.ValidationException::class.'.code', 422);
 
-        $exceptionConfig = Config::get('response.exception');
-        $code = is_array($exceptionConfig) ? Arr::get($exceptionConfig, ValidationException::class.'.code', 422) : 422;
-        $codeValue = is_numeric($code) ? (int) $code : 422;
-
-        return Response::fail($message, $codeValue, $errors);
+        return Response::fail($message, is_numeric($code) ? (int) $code : 422, $errors);
     }
 
     /**
@@ -92,18 +85,13 @@ trait ExceptionTrait
      */
     protected function invalidJson($request, ValidationException $exception)
     {
-        $exceptionConfig = Config::get('response.exception.'.ValidationException::class);
+        $code = Config::get('response.exception.'.ValidationException::class.'.code', 422);
 
-        if ($exceptionConfig !== false) {
-            $firstError = $exception->validator->errors()->first();
-            $message = (string) $firstError;
-            $code = is_array($exceptionConfig) ? Arr::get($exceptionConfig, 'code', 422) : 422;
-            $codeValue = is_numeric($code) ? (int) $code : 422;
-
-            return Response::fail($message, $codeValue, $exception->errors());
-        }
-
-        return parent::invalidJson($request, $exception);
+        return Response::fail(
+            (string) $exception->validator->errors()->first(),
+            is_numeric($code) ? (int) $code : 422,
+            $exception->errors()
+        );
     }
 
     /**
@@ -111,17 +99,11 @@ trait ExceptionTrait
      */
     private function extractStringFromMessage(mixed $message): string
     {
-        if (is_string($message)) {
-            return $message;
-        }
-
-        if (is_array($message)) {
-            $firstElement = Arr::first($message);
-
-            return is_scalar($firstElement) ? (string) $firstElement : '';
-        }
-
-        return is_scalar($message) ? (string) $message : '';
+        return match (true) {
+            is_string($message) => $message,
+            is_array($message) => is_string($first = Arr::first($message)) ? $first : '',
+            default => (string) $message,
+        };
     }
 
     /**
@@ -134,8 +116,10 @@ trait ExceptionTrait
     {
         $exceptionConfig = Config::get('response.exception.'.AuthenticationException::class);
 
-        return $exceptionConfig !== false && $request->expectsJson()
-            ? Response::errorUnauthorized(is_array($exceptionConfig) && is_string($exceptionConfig['message'] ?? null) ? $exceptionConfig['message'] : $exception->getMessage())
-            : parent::unauthenticated($request, $exception);
+        if ($exceptionConfig !== false && $request->expectsJson()) {
+            return Response::errorUnauthorized($exceptionConfig['message'] ?? $exception->getMessage());
+        }
+
+        return parent::unauthenticated($request, $exception);
     }
 }
