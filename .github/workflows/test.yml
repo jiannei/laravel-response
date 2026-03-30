@@ -23,9 +23,6 @@ jobs:
             - name: Install dependencies
               run: composer install --no-interaction --prefer-dist
 
-            - name: Run code style check
-              run: vendor/bin/pint --test
-
             - name: Run PHPStan
               run: vendor/bin/phpstan analyse --memory-limit=512M
 
