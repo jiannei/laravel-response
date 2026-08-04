@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [ENGLISH](README-EN.md)
 
-> 为 Laravel 和 Lumen API 项目提供一个规范统一的响应数据格式。
+> 为 Laravel API 项目提供一个规范统一的响应数据格式。
 
 > **🎉 最新更新：现已支持 Laravel 12！** 支持 Laravel 5.5 ~ 12.x 全版本，PHP 7.0 ~ 8.3。
 
@@ -51,19 +51,19 @@
 
 支持 Laravel 5.5.* ~ Laravel 12.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
-| laravel 版本 | lumen 版本   | response 版本 | enum 版本 | PHP 版本要求 |
-|------------|------------|-------------|---------|------------|
-| 5.5.*      | 5.5.*      | ~1.8        | ~1.4    | ^7.0       |
-| 6.*        | 6.*        | ^2.0        | ~1.4    | ^7.2       |
-| 7.*        | 7.*        | ^3.0        | ^2.0    | ^7.2.5     |
-| 8.*        | 8.*        | ^4.0        | ^3.0    | ^7.3       |
-| 9.* - 10.* | 9.* - 10.* | ^5.0        | ^3.0    | ^8.0       |
-| 11.*       | 不支持      | ^6.0        | ^4.0    | ^8.2       |
-| 12.*       | 不支持      | ^6.0        | ^4.0    | ^8.2       |
+| laravel 版本 | response 版本 | enum 版本 | PHP 版本要求 |
+|------------|-------------|---------|------------|
+| 5.5.*      | ~1.8        | ~1.4    | ^7.0       |
+| 6.*        | ^2.0        | ~1.4    | ^7.2       |
+| 7.*        | ^3.0        | ^2.0    | ^7.2.5     |
+| 8.*        | ^4.0        | ^3.0    | ^7.3       |
+| 9.* - 10.* | ^5.0        | ^3.0    | ^8.0       |
+| 11.*       | ^6.0        | ^4.0    | ^8.2       |
+| 12.*       | ^6.0        | ^4.0    | ^8.2       |
 
 > **📝 版本说明：**
 > - Laravel 11+ 版本内置了更好的异常处理机制，可以省略手动配置异常处理步骤
-> - Lumen 从 Laravel 9 开始不再维护，建议使用 Laravel 进行 API 开发
+> - Lumen 已停止维护，本包不再提供 Lumen 适配器
 > - 推荐使用最新版本以获得更好的性能和安全性
 
 ```shell
@@ -137,33 +137,6 @@ class Handler extends ExceptionHandler
 }
 ```
 
-### Lumen
-
-- 复制配置文件到 `vendor/jiannei/laravel-response/config/response.php`，到 `config/response.php`
-
-```bash
-cp vendor/jiannei/laravel-response/config/response.php config/response.php
-```
-
-- 加载配置
-
-```php
-// bootstrap/app.php
-$app->configure('response');
-```
-
-- 格式化异常响应
-
-在 `app/Exceptions/Handler.php` 中 引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
-
-在 `app/Http/Controllers/Controller.php` 中引入 `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
-
-- 注册服务容器
-
-```php
-$app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
-```
-
 ## 使用
 
 扩展包本身提供了丰富的单元测试用例[tests](https://github.com/Jiannei/laravel-response/tree/main/tests) ，也可以通过查看测试用例来解锁使用方法。
@@ -171,7 +144,6 @@ $app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
 或者查看相应的模板项目:
 
 - [laravel-api-starter](https://github.com/Jiannei/laravel-api-starter)
-- [lumen-api-starter](https://github.com/Jiannei/lumen-api-starter)
 
 ### 成功响应
 

@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | [ENGLISH](README-EN.md)
 
-> Provide a standardized and unified response data format for Laravel and Lumen API projects.
+> Provide a standardized and unified response data format for Laravel API projects.
 
 > **🎉 Latest Update: Now supports Laravel 12!** Supports Laravel 5.5 ~ 12.x all versions, PHP 7.0 ~ 8.3.
 
@@ -40,15 +40,15 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 
 Support for Laravel 5.5.* ~ Laravel 12.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
-| laravel version | lumen version |  response version |  enum version  | PHP version |
+| laravel version | response version | enum version | PHP version |
 |------------| ----  |-------------|  ----  |------------|
-| 5.5.*      | 5.5.* | ~1.8        | ~1.4  | ^7.0       |
-| 6.*        | 6.* | ^2.0        |  ~1.4  | ^7.2       |
-| 7.*        | 7.* | ^3.0        |  ^2.0  | ^7.2.5     |
-| 8.*  | 8.* | ^4.0        |  ^3.0  | ^7.3       |
-| 9.* - 10.* | 9.* - 10.* | ^5.0        |  ^3.0  | ^8.0       |
-| 11.*       | Not supported | ^6.0        |  ^4.0  | ^8.2       |
-| 12.*       | Not supported | ^6.0        |  ^4.0  | ^8.2       |
+| 5.5.*      | ~1.8        | ~1.4    | ^7.0       |
+| 6.*        | ^2.0        |  ~1.4  | ^7.2       |
+| 7.*        | ^3.0        |  ^2.0  | ^7.2.5     |
+| 8.*  | ^4.0        |  ^3.0  | ^7.3       |
+| 9.* - 10.* | ^5.0        |  ^3.0  | ^8.0       |
+| 11.*       | ^6.0        |  ^4.0  | ^8.2       |
+| 12.*       | ^6.0        |  ^4.0  | ^8.2       |
 
 
 ```shell
@@ -90,7 +90,7 @@ composer require jiannei/laravel-enum "^4.0" -vvv # optional
 
 > **📝 Version Notes:**
 > - Laravel 11+ has built-in better exception handling mechanism, you can skip manual exception handling configuration
-> - Lumen is no longer maintained since Laravel 9, it's recommended to use Laravel for API development
+> - Lumen is no longer maintained; this package no longer provides a Lumen adapter
 > - It's recommended to use the latest version for better performance and security
 
 ## Configuration
@@ -126,33 +126,6 @@ class Handler extends ExceptionHandler
 }
 ```
 
-### Lumen
-
-- Copy `vendor/jiannei/laravel-response/config/response.php` file to `config/response.php`
-
-```bash
-cp vendor/jiannei/laravel-response/config/response.php config/response.php
-```
-
-- load response configuration
-
-```php
-// bootstrap/app.php
-$app->configure('response');
-```
-
-- format exception response
-
-In `app/Exceptions/Handler.php` file `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
-
-In `app/Http/Controllers/Controller.php` file `use Jiannei\Response\Laravel\Support\Traits\ExceptionTrait;`
-
-- register service provider
-
-```php
-$app->register(\Jiannei\Response\Laravel\Providers\LumenServiceProvider::class);
-```
-
 ## Usage
 
 The extension package itself provides rich unit test cases,you can unlock usage by viewing test cases [tests](https://github.com/Jiannei/laravel-response/tree/main/tests)
@@ -160,7 +133,6 @@ The extension package itself provides rich unit test cases,you can unlock usage 
 Or view the corresponding template projects:
 
 - [laravel-api-starter](https://github.com/Jiannei/laravel-api-starter)
-- [lumen-api-starter](https://github.com/Jiannei/lumen-api-starter)
 
 ### Successful response
 
