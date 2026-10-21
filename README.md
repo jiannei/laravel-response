@@ -4,7 +4,7 @@
 
 > 为 Laravel API 项目提供一个规范统一的响应数据格式。
 
-> **🎉 最新更新：现已支持 Laravel 13！** 支持 Laravel 5.5 ~ 13.x 全版本，PHP 7.0 ~ 8.4。
+> **🎉 最新更新：现已支持 Laravel 13！** 支持 Laravel 5.5 ~ 13.x 全版本，PHP 7.0 ~ 8.5。
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)

@@ -87,6 +87,8 @@ trait ExceptionTrait
      *
      * Config keys: message / code / header / options. Missing keys fall back to
      * validation-specific defaults (code=422, first validator error as message).
+     *
+     * @param  array<string, mixed>  $config
      */
     protected function formatValidationException(ValidationException $exception, array $config): JsonResponse
     {
@@ -104,6 +106,8 @@ trait ExceptionTrait
      *
      * Config keys: message / code / header / options. Missing keys fall back to
      * auth-specific defaults (code=401, exception message).
+     *
+     * @param  array<string, mixed>  $config
      */
     protected function formatAuthenticationException(AuthenticationException $exception, array $config): JsonResponse
     {
@@ -122,6 +126,8 @@ trait ExceptionTrait
      * All typed formatters converge here. Each caller is responsible for
      * extracting the appropriate message / code / error / header / options
      * for its exception type — this method only assembles the response.
+     *
+     * @param  array<string, mixed>  $header
      */
     protected function formatException(
         int $code,
@@ -142,6 +148,8 @@ trait ExceptionTrait
      *  - false: explicit opt-out (response.exception.<FQCN> === false) — caller
      *    must fall through to parent::* behaviour.
      *  - array: the configured block (empty array if no block exists).
+     *
+     * @return array<string, mixed>|false
      */
     private function resolveExceptionConfig(Throwable|string $e): array|false
     {

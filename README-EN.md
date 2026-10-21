@@ -4,7 +4,7 @@
 
 > Provide a standardized and unified response data format for Laravel API projects.
 
-> **🎉 Latest Update: Now supports Laravel 13!** Supports Laravel 5.5 ~ 13.x all versions, PHP 7.0 ~ 8.4.
+> **🎉 Latest Update: Now supports Laravel 13!** Supports Laravel 5.5 ~ 13.x all versions, PHP 7.0 ~ 8.5.
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)

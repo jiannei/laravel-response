@@ -1,5 +1,12 @@
 name: Test
 
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 on:
     push:
         branches: [ main ]
@@ -11,17 +18,31 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                php-version: '8.2'
+                php-version: '8.3'
                 extensions: curl, mbstring, zip, pcntl, sqlite, pdo_sqlite, iconv
                 coverage: none
 
-            - name: Install dependencies
-              run: composer install --no-interaction --prefer-dist
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ~/.cache/composer
+                  key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}-L13
+                  restore-keys: |
+                      ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}-
+
+            - name: Install dependencies on the latest Laravel
+              # Analyse against the newest supported framework (Laravel 13).
+              run: |
+                  composer require --dev "orchestra/testbench:^11.0" --no-interaction --no-update
+                  composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+            - name: Show analysed Laravel version
+              run: composer show laravel/framework
 
             - name: Run PHPStan
               run: vendor/bin/phpstan analyse --memory-limit=512M
@@ -39,6 +60,10 @@ jobs:
                       testbench: '^9.0'
                       pest: '^3.11'
                     - php: '8.3'
+                      laravel: '11.*'
+                      testbench: '^9.0'
+                      pest: '^3.11'
+                    - php: '8.4'
                       laravel: '11.*'
                       testbench: '^9.0'
                       pest: '^3.11'
@@ -64,10 +89,14 @@ jobs:
                       laravel: '13.*'
                       testbench: '^11.0'
                       pest: '^5.0'
+                    - php: '8.5'
+                      laravel: '13.*'
+                      testbench: '^11.0'
+                      pest: '^5.0'
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Validate composer.json and composer.lock
               run: composer validate --strict
@@ -76,12 +105,12 @@ jobs:
               run: composer audit --no-dev || true
 
             - name: Cache Composer packages
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
-                  path: vendor
-                  key: ${{ runner.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-${{ hashFiles('**/composer.lock') }}-current
+                  path: ~/.cache/composer
+                  key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ hashFiles('composer.json') }}
                   restore-keys: |
-                      ${{ runner.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-current
+                      ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -99,7 +128,8 @@ jobs:
                       --no-interaction --no-progress
 
             - name: List installed Laravel
-              run: composer show laravel/framework | head -2
+              # No pipes: `head` closes stdout early and Composer aborts with EPIPE.
+              run: composer show laravel/framework
 
             - name: Run tests
               run: vendor/bin/pest --ci
@@ -140,7 +170,7 @@ jobs:
 
         steps:
             - name: Checkout legacy tag
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   ref: ${{ matrix.tag }}
 
@@ -152,6 +182,14 @@ jobs:
                   tools: composer:2.2
                   extensions: curl, dom, fileinfo, filter, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip
                   coverage: none
+
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ~/.cache/composer
+                  key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.tag }}-${{ hashFiles('composer.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.tag }}-
 
             - name: Allow legacy Composer plugins
               # Laravel 5.5 era dependencies (Carbon 1.x) pull in
