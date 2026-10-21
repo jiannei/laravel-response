@@ -158,6 +158,30 @@ jobs:
               # kylekatarnls/update-helper, which Composer 2.2 blocks unless allowlisted.
               run: composer config --no-interaction allow-plugins.kylekatarnls/update-helper true
 
+            - name: Align legacy migration hook
+              # Old tags register migrations in setUp() *after* parent::setUp(),
+              # but Laravel's RefreshDatabase migrates in-memory SQLite during
+              # setUpTraits() — i.e. before the paths exist (e.g. tag v4.0.0 on
+              # Laravel 8: "no such table: users"). Testbench >= 6 supports the
+              # defineDatabaseMigrations() hook, which runs before that refresh.
+              # Inject it when the tag does not define it already; it is inert
+              # on older Testbench versions that never call the hook.
+              run: |
+                  php <<'PHP'
+                  <?php
+                  $file = 'tests/TestCase.php';
+                  $code = file_get_contents($file);
+                  if (strpos($code, 'defineDatabaseMigrations') === false) {
+                      $hook = "\n    protected function defineDatabaseMigrations()\n    {\n        \$this->loadMigrationsFrom(__DIR__ . '/database/migrations');\n    }\n";
+                      $pos = strrpos($code, '}');
+                      $code = substr($code, 0, $pos) . $hook . substr($code, $pos);
+                      file_put_contents($file, $code);
+                      echo "Injected defineDatabaseMigrations() into tests/TestCase.php\n";
+                  } else {
+                      echo "defineDatabaseMigrations() already present\n";
+                  }
+                  PHP
+
             - name: Install legacy dependencies
               run: composer update --prefer-dist --no-interaction --no-progress
 
