@@ -153,13 +153,20 @@ jobs:
                   extensions: curl, dom, fileinfo, filter, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip
                   coverage: none
 
+            - name: Allow legacy Composer plugins
+              # Laravel 5.5 era dependencies (Carbon 1.x) pull in
+              # kylekatarnls/update-helper, which Composer 2.2 blocks unless allowlisted.
+              run: composer config --no-interaction allow-plugins.kylekatarnls/update-helper true
+
             - name: Install legacy dependencies
               run: composer update --prefer-dist --no-interaction --no-progress
 
             - name: List installed versions
+              # No pipes here: `head` closes stdout early and Composer aborts with
+              # "Unable to write output" (EPIPE) on PHP/Framework versions in this matrix.
               run: |
-                  composer show laravel/framework | head -2
-                  composer show | grep 'jiannei/laravel-response'
+                  composer show laravel/framework
+                  composer show orchestra/testbench
 
             - name: Run legacy tests
               run: vendor/bin/phpunit --no-coverage
