@@ -13,8 +13,8 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "^3.11",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.11|^5.0",
         "jiannei/laravel-enum": "^4.0",
         "laravel/pint": "^1.18.1",
         "larastan/larastan": "^3.0"

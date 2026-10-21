@@ -4,7 +4,7 @@
 
 > 为 Laravel API 项目提供一个规范统一的响应数据格式。
 
-> **🎉 最新更新：现已支持 Laravel 12！** 支持 Laravel 5.5 ~ 12.x 全版本，PHP 7.0 ~ 8.3。
+> **🎉 最新更新：现已支持 Laravel 13！** 支持 Laravel 5.5 ~ 13.x 全版本，PHP 7.0 ~ 8.4。
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)
@@ -49,7 +49,7 @@
 
 ## 安装
 
-支持 Laravel 5.5.* ~ Laravel 12.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
+支持 Laravel 5.5.* ~ Laravel 13.* 版本，自定义业务操作码部分依赖于  [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum)，需要先进行安装。
 
 | laravel 版本 | response 版本 | enum 版本 | PHP 版本要求 |
 |------------|-------------|---------|------------|
@@ -60,6 +60,7 @@
 | 9.* - 10.* | ^5.0        | ^3.0    | ^8.0       |
 | 11.*       | ^6.0        | ^4.0    | ^8.2       |
 | 12.*       | ^6.0        | ^4.0    | ^8.2       |
+| 13.*       | ^6.0        | ^4.0    | ^8.3       |
 
 > **📝 版本说明：**
 > - Laravel 11+ 版本内置了更好的异常处理机制，可以省略手动配置异常处理步骤
@@ -98,6 +99,11 @@ composer require jiannei/laravel-response "^6.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # 可选
 
 # laravel 12.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^4.0" -vvv # 可选
+
+# laravel 13.x
 
 composer require jiannei/laravel-response "^6.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # 可选

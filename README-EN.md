@@ -4,7 +4,7 @@
 
 > Provide a standardized and unified response data format for Laravel API projects.
 
-> **🎉 Latest Update: Now supports Laravel 12!** Supports Laravel 5.5 ~ 12.x all versions, PHP 7.0 ~ 8.3.
+> **🎉 Latest Update: Now supports Laravel 13!** Supports Laravel 5.5 ~ 13.x all versions, PHP 7.0 ~ 8.4.
 
 ![Test](https://github.com/Jiannei/laravel-response/workflows/Test/badge.svg)
 [![Pest](https://img.shields.io/badge/Tests-Pest-green?style=flat)](https://pestphp.com)
@@ -38,7 +38,7 @@ Follow certain specifications, return HTTP status codes that are easy to underst
 
 ## Install
 
-Support for Laravel 5.5.* ~ Laravel 12.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
+Support for Laravel 5.5.* ~ Laravel 13.*, the user-defined business operation code partially depends on [jiannei/laravel-enum](https://github.com/Jiannei/laravel-enum).
 
 | laravel version | response version | enum version | PHP version |
 |------------| ----  |-------------|  ----  |------------|
@@ -49,6 +49,7 @@ Support for Laravel 5.5.* ~ Laravel 12.*, the user-defined business operation co
 | 9.* - 10.* | ^5.0        |  ^3.0  | ^8.0       |
 | 11.*       | ^6.0        |  ^4.0  | ^8.2       |
 | 12.*       | ^6.0        |  ^4.0  | ^8.2       |
+| 13.*       | ^6.0        |  ^4.0  | ^8.3       |
 
 
 ```shell
@@ -83,6 +84,11 @@ composer require jiannei/laravel-response "^6.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # optional
 
 # laravel 12.x
+
+composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-enum "^4.0" -vvv # optional
+
+# laravel 13.x
 
 composer require jiannei/laravel-response "^6.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # optional

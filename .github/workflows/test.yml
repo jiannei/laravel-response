@@ -27,31 +27,43 @@ jobs:
               run: vendor/bin/phpstan analyse --memory-limit=512M
 
     tests:
-        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
-        runs-on: ${{ matrix.os }}
+        name: P${{ matrix.php }} - L${{ matrix.laravel }}
+        runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                os: [ ubuntu-latest ]
-                php: [8.1, 8.2, 8.3]
-                laravel: [11.*, 12.*]
-                dependency-version: [ prefer-stable ]
                 include:
-                    - laravel: 11.*
-                      testbench: 9.*
-                      pest: ^3.11
-                      enum: ^4.0
-                    - laravel: 12.*
-                      testbench: 10.*
-                      pest: ^3.11
-                      enum: ^4.0
-                exclude:
-                    # Laravel 12 requires PHP 8.2+
-                    - php: 8.1
-                      laravel: 12.*
-                    # Laravel 11 requires PHP 8.2+  
-                    - php: 8.1
-                      laravel: 11.*
+                    # Laravel 11 (PHP 8.2 - 8.4)
+                    - php: '8.2'
+                      laravel: '11.*'
+                      testbench: '^9.0'
+                      pest: '^3.11'
+                    - php: '8.3'
+                      laravel: '11.*'
+                      testbench: '^9.0'
+                      pest: '^3.11'
+                    # Laravel 12 (PHP 8.2 - 8.4)
+                    - php: '8.2'
+                      laravel: '12.*'
+                      testbench: '^10.0'
+                      pest: '^3.11'
+                    - php: '8.3'
+                      laravel: '12.*'
+                      testbench: '^10.0'
+                      pest: '^3.11'
+                    - php: '8.4'
+                      laravel: '12.*'
+                      testbench: '^10.0'
+                      pest: '^3.11'
+                    # Laravel 13 (PHP 8.3+)
+                    - php: '8.3'
+                      laravel: '13.*'
+                      testbench: '^11.0'
+                      pest: '^3.11'
+                    - php: '8.4'
+                      laravel: '13.*'
+                      testbench: '^11.0'
+                      pest: '^5.0'
 
         steps:
             - name: Checkout code
@@ -67,21 +79,87 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: vendor
-                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+                  key: ${{ runner.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-${{ hashFiles('**/composer.lock') }}-current
                   restore-keys: |
-                      ${{ runner.os }}-php-
+                      ${{ runner.os }}-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-current
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                php-version: ${{ matrix.php }}
-                extensions: curl, mbstring, zip, pcntl, sqlite, pdo_sqlite, iconv
-                coverage: none
+                  php-version: ${{ matrix.php }}
+                  extensions: curl, dom, fileinfo, filter, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip
+                  coverage: none
 
-            - name: Install dependencies - L${{ matrix.laravel }}
+            - name: Install dependencies
               run: |
-                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "pestphp/pest:${{ matrix.pest }}" "jiannei/laravel-enum:${{ matrix.enum }}" --no-interaction --no-update
-                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" \
+                      "pestphp/pest:${{ matrix.pest }}" "jiannei/laravel-enum:^4.0" \
+                      --no-interaction --no-update
+                  composer update --${{ matrix.dependency-version || 'prefer-stable' }} --prefer-dist \
+                      --no-interaction --no-progress
 
-            - name: Execute tests
-              run: vendor/bin/pest
+            - name: List installed Laravel
+              run: composer show laravel/framework | head -2
+
+            - name: Run tests
+              run: vendor/bin/pest --ci
+
+    legacy-tests:
+        name: Legacy P${{ matrix.php }} - L${{ matrix.laravel }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                # Test each historical package tag against the Laravel version
+                # documented in README (the current codebase only supports Laravel >= 11)
+                include:
+                    # Laravel 5.5 - response ~1.8 (testbench ^3.5)
+                    - php: '7.1'
+                      laravel: '5.5'
+                      tag: v1.8.0
+                    # Laravel 6 - response ^2.0 (testbench ^4.0)
+                    - php: '7.2'
+                      laravel: '6.*'
+                      tag: v2.0.5
+                    # Laravel 7 - response ^3.0 (testbench ^5.0)
+                    - php: '7.3'
+                      laravel: '7.*'
+                      tag: v3.0.5
+                    # Laravel 8 - response ^4.0 (testbench ^6.0)
+                    - php: '7.4'
+                      laravel: '8.*'
+                      tag: v4.0.0
+                    # Laravel 9 - response ^4.4 (testbench ^7.0)
+                    - php: '8.0'
+                      laravel: '9.*'
+                      tag: v4.4.0
+                    # Laravel 10 - response ^5.0 (testbench ^8.0)
+                    - php: '8.1'
+                      laravel: '10.*'
+                      tag: v5.2.0
+
+        steps:
+            - name: Checkout legacy tag
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ matrix.tag }}
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  # Composer 2.2 LTS still supports PHP 5.3 - 8.x
+                  tools: composer:2.2
+                  extensions: curl, dom, fileinfo, filter, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip
+                  coverage: none
+
+            - name: Install legacy dependencies
+              run: composer update --prefer-dist --no-interaction --no-progress
+
+            - name: List installed versions
+              run: |
+                  composer show laravel/framework | head -2
+                  composer show | grep 'jiannei/laravel-response'
+
+            - name: Run legacy tests
+              run: vendor/bin/phpunit --no-coverage
