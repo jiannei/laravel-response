@@ -9,6 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-test('example', function () {
-    expect(true)->toBeTrue();
-});
+namespace Jiannei\Response\Laravel\Tests\Support;
+
+use Jiannei\Response\Laravel\Support\Traits\JsonResponseTrait;
+
+class LegacyResponse
+{
+    use JsonResponseTrait;
+}

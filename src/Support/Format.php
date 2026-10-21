@@ -21,66 +21,39 @@ use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Traits\Macroable;
-use Jiannei\Response\Laravel\Contract\ResponseFormat;
+use Jiannei\Response\Laravel\Support\Config\ResponseConfig;
 
-class Format implements ResponseFormat
+class Format
 {
     use Macroable;
 
-    /**
-     * @var array<string, mixed>|null
-     */
-    protected ?array $data = null;
-
-    protected int $statusCode = 200;
+    public function __construct(protected ResponseConfig $config) {}
 
     /**
-     * @param  array<string, mixed>  $config
-     */
-    public function __construct(protected array $config = []) {}
-
-    /**
-     * Return a new JSON response from the application.
-     */
-    public function response(): JsonResponse
-    {
-        return tap(new JsonResponse($this->data, $this->statusCode), function () {
-            $this->data = null;
-            $this->statusCode = 200;
-        });
-    }
-
-    /**
-     * Get formatted data.
+     * Build a formatted JSON response.
      *
-     * @return array<string, mixed>|null
+     * @param  array<string, mixed>|object|null  $error
      */
-    public function get(): ?array
-    {
-        return $this->data;
-    }
-
-    /**
-     * Core format.
-     */
-    public function data(mixed $data = null, string $message = '', int|\BackedEnum $code = 200, mixed $error = null): static
-    {
+    public function make(
+        mixed $data = null,
+        string $message = '',
+        int|\BackedEnum $code = 200,
+        array|object|null $error = null,
+    ): JsonResponse {
         $bizCode = $this->formatBusinessCode($code);
+        $status = $this->formatStatus($bizCode);
 
-        $this->data = $this->formatDataFields([
-            'status' => $this->formatStatus($bizCode),
+        $payload = $this->formatDataFields([
+            'status' => $status,
             'code' => $bizCode,
             'message' => $this->formatMessage($bizCode, $message),
             'data' => $this->formatData($data),
-            'error' => $this->formatError(null),
+            'error' => $this->formatError($error),
         ]);
 
-        $this->statusCode = $this->formatStatusCode($bizCode);
-
-        return $this;
+        return new JsonResponse($payload, $this->formatStatusCode($bizCode, $status));
     }
 
     /**
@@ -89,7 +62,7 @@ class Format implements ResponseFormat
      * @param  AbstractPaginator<int|string, mixed>|AbstractCursorPaginator<int|string, mixed>|Paginator<int|string, mixed>  $resource
      * @return array<string, mixed>
      */
-    public function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array
+    protected function paginator(AbstractPaginator|AbstractCursorPaginator|Paginator $resource): array
     {
         $data = method_exists($resource, 'toArray') ? $resource->toArray()['data'] : $resource->items();
 
@@ -104,7 +77,7 @@ class Format implements ResponseFormat
      *
      * @return array<string, mixed>
      */
-    public function resourceCollection(ResourceCollection $collection): array
+    protected function resourceCollection(ResourceCollection $collection): array
     {
         return [
             'data' => $collection->resolve(),
@@ -117,9 +90,9 @@ class Format implements ResponseFormat
      *
      * @return array<string, mixed>
      */
-    public function jsonResource(JsonResource $resource): array
+    protected function jsonResource(JsonResource $resource): array
     {
-        return value($this->formatJsonResource(), $resource);
+        return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
     }
 
     /**
@@ -132,7 +105,9 @@ class Format implements ResponseFormat
         return match (true) {
             $data instanceof ResourceCollection => $this->resourceCollection($data),
             $data instanceof JsonResource => $this->jsonResource($data),
-            $data instanceof AbstractPaginator, $data instanceof AbstractCursorPaginator => $this->paginator($data),
+            $data instanceof AbstractPaginator,
+            $data instanceof AbstractCursorPaginator,
+            $data instanceof Paginator => $this->paginator($data),
             $data instanceof Arrayable, (is_object($data) && method_exists($data, 'toArray')) => $data->toArray(),
             empty($data) => (object) $data,
             default => Arr::wrap($data),
@@ -148,9 +123,10 @@ class Format implements ResponseFormat
             return $message;
         }
 
-        $localizationKey = implode('.', [Config::get('response.locale', 'enums'), $code]);
+        $localizationKey = implode('.', [$this->config->locale(), $code]);
+        $localized = Lang::has($localizationKey) ? Lang::get($localizationKey) : null;
 
-        return Lang::has($localizationKey) ? Lang::get($localizationKey) : null;
+        return is_string($localized) ? $localized : null;
     }
 
     /**
@@ -169,42 +145,36 @@ class Format implements ResponseFormat
         $statusCode = (int) substr((string) $bizCode, 0, 3);
 
         return match (true) {
-            ($statusCode >= 400 && $statusCode <= 499) => 'error',// client error
-            ($statusCode >= 500 && $statusCode <= 599) => 'fail',// service error
-            default => 'success'
+            ($statusCode >= 400 && $statusCode <= 499) => 'error', // client error
+            ($statusCode >= 500 && $statusCode <= 599) => 'fail', // service error
+            default => 'success',
         };
     }
 
     /**
      * Http status code.
+     *
+     * The configured error code only overrides failed responses; successful
+     * responses keep the first three digits of their business code.
      */
-    protected function formatStatusCode(int $code): int
+    protected function formatStatusCode(int $bizCode, string $status): int
     {
-        $errorCode = Config::get('response.error_code');
+        $errorCode = $this->config->errorCodePolicy();
 
-        return (int) substr((string) ($errorCode ?: $code), 0, 3);
+        if ($errorCode !== false && $status !== 'success') {
+            return (int) substr((string) $errorCode, 0, 3);
+        }
+
+        return (int) substr((string) $bizCode, 0, 3);
     }
 
     /**
-     * Get JsonResource resource data.
-     */
-    protected function formatJsonResource(): \Closure
-    {
-        // vendor/laravel/framework/src/Illuminate/Http/Resources/Json/ResourceResponse.php
-        // toResponse
-        return function (JsonResource $resource) {
-            return array_merge_recursive($resource->resolve(request()), $resource->with(request()), $resource->additional);
-        };
-    }
-
-    /**
-     * Format paginator data.
+     * Format paginator meta.
      *
      * @return array<string, mixed>
      */
     protected function formatMeta(mixed $collection): array
     {
-        // vendor/laravel/framework/src/Illuminate/Http/Resources/Json/PaginatedResourceResponse.php
         return match (true) {
             $collection instanceof CursorPaginator => [
                 'cursor' => [
@@ -245,39 +215,48 @@ class Format implements ResponseFormat
     /**
      * Format error.
      *
-     * @param  array<string, mixed>|null  $error
+     * @param  array<string, mixed>|object|null  $error
      * @return object|array<string, mixed>
      */
-    protected function formatError(?array $error): object|array
+    protected function formatError(array|object|null $error): object|array
     {
-        return $error ?: (object) [];
+        return $error === null || $error === [] ? (object) [] : $error;
     }
 
     /**
-     * Format response data fields.
+     * Apply the configured display and alias rules to the response envelope.
+     *
+     * Rules are applied deepest-first so nested paths such as `data.data` are
+     * still reachable after their parent alias is applied.
      *
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     protected function formatDataFields(array $data): array
     {
-        foreach ($this->config as $key => $config) {
-            if (! is_string($key) || ! Arr::has($data, $key) || ! is_array($config)) {
+        $fields = $this->config->fields();
+
+        uksort($fields, static function ($a, $b): int {
+            return substr_count((string) $b, '.') <=> substr_count((string) $a, '.');
+        });
+
+        foreach ($fields as $key => $fieldConfig) {
+            if (! is_string($key) || ! Arr::has($data, $key) || ! is_array($fieldConfig)) {
                 continue;
             }
 
-            $show = $config['show'] ?? true;
-            $alias = $config['alias'] ?? '';
+            $show = (bool) ($fieldConfig['show'] ?? true);
+            $alias = $fieldConfig['alias'] ?? '';
 
             if (! $show) {
-                unset($data[$key]);
+                Arr::forget($data, $key);
 
                 continue;
             }
 
-            if ($alias && $alias !== $key) {
-                $data[$alias] = Arr::get($data, $key);
-                unset($data[$key]);
+            if (is_string($alias) && $alias !== '' && $alias !== $key) {
+                Arr::set($data, $alias, Arr::get($data, $key));
+                Arr::forget($data, $key);
             }
         }
 

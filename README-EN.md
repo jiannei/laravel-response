@@ -49,7 +49,7 @@ Support for Laravel 5.5.* ~ Laravel 13.*, the user-defined business operation co
 | 9.* - 10.* | ^5.0        |  ^3.0  | ^8.0       |
 | 11.*       | ^6.0        |  ^4.0  | ^8.2       |
 | 12.*       | ^6.0        |  ^4.0  | ^8.2       |
-| 13.*       | ^6.0        |  ^4.0  | ^8.3       |
+| 13.*       | ^7.0        |  ^4.0  | ^8.3       |
 
 
 ```shell
@@ -90,7 +90,7 @@ composer require jiannei/laravel-enum "^4.0" -vvv # optional
 
 # laravel 13.x
 
-composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-response "^7.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # optional
 ```
 

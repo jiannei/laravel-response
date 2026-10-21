@@ -12,14 +12,23 @@
 namespace Jiannei\Response\Laravel\Tests;
 
 use Illuminate\Contracts\Config\Repository;
+use Jiannei\Response\Laravel\Providers\LaravelServiceProvider;
+use Jiannei\Response\Laravel\Support\Config\ResponseConfig;
 use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->useResponseConfig();
+    }
+
     protected function getPackageProviders($app)
     {
         return [
-            \Jiannei\Response\Laravel\Providers\LaravelServiceProvider::class,
+            LaravelServiceProvider::class,
         ];
     }
 
@@ -48,28 +57,19 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
             $config->set('response.locale', 'enums.'.ResponseEnum::class);
         });
+    }
 
-        if ($this instanceof \P\Tests\Unit\CustomFormatTest) {
-            $app['config']->set('response.format', [
-                'class' => Support\Format::class,
-                'config' => [
-                    // key => config
-                    'status' => ['alias' => 'status', 'show' => false],
-                    'code' => ['alias' => 'code', 'show' => true],
-                    'message' => ['alias' => 'msg', 'show' => true],
-                    'error' => ['alias' => 'error', 'show' => false],
-                    'data' => ['alias' => 'data', 'show' => true],
-                    'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
-                ],
-            ]);
-        }
+    /**
+     * Bind a response config instance for the current test.
+     *
+     * @param  array<string, mixed>  $overrides
+     */
+    protected function useResponseConfig(array $overrides = []): void
+    {
+        $config = $this->app->config->get('response', []);
+        $config = is_array($config) ? $config : [];
+        $config = array_replace_recursive($config, $overrides);
 
-        if ($this instanceof \P\Tests\Unit\Fail200Test) {
-            $app['config']->set('response.error_code', 200);
-        }
-
-        if ($this instanceof \P\Tests\Unit\Fail500Test) {
-            $app['config']->set('response.error_code', 500);
-        }
+        $this->app->instance(ResponseConfig::class, new ResponseConfig($config));
     }
 }

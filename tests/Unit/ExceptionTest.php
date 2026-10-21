@@ -11,40 +11,58 @@
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Jiannei\Response\Laravel\Tests\Support\TestHandler;
+use Jiannei\Response\Laravel\Support\Config\ResponseConfig;
+use Jiannei\Response\Laravel\Support\Exceptions\ExceptionResponse;
+use Jiannei\Response\Laravel\Support\Format;
+use Jiannei\Response\Laravel\Tests\Enums\ResponseEnum;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-uses()->beforeEach(function () {
-    $this->handler = new TestHandler($this->app);
-})->in(__FILE__);
+function exceptionModule(array $overrides = [], ?Closure $converter = null): ExceptionResponse
+{
+    $config = new ResponseConfig(array_replace_recursive([
+        'locale' => 'enums.'.ResponseEnum::class,
+        'error_code' => false,
+        'exception' => [
+            ValidationException::class => ['code' => 422],
+            AuthenticationException::class => [],
+            NotFoundHttpException::class => [],
+        ],
+        'format' => ['class' => Format::class, 'config' => []],
+    ], $overrides));
 
-test('prepareJsonResponse dispatches ValidationException to typed formatter', function () {
-    Config::set('app.debug', false);
+    $converter ??= fn (Throwable $e): array => ['debug' => $e->getMessage()];
 
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new ValidationException(Validator::make(['name' => ''], ['name' => 'required']))
-    );
+    return new ExceptionResponse($config, new Format($config), $converter);
+}
+
+function rendered(ExceptionResponse $module, Throwable $e): JsonResponse
+{
+    $response = $module->render($e);
+
+    expect($response)->toBeInstanceOf(JsonResponse::class);
+    assert($response instanceof JsonResponse);
+
+    return $response;
+}
+
+test('validation exceptions use the validation defaults', function () {
+    $response = rendered(exceptionModule(), new ValidationException(
+        Validator::make(['name' => ''], ['name' => 'required'])
+    ));
 
     expect($response->getStatusCode())->toEqual(422)
         ->and($response->getData(true))->toMatchArray([
             'status' => 'error',
             'code' => 422,
             'message' => 'The name field is required.',
+            'error' => ['name' => ['The name field is required.']],
         ]);
 });
 
-test('prepareJsonResponse dispatches AuthenticationException to typed formatter', function () {
-    Config::set('app.debug', false);
-
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new AuthenticationException('Unauthenticated.')
-    );
+test('authentication exceptions use the auth defaults', function () {
+    $response = rendered(exceptionModule(), new AuthenticationException('Unauthenticated.'));
 
     expect($response->getStatusCode())->toEqual(401)
         ->and($response->getData(true))->toMatchArray([
@@ -54,69 +72,55 @@ test('prepareJsonResponse dispatches AuthenticationException to typed formatter'
         ]);
 });
 
-test('prepareJsonResponse dispatches HttpException to generic fallback', function () {
-    // Override the package default (which sets message => '') so the trait falls through
-    // to the exception's own message rather than the empty-string config.
-    Config::set('response.exception.'.NotFoundHttpException::class, []);
-    Config::set('app.debug', false);
-
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new NotFoundHttpException('Route not found')
-    );
+test('http exceptions use their status and message', function () {
+    $response = rendered(exceptionModule(), new NotFoundHttpException('Route not found'));
 
     expect($response->getStatusCode())->toEqual(404)
         ->and($response->getData(true))->toMatchArray([
             'status' => 'error',
             'code' => 404,
             'message' => 'Route not found',
+            'error' => ['debug' => 'Route not found'],
         ]);
 });
 
-test('prepareJsonResponse dispatches generic Throwable to generic fallback', function () {
-    Config::set('app.debug', false);
-
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new RuntimeException('boom')
-    );
+test('generic throwables use the server error fallback', function () {
+    $response = rendered(exceptionModule(), new RuntimeException('boom'));
 
     expect($response->getStatusCode())->toEqual(500)
         ->and($response->getData(true))->toMatchArray([
             'status' => 'fail',
             'code' => 500,
             'message' => 'Server Error',
+            'error' => ['debug' => 'boom'],
         ]);
 });
 
-test('prepareJsonResponse honours opt-out (config === false)', function () {
-    Config::set('response.exception.'.NotFoundHttpException::class, false);
-
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new NotFoundHttpException('Route not found')
-    );
-
-    // parent::prepareJsonResponse returns a JsonResponse with the converted array directly —
-    // not the wrapped {status, code, message, data, error} shape.
-    expect($response->getStatusCode())->toEqual(404)
-        ->and($response->getData(true))->toMatchArray(['message' => 'Route not found']);
-});
-
-test('prepareJsonResponse applies 4-key config overrides', function () {
-    Config::set('response.exception.'.NotFoundHttpException::class, [
-        'message' => 'Custom not-found message',
-        'code' => 418,
-        'header' => ['X-Custom-Header' => 'foo'],
+test('an exception rule set to false falls through', function () {
+    $module = exceptionModule([
+        'exception' => [NotFoundHttpException::class => false],
     ]);
 
-    $response = $this->handler->publicPrepareJsonResponse(
-        Request::create('/api/test'),
-        new NotFoundHttpException('Original message')
-    );
+    expect($module->render(new NotFoundHttpException('Route not found')))->toBeNull();
+});
+
+test('exception rules override code, message, header and options', function () {
+    $module = exceptionModule([
+        'exception' => [
+            NotFoundHttpException::class => [
+                'message' => 'Custom not-found message',
+                'code' => 418,
+                'header' => ['X-Custom-Header' => 'foo'],
+                'options' => JSON_UNESCAPED_SLASHES,
+            ],
+        ],
+    ]);
+
+    $response = rendered($module, new NotFoundHttpException('Original message'));
 
     expect($response->getStatusCode())->toEqual(418)
         ->and($response->headers->get('X-Custom-Header'))->toEqual('foo')
+        ->and($response->getEncodingOptions())->toEqual(JSON_UNESCAPED_SLASHES)
         ->and($response->getData(true))->toMatchArray([
             'status' => 'error',
             'code' => 418,
@@ -124,115 +128,22 @@ test('prepareJsonResponse applies 4-key config overrides', function () {
         ]);
 });
 
-test('invalidJson delegates to formatValidationException', function () {
-    $response = $this->handler->publicInvalidJson(
-        Request::create('/api/test'),
-        new ValidationException(Validator::make(['email' => 'not-an-email'], ['email' => 'email']))
-    );
+test('validation rules can override the error payload', function () {
+    $module = exceptionModule([
+        'exception' => [
+            ValidationException::class => [
+                'message' => 'Validation failed',
+                'error' => ['custom' => ['error']],
+            ],
+        ],
+    ]);
 
-    expect($response->getStatusCode())->toEqual(422)
-        ->and($response->getData(true))->toMatchArray([
-            'status' => 'error',
-            'code' => 422,
-            'message' => 'The email field must be a valid email address.',
-        ]);
-});
+    $response = rendered($module, new ValidationException(
+        Validator::make(['email' => 'x'], ['email' => 'email'])
+    ));
 
-test('invalidJson honours opt-out (config === false)', function () {
-    Config::set('response.exception.'.ValidationException::class, false);
-
-    $response = $this->handler->publicInvalidJson(
-        Request::create('/api/test'),
-        new ValidationException(Validator::make(['email' => 'x'], ['email' => 'email']))
-    );
-
-    // parent::invalidJson returns the original Laravel shape — no wrapper.
-    expect($response->getStatusCode())->toEqual(422);
-});
-
-test('invalidJson applies ValidationException config overrides', function () {
-    Config::set('response.exception.'.ValidationException::class, [
+    expect($response->getData(true))->toMatchArray([
         'message' => 'Validation failed',
-        'code' => 400,
+        'error' => ['custom' => ['error']],
     ]);
-
-    $response = $this->handler->publicInvalidJson(
-        Request::create('/api/test'),
-        new ValidationException(Validator::make(['email' => 'x'], ['email' => 'email']))
-    );
-
-    expect($response->getStatusCode())->toEqual(400)
-        ->and($response->getData(true))->toMatchArray([
-            'code' => 400,
-            'message' => 'Validation failed',
-        ]);
-});
-
-test('unauthenticated formats AuthenticationException for JSON requests', function () {
-    $request = Request::create('/api/test');
-    $request->headers->set('Accept', 'application/json');
-
-    $response = $this->handler->publicUnauthenticated(
-        $request,
-        new AuthenticationException('Login required.')
-    );
-
-    expect($response->getStatusCode())->toEqual(401)
-        ->and($response->getData(true))->toMatchArray([
-            'status' => 'error',
-            'code' => 401,
-            'message' => 'Login required.',
-        ]);
-});
-
-test('unauthenticated applies AuthenticationException config overrides', function () {
-    Config::set('response.exception.'.AuthenticationException::class, [
-        'message' => '请先登录',
-        'code' => 403,
-    ]);
-
-    $request = Request::create('/api/test');
-    $request->headers->set('Accept', 'application/json');
-
-    $response = $this->handler->publicUnauthenticated(
-        $request,
-        new AuthenticationException('Login required.')
-    );
-
-    expect($response->getStatusCode())->toEqual(403)
-        ->and($response->getData(true))->toMatchArray([
-            'code' => 403,
-            'message' => '请先登录',
-        ]);
-});
-
-test('unauthenticated falls through to parent for non-JSON requests', function () {
-    $this->app['router']->get('login', fn () => 'login-page')->name('login');
-
-    $request = Request::create('/web/test', 'GET');
-
-    $response = $this->handler->publicUnauthenticated(
-        $request,
-        new AuthenticationException('Login required.')
-    );
-
-    // parent::unauthenticated returns a redirect for non-JSON — not our JsonResponse.
-    expect($response)->not->toBeInstanceOf(JsonResponse::class);
-});
-
-test('unauthenticated honours opt-out (config === false)', function () {
-    Config::set('response.exception.'.AuthenticationException::class, false);
-
-    $request = Request::create('/api/test');
-    $request->headers->set('Accept', 'application/json');
-
-    $response = $this->handler->publicUnauthenticated(
-        $request,
-        new AuthenticationException('Login required.')
-    );
-
-    // parent::unauthenticated for JSON request still returns a JsonResponse,
-    // but it's Laravel's default shape — not our wrapped format.
-    expect($response)->toBeInstanceOf(JsonResponse::class)
-        ->and($response->getData(true))->not->toHaveKey('status');
 });

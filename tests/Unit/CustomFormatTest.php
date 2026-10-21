@@ -9,10 +9,26 @@
  * with this source code in the file LICENSE.
  */
 
-use Jiannei\Response\Laravel\Support\Facades\Format;
 use Jiannei\Response\Laravel\Support\Facades\Response;
+use Jiannei\Response\Laravel\Support\Format;
+use Jiannei\Response\Laravel\Tests\Support\Format as CustomFormat;
 
-test('add extra field', function () {
+uses()->beforeEach(function () {
+    $this->useResponseConfig([
+        'format' => [
+            'class' => CustomFormat::class,
+            'config' => [
+                'status' => ['alias' => 'status', 'show' => false],
+                'code' => ['alias' => 'code', 'show' => true],
+                'message' => ['alias' => 'msg', 'show' => true],
+                'error' => ['alias' => 'error', 'show' => false],
+                'data' => ['alias' => 'data', 'show' => true],
+            ],
+        ],
+    ]);
+})->in(__FILE__);
+
+test('custom formatter can add fields', function () {
     $response = Response::success();
 
     expect($response->status())->toEqual(200)
@@ -20,25 +36,22 @@ test('add extra field', function () {
         ->and($response->getData(true)['extra'])->toHaveKey('time');
 });
 
-/*
- * 'class' => \Jiannei\Response\Laravel\Tests\Support\Format::class,
- * 'config' => [
- *      // key => config
- *      'status' => ['alias' => 'status', 'show' => false],
- *      'code' => ['alias' => 'code', 'show' => true],
- *      'message' => ['alias' => 'msg', 'show' => true],
- *      'error' => ['alias' => 'error', 'show' => false],
- *      'data' => ['alias' => 'data', 'show' => true],
- *      'data.data' => ['alias' => 'data.data', 'show' => true], // rows/items/list
- * ].
- */
-test('hide some field', function () {
-    // 隐藏 status，message 字段名称修改成 msg
-    $data = Format::data()->get();
+test('custom formatter can hide and alias fields', function () {
+    $data = Response::success()->getData(true);
 
     expect($data)->toMatchArray([
         'code' => 200,
-        'data' => (object) [],
+        'data' => [],
         'msg' => '操作成功',
+    ])->not->toHaveKey('status')
+        ->not->toHaveKey('error');
+});
+
+test('invalid formatter class is rejected', function () {
+    $this->useResponseConfig([
+        'format' => ['class' => stdClass::class],
     ]);
+
+    expect(fn () => app(Format::class))
+        ->toThrow(InvalidArgumentException::class, 'Invalid response formatter');
 });

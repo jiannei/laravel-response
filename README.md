@@ -60,7 +60,7 @@
 | 9.* - 10.* | ^5.0        | ^3.0    | ^8.0       |
 | 11.*       | ^6.0        | ^4.0    | ^8.2       |
 | 12.*       | ^6.0        | ^4.0    | ^8.2       |
-| 13.*       | ^6.0        | ^4.0    | ^8.3       |
+| 13.*       | ^7.0        | ^4.0    | ^8.3       |
 
 > **📝 版本说明：**
 > - Laravel 11+ 版本内置了更好的异常处理机制，可以省略手动配置异常处理步骤
@@ -105,7 +105,7 @@ composer require jiannei/laravel-enum "^4.0" -vvv # 可选
 
 # laravel 13.x
 
-composer require jiannei/laravel-response "^6.0" -vvv
+composer require jiannei/laravel-response "^7.0" -vvv
 composer require jiannei/laravel-enum "^4.0" -vvv # 可选
 ```
 

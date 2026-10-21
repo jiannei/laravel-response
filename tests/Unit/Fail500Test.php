@@ -11,6 +11,10 @@
 
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
+uses()->beforeEach(function () {
+    $this->useResponseConfig(['error_code' => 500]);
+})->in(__FILE__);
+
 test('fail with 500 status code', function () {
     $response = Response::fail();
 
@@ -22,4 +26,11 @@ test('fail with 500 status code', function () {
             'data' => [],
             'error' => [],
         ]);
+});
+
+test('success keeps its own status code when error_code is set', function () {
+    $response = Response::success();
+
+    expect($response->status())->toEqual(200)
+        ->and($response->getData(true)['code'])->toEqual(200);
 });

@@ -11,6 +11,10 @@
 
 use Jiannei\Response\Laravel\Support\Facades\Response;
 
+uses()->beforeEach(function () {
+    $this->useResponseConfig(['error_code' => 200]);
+})->in(__FILE__);
+
 test('fail with 200 status code', function () {
     $response = Response::fail();
 

@@ -11,9 +11,11 @@
 
 namespace Jiannei\Response\Laravel\Providers;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\ServiceProvider;
-use Jiannei\Response\Laravel\Contract\ResponseFormat;
+use InvalidArgumentException;
 use Jiannei\Response\Laravel\Http\Exceptions\Handler;
+use Jiannei\Response\Laravel\Support\Config\ResponseConfig;
 use Jiannei\Response\Laravel\Support\Format;
 
 class LaravelServiceProvider extends ServiceProvider
@@ -23,18 +25,30 @@ class LaravelServiceProvider extends ServiceProvider
         $this->setupConfig();
 
         $this->app->singleton(
-            \Illuminate\Contracts\Debug\ExceptionHandler::class,
+            ExceptionHandler::class,
             Handler::class
         );
 
-        $this->app->singleton(ResponseFormat::class, function ($app) {
-            $formatter = $app->config->get('response.format.class');
-            $config = $app->config->get('response.format.config');
+        $this->app->singleton(ResponseConfig::class, function ($app) {
+            $config = $app->config->get('response', []);
 
-            return match (true) {
-                class_exists($formatter) && is_subclass_of($formatter, ResponseFormat::class) => new $formatter($config),
-                default => new Format($config),
-            };
+            return new ResponseConfig(is_array($config) ? $config : []);
+        });
+
+        $this->app->bind(Format::class, function ($app) {
+            /** @var ResponseConfig $config */
+            $config = $app->make(ResponseConfig::class);
+            $formatter = $config->formatterClass();
+
+            if (! class_exists($formatter) || ! is_a($formatter, Format::class, true)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid response formatter [%s]; it must extend [%s].',
+                    $formatter,
+                    Format::class
+                ));
+            }
+
+            return new $formatter($config);
         });
     }
 

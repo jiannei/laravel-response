@@ -12,22 +12,24 @@
 namespace Jiannei\Response\Laravel\Support\Traits;
 
 use Illuminate\Http\JsonResponse;
-use Jiannei\Response\Laravel\Support\Facades\Format;
+use Jiannei\Response\Laravel\Support\Facades\Response as ResponseFacade;
 
 trait JsonResponseTrait
 {
     /**
-     *  Respond with an accepted response and associate a location and/or content if provided.
+     * Respond with an accepted response and associate a location if provided.
      *
      * @param  array<string, mixed>  $data
      */
     public function accepted(array $data = [], string $message = '', string $location = ''): JsonResponse
     {
-        return tap($this->success($data, $message, 202), function ($response) use ($location) {
-            if ($location) {
-                $response->header('Location', $location);
-            }
-        });
+        $response = $this->success($data, $message, 202);
+
+        if ($location) {
+            $response->header('Location', $location);
+        }
+
+        return $response;
     }
 
     /**
@@ -37,11 +39,13 @@ trait JsonResponseTrait
      */
     public function created(array $data = [], string $message = '', string $location = ''): JsonResponse
     {
-        return tap($this->success($data, $message, 201), function ($response) use ($location) {
-            if ($location) {
-                $response->header('Location', $location);
-            }
-        });
+        $response = $this->success($data, $message, 201);
+
+        if ($location) {
+            $response->header('Location', $location);
+        }
+
+        return $response;
     }
 
     /**
@@ -62,7 +66,6 @@ trait JsonResponseTrait
 
     /**
      * Alias of the successful method, no need to specify the message and data parameters.
-     * You can use ResponseCodeEnum to localize the message.
      */
     public function localize(int|\BackedEnum $code = 200): JsonResponse
     {
@@ -110,18 +113,23 @@ trait JsonResponseTrait
     }
 
     /**
-     * Return an fail response.
+     * Return a failed response.
+     *
+     * The mixed parameter is kept for backwards compatibility; non-array and
+     * non-object values are ignored, as they were by the old formatter.
      */
     public function fail(string $message = '', int|\BackedEnum $code = 500, mixed $errors = null): JsonResponse
     {
-        return Format::data(message: $message, code: $code, error: $errors)->response();
+        $errors = is_array($errors) || is_object($errors) ? $errors : null;
+
+        return ResponseFacade::fail($message, $code, $errors);
     }
 
     /**
-     * Return a success response.
+     * Return a successful response.
      */
     public function success(mixed $data = [], string $message = '', int|\BackedEnum $code = 200): JsonResponse
     {
-        return Format::data(data: $data, message: $message, code: $code)->response();
+        return ResponseFacade::success($data, $message, $code);
     }
 }

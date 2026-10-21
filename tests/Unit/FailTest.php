@@ -118,3 +118,27 @@ test('error method not allowed', function () {
             'error' => [],
         ]);
 });
+
+test('error internal', function () {
+    $response = Response::errorInternal();
+
+    expect($response->status())->toEqual(500)
+        ->and($response->getData(true))->toMatchArray([
+            'status' => 'fail',
+            'code' => 500,
+            'message' => '',
+            'data' => [],
+            'error' => [],
+        ]);
+});
+
+test('fail carries the error payload', function () {
+    $errors = [
+        'email' => ['The email field is required.'],
+    ];
+
+    $response = Response::fail('Validation failed', 422, $errors);
+
+    expect($response->status())->toEqual(422)
+        ->and($response->getData(true)['error'])->toEqual($errors);
+});
